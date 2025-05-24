@@ -4,98 +4,65 @@
 	<meta charset="UTF-8">
 	<title>Register - Computer Shop</title>
 	<style>
-		.error {
-			color: red;
-			font-size: 0.8em;
-		}
-		.form-container {
-			max-width: 500px;
-			margin: 0 auto;
-			padding: 20px;
-		}
-		table {
-			width: 100%;
-		}
-		td {
-			padding: 5px;
-		}
+        .error {
+            color: red;
+            font-size: 0.8em;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+        }
+        td {
+            padding: 5px;
+        }
 	</style>
 </head>
 <body>
 	<div class="form-container">
 		<h2>Register New Account</h2>
-
-		<div th:if="${error}" class="error" th:text="${error}"></div>
+		<div th:if="${error}" class="error" role="alert">
+			<p th:text="${error}"></p>
+		</div>
 
 		<form th:action="@{/users/register}" th:object="${user}" method="post">
 			<table>
 				<tr>
-					<td>
-						<label for="username">Username:</label>
-					</td>
-					<td>
-						<input type="text" id="username" th:field="*{username}" required />
-					</td>
-					<td>
-						<span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error"></span>
-					</td>
+					<td><label for="username">Username:</label></td>
+					<td><input type="text" id="username" th:field="*{username}" required /></td>
+					<td><span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error"></span></td>
 				</tr>
 				<tr>
+					<td><label for="password">Password:</label></td>
+					<td><input type="password" id="password" th:field="*{password}" required /></td>
 					<td>
-						<label for="password">Password:</label>
-					</td>
-					<td>
-						<input type="password" id="password" th:field="*{password}" required />
-					</td>
-					<td>
-						<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></span>
+						<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></span><br/>
 						<input type="checkbox" id="showPassword" onclick="togglePassword()">
 						<label for="showPassword">Show Password</label>
 					</td>
 				</tr>
 				<tr>
-					<td>
-						<label for="passwordConfirm">Confirm Password:</label>
-					</td>
-					<td>
-						<input type="password" id="passwordConfirm" th:field="*{passwordConfirm}" required />
-					</td>
-					<td>
-						<span th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}" class="error"></span>
-					</td>
+					<td><label for="passwordConfirm">Confirm Password:</label></td>
+					<td><input type="password" id="passwordConfirm" th:field="*{passwordConfirm}" required /></td>
+					<td><span th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}" class="error"></span></td>
 				</tr>
 				<tr>
-					<td>
-						<label for="fullName">Full Name:</label>
-					</td>
-					<td>
-						<input type="text" id="fullName" th:field="*{fullName}" required />
-					</td>
-					<td>
-						<span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="error"></span>
-					</td>
+					<td><label for="fullName">Full Name:</label></td>
+					<td><input type="text" id="fullName" th:field="*{fullName}" required /></td>
+					<td><span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="error"></span></td>
 				</tr>
 				<tr>
-					<td>
-						<label for="email">Email:</label>
-					</td>
-					<td>
-						<input type="email" id="email" th:field="*{email}" required />
-					</td>
-					<td>
-						<span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></span>
-					</td>
+					<td><label for="email">Email:</label></td>
+					<td><input type="email" id="email" th:field="*{email}" required /></td>
+					<td><span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></span></td>
 				</tr>
 				<tr>
-					<td>
-						<label for="phoneNumber">Phone Number:</label>
-					</td>
-					<td>
-						<input type="tel" id="phoneNumber" th:field="*{phoneNumber}" placeholder="0XXXXXXXXX" required />
-					</td>
-					<td>
-						<span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error"></span>
-					</td>
+					<td><label for="phoneNumber">Phone Number:</label></td>
+					<td><input type="tel" id="phoneNumber" th:field="*{phoneNumber}" placeholder="0XXXXXXXXX" required /></td>
+					<td><span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error"></span></td>
 				</tr>
 				<tr>
 					<td colspan="2" style="text-align: end;">
@@ -108,25 +75,25 @@
 	</div>
 
 	<script>
-		function togglePassword() {
-			var pwd = document.getElementById('password');
-			var pwdConfirm = document.getElementById('passwordConfirm');
-			pwd.type = pwd.type === 'password' ? 'text' : 'password';
-			pwdConfirm.type = pwdConfirm.type === 'password' ? 'text' : 'password';
-		}
+        function togglePassword() {
+            var pwd = document.getElementById('password');
+            var pwdConfirm = document.getElementById('passwordConfirm');
+            pwd.type = pwd.type === 'password' ? 'text' : 'password';
+            pwdConfirm.type = pwdConfirm.type === 'password' ? 'text' : 'password';
+        }
 
-		document.addEventListener('DOMContentLoaded', function() {
-			var form = document.querySelector('form');
-			var password = document.getElementById('password');
-			var passwordConfirm = document.getElementById('passwordConfirm');
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.querySelector('form');
+            var password = document.getElementById('password');
+	        var passwordConfirm = document.getElementById('passwordConfirm');
 
-			form.addEventListener('submit', function(event) {
-				if (password.value !== passwordConfirm.value) {
-					alert('Passwords do not match!');
-					event.preventDefault();
-				}
-			});
-		});
+            form.addEventListener('submit', function (event) {
+                if (password.value !== passwordConfirm.value) {
+                    alert('Passwords do not match!');
+                    event.preventDefault();
+                }
+	        });
+        });
 	</script>
 </body>
 </html>
