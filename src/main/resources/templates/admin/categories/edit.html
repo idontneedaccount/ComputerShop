@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/header :: header}"></head>
+
+<body id="page-top" class="newsletter-popup-modal">
+
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+  <div id="content-wrapper">
+    <div class="container-fluid">
+
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="#">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">Overview</li>
+      </ol>
+
+      <!-- Icon Cards-->
+      <div th:replace="~{admin/fragments/icon-cards :: icon-cards}"></div>
+
+
+      <!-- Main body information -->
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+              <h4 class="mb-0">Thêm danh mục mới</h4>
+            </div>
+            <div class="card-body">
+              <form th:action="@{/admin/edit-categories}" th:object="${categories}" method="post">
+                <div class="form-group mb-3">
+                  <label for="categoryId">Mã sản phẩm (CategoryID)<span class="text-danger">*</span></label>
+                  <textarea  id="categoryId" class="form-control" th:field="*{CategoryID}" readonly></textarea>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="name">Tên hãng<span class="text-danger">*</span></label>
+                  <textarea id="name" class="form-control" th:field="*{Name}"></textarea>
+                </div>
+                <div class="form-group mb-4">
+                  <label for="description">Mô tả<span class="text-danger">*</span></label>
+                  <textarea id="description" class="form-control" th:field="*{Description}"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success w-100">
+                  <i class="fas fa-save"></i> Chỉnh sửa sản phẩm
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+
+
+
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+        <a class="btn btn-primary" th:href="@{/admin/login}">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
+<footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+</body>
+</html>
