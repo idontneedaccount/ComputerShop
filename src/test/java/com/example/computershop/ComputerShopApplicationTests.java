@@ -8,6 +8,7 @@ class ComputerShopApplicationTests {
 
     @Test
     void contextLoads() {
+        // This test verifies that the application context loads successfully
     }
 
 }

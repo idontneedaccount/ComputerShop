@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Login - Computer Shop</title>
+	<style>
+        .error {
+            color: red;
+            font-size: 0.8em;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+        }
+        td {
+            padding: 5px;
+        }
+	</style>
+</head>
+<body>
+	<div class="form-container">
+		<h2>Login to Your Account</h2>
+		<div th:if="${error}" class="error" role="alert">
+			<p th:text="${error}"></p>
+		</div>
+
+		<form th:action="@{/auth/login}" method="post" th:object="${user}">
+			<table>
+				<tr>
+					<td><label for="username">Username:</label></td>
+					<td><input type="text" id="username" th:field="*{username}" required /></td>
+				</tr>
+				<tr>
+					<td><label for="password">Password:</label></td>
+					<td>
+						<input type="password" id="password" th:field="*{password}" required />
+						<br/>
+						<input type="checkbox" id="showPassword" onclick="togglePassword()">
+						<label for="showPassword">Show me password</label>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align: end;">
+						<button type="submit">Login</button>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<p>Don't have an account? <a th:href="@{/auth/register}">Register here</a></p>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<script>
+        function togglePassword() {
+            var pwd = document.getElementById('password');
+            pwd.type = pwd.type === 'password' ? 'text' : 'password';
+        }
+	</script>
+</body>
+</html>

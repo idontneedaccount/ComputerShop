@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -35,5 +36,8 @@ public class User {
     LocalDateTime createdAt;
     @Column(name = "isActive")
     boolean isActive;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    Set<UserRole> userRoles;
+
     
 }
