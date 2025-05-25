@@ -37,12 +37,12 @@
                         <div class="card-body">
                             <form th:action="@{/admin/add-categories}" th:object="${categories}" method="post">
                                 <div class="form-group mb-3">
-                                    <label for="name">Tên hãng<span class="text-danger">*</span></label>
-                                    <textarea id="name" class="form-control" th:field="*{Name}" required></textarea>
-                                </div>
-                                <div class="form-group mb-3">
                                     <label for="categoryId">Mã sản phẩm (CategoryID)<span class="text-danger">*</span></label>
                                     <textarea id="categoryId" class="form-control" th:field="*{CategoryID}" required></textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="name">Tên hãng<span class="text-danger">*</span></label>
+                                    <textarea id="name" class="form-control" th:field="*{Name}" required></textarea>
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="description">Mô tả<span class="text-danger">*</span></label>
