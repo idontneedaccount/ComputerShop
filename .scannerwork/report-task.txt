@@ -1,0 +1,6 @@
+projectKey=ggwp
+serverUrl=http://localhost:9000
+serverVersion=25.5.0.107428
+dashboardUrl=http://localhost:9000/dashboard?id=ggwp
+ceTaskId=4103d401-54d4-4e3e-864d-19ee290da52e
+ceTaskUrl=http://localhost:9000/api/ce/task?id=4103d401-54d4-4e3e-864d-19ee290da52e
