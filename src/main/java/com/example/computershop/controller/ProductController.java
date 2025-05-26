@@ -1,33 +1,46 @@
 package com.example.computershop.controller;
 
+import com.example.computershop.entity.Categories;
 import com.example.computershop.entity.Product;
 import com.example.computershop.repository.ProductRepository;
+import com.example.computershop.service.CategoriesService;
+import com.example.computershop.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @Controller
+@RequestMapping("/admin")
 public class ProductController {
-    private final ProductRepository repo;
-    public ProductController(ProductRepository repo) {
-        this.repo = repo;
+    @Autowired
+    private ProductService repo;
+    @Autowired
+    private CategoriesService categoriesService;
+    @RequestMapping("/add-product")
+    public String add(Model model) {
+        Product product = new Product();
+        model.addAttribute("product", product);
+        List<Categories> list = this.categoriesService.getAll();
+        model.addAttribute("categories", list);
+        return "admin/product/add";
     }
-    @GetMapping("/admin/add-product")
-    public String showAddProductForm(Model model){
-        model.addAttribute("product", new Product());
-        return "admin/add-product";
-    }
-    @PostMapping("/admin/add-product")
-    public String addProduct(@ModelAttribute("product") Product product, BindingResult result, Model model){
-        if (result.hasErrors()){
-            return "admin/add-product";
+    @PostMapping("/add-product")
+    public String addProduct(@ModelAttribute("product") Product product , Model model) {
+        if (this.repo.create(product)) {
+            return "redirect:/admin/product";
+        } else {
+            return "admin/product/add";
         }
-        repo.save(product);
-        model.addAttribute("message", "Product added successfully");
-        model.addAttribute("product", new Product());
-        return "admin/add-product";
     }
+    @GetMapping("/product")
+    public String showProducts(Model model){
+        List<Product> list = this.repo.getAll();
+        model.addAttribute("product", list);
+        return "admin/product/product";
+    }
+
 }

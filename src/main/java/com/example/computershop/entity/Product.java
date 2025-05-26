@@ -1,21 +1,17 @@
 package com.example.computershop.entity;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 @Entity
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer productID;
+    private String productID;
 
     private String name;
-    private Integer categoryID;
     private String description;
 
     private BigInteger price;
@@ -24,27 +20,29 @@ public class Product {
 
     private Boolean isActive = true;
     private LocalDateTime createdAt = LocalDateTime.now();
-
+    @ManyToOne
+    @JoinColumn(name = "categoryID", referencedColumnName = "CategoryID")
+    private Categories categories;
     public Product() {
     }
 
-    public Product(Integer productID, Integer categoryID, String name, String description, BigInteger price, Integer quantity, String imageURL, LocalDateTime createdAt, Boolean isActive) {
+    public Product(String productID, String name, String description, BigInteger price, Integer quantity, String imageURL, Boolean isActive, LocalDateTime createdAt, Categories categories) {
         this.productID = productID;
-        this.categoryID = categoryID;
         this.name = name;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
         this.imageURL = imageURL;
-        this.createdAt = createdAt;
         this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.categories = categories;
     }
 
-    public Integer getProductID() {
+    public String getProductID() {
         return productID;
     }
 
-    public void setProductID(Integer productID) {
+    public void setProductID(String productID) {
         this.productID = productID;
     }
 
@@ -54,14 +52,6 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getCategoryID() {
-        return categoryID;
-    }
-
-    public void setCategoryID(Integer categoryID) {
-        this.categoryID = categoryID;
     }
 
     public String getDescription() {
@@ -110,5 +100,13 @@ public class Product {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Categories getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Categories categories) {
+        this.categories = categories;
     }
 }
