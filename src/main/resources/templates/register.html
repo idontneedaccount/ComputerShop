@@ -29,7 +29,7 @@
 		</div>
 
 		<form th:action="@{/auth/register}" th:object="${user}" method="post">
-			<table>
+			<table th:role="register-form">
 				<tr>
 					<td><label for="username">Username:</label></td>
 					<td><input type="text" id="username" th:field="*{username}"/></td>

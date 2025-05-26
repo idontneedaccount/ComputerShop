@@ -27,19 +27,25 @@
 		<div th:if="${error}" class="error" role="alert">
 			<p th:text="${error}"></p>
 		</div>
+		<div th:if="${param.verified}" class="success" role="alert" style="color: green; font-size: 0.9em;">
+			<p>Your account has been successfully verified. You can now login.</p>
+		</div>
+		<div th:if="${param.resent}" class="success" role="alert" style="color: green; font-size: 0.9em;">
+			<p>Verification email resent successfully. Please check your email.</p>
+		</div>
 
 		<form th:action="@{/auth/login}" method="post" th:object="${user}">
-			<table>
+			<table th:role="login-form">
 				<tr>
 					<td><label for="username">Username:</label></td>
-					<td><input type="text" id="username" th:field="*{username}" required /></td>
+					<td><input type="text" id="username" th:field="*{username}"/></td>
 				</tr>
 				<tr>
 					<td><label for="password">Password:</label></td>
 					<td>
-						<input type="password" id="password" th:field="*{password}" required />
+						<input type="password" id="password" th:field="*{password}"/>
 						<br/>
-						<input type="checkbox" id="showPassword" onclick="togglePassword()">
+						<input type="checkbox" id="showPassword" onclick="pwd.type = this.checked ? 'text' : 'password';">
 						<label for="showPassword">Show me password</label>
 					</td>
 				</tr>
@@ -51,6 +57,7 @@
 				<tr>
 					<td colspan="2">
 						<p>Don't have an account? <a th:href="@{/auth/register}">Register here</a></p>
+						<p>Haven't received verification email? <a th:href="@{/auth/resend-verification}">Resend verification</a></p>
 					</td>
 				</tr>
 			</table>

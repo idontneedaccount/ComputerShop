@@ -3,9 +3,13 @@ package com.example.computershop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -15,7 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "Users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "userId")
@@ -36,8 +40,28 @@ public class User {
     LocalDateTime createdAt;
     @Column(name = "isActive")
     boolean isActive;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    Set<UserRole> userRoles;
-
-    
+    @Column(name = "verification_code")
+    String verificationCode;
+    @Column(name = "verification_expiration")
+    LocalDateTime verificationExpiration;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> "ROLE_" + role.toUpperCase());
+    }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+    @Override
+    public boolean isEnabled() {
+        return isActive;
+    }
 }

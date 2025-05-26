@@ -2,6 +2,8 @@ package com.example.computershop.controller;
 
 import com.example.computershop.dto.request.AuthenticationRequest;
 import com.example.computershop.dto.request.UserCreationRequest;
+import com.example.computershop.dto.request.VerifyUserRequest;
+import com.example.computershop.entity.User;
 import com.example.computershop.service.AuthenticationService;
 import com.example.computershop.service.UserService;
 import jakarta.validation.Valid;
@@ -19,10 +21,9 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
-    UserService userService;
     static String register = "register";
     static String login = "login";
-    static String error = "error";
+    static String errorPage = "error";
 
 
     @GetMapping("/register")
@@ -38,33 +39,59 @@ public class AuthenticationController {
         }
 
         try {
-            userService.createUser(request);
+            authenticationService.createUser(request);
             return "redirect:/auth/login";
         } catch (IllegalArgumentException e) {
-            model.addAttribute(error, e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return register;
         }
     }
 
     @GetMapping("/login")
     public String showLoginForm(Model model) {
-        model.addAttribute("authenticationRequest", new AuthenticationRequest());
+        model.addAttribute("user", new AuthenticationRequest());
         return login;
     }
 
     @PostMapping("/login")
-    public String authenticate(@ModelAttribute("authenticationRequest") AuthenticationRequest request, Model model) {
+    public String authenticate(@ModelAttribute("user") AuthenticationRequest request, Model model) {
         try {
-            boolean result = authenticationService.authenticate(request);
-            if (result) {
-                return "redirect:/home";
-            } else {
-                model.addAttribute(error, "Invalid username or password");
-                return login;
-            }
+            User authenticated = authenticationService.authenticate(request);
+            return "redirect:/home";
         } catch (IllegalArgumentException e) {
-            model.addAttribute(error, e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return login;
+        }
+    }
+
+    @GetMapping("/verify")
+    public String verifyUserByLink(@RequestParam("email") String email, @RequestParam("code") String code, Model model) {
+        try {
+            VerifyUserRequest verifyRequest = new VerifyUserRequest();
+            verifyRequest.setEmail(email);
+            verifyRequest.setVerificationCode(code);
+            authenticationService.verifyUser(verifyRequest);
+            return "redirect:/auth/login?verified=true";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return errorPage;
+        }
+    }
+
+    @GetMapping("/resend-verification")
+    public String showResendVerificationForm(Model model) {
+        model.addAttribute("email", "");
+        return "resend-verification";
+    }
+
+    @PostMapping("/resend-verification")
+    public String resendVerificationEmail(@RequestParam("email") String email, Model model) {
+        try {
+            authenticationService.resendVerificationEmail(email);
+            return "redirect:/auth/login?resent=true";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "resend-verification";
         }
     }
 }
