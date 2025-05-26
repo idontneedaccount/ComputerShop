@@ -40,16 +40,28 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Tên thể loại</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Tên danh mục</th>
                                 <th>Mô tả</th>
-                                <th>Hành động</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="product : ${product}">
-                                <td th:text="${}"></td>
-                                <td th:text="${}"></td>
-                                <td th:text="${}"></td>
+                            <tr th:each="products : ${product}">
+                                <td th:text="${products.productID}"></td>
+                                <td th:text="${products.name}"></td>
+                                <td th:each="category : ${products.categories}" th:text="${category.Name}">
+                                </td>
+                                <td th:text="${products.description}"></td>
+                                <td th:text="${products.price}"></td>
+                                <td th:text="${products.quantity}"></td>
+                                <td th:if="${products.active}"><span class="btn btn-success">Hoạt động</span></td>
+                                <td th:if="${!products.active}"><span class="btn btn-danger">Ẩn</span></td>
+                                <td th:text="${products.createdAt}"></td>
+
                             </tr>
                             </tbody>
                         </table>

@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String productID;
 
     private String name;
@@ -21,7 +20,7 @@ public class Product {
     private Boolean isActive = true;
     private LocalDateTime createdAt = LocalDateTime.now();
     @ManyToOne
-    @JoinColumn(name = "categoryID", referencedColumnName = "CategoryID")
+    @JoinColumn(name = "CategoryID", referencedColumnName = "CategoryID")
     private Categories categories;
     public Product() {
     }
