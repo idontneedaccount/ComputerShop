@@ -59,4 +59,31 @@ public class ProductController {
         }
         return "admin/product/add";
     }
+    @GetMapping("/edit-product/{productID}")
+    public String editProduct( Model model,@PathVariable("productID") String productID) {
+        Product product = this.productService.findById(productID);
+        List<Categories> list = this.categoriesService.getAll();
+        model.addAttribute("categories", list);
+        model.addAttribute("product", product);
+        return "admin/product/edit";
+    }
+    @PostMapping("/edit-product")
+    public String updateProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
+        //up file
+        this.storageService.store(file);
+        String fileName = file.getOriginalFilename();
+        product.setImageURL(fileName);
+        if (this.productService.update(product)) {
+            return "redirect:/admin/product";
+        }
+        return "admin/product/edit";
+    }
+    @GetMapping("/delete-product/{productID}")
+    public String deleteProduct(@PathVariable("productID") String productID) {
+        if (this.productService.delete(productID)) {
+            return "redirect:/admin/product";
+        } else {
+            return "admin/product/product";
+        }
+    }
 }

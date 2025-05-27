@@ -47,6 +47,8 @@
                                 <th>Số lượng</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
+                                <th>Hình ảnh</th>
+                                <th>Hành động</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -61,7 +63,19 @@
                                 <td th:if="${products.active}"><span class="btn btn-success">Hoạt động</span></td>
                                 <td th:if="${!products.active}"><span class="btn btn-danger">Ẩn</span></td>
                                 <td th:text="${products.createdAt}"></td>
-
+                                <td>
+                                    <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product Image" class="img-fluid"
+                                         style="max-width: 100px; max-height: 100px;">
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/edit-product/{id}(id=${products.productID})}" class="btn btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a th:href="@{/admin/delete-product/{id}(id=${products.productID})}" class="btn btn-danger"
+                                       onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
