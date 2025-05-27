@@ -69,10 +69,19 @@ public class ProductController {
     }
     @PostMapping("/edit-product")
     public String updateProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
-        //up file
         this.storageService.store(file);
         String fileName = file.getOriginalFilename();
-        product.setImageURL(fileName);
+        // Check if the file is empty
+        if (file.isEmpty()) {
+            // If the file is empty, keep the existing image URL
+            Product existingProduct = this.productService.findById(product.getProductID());
+            fileName = existingProduct.getImageURL();
+            product.setImageURL(fileName);
+        }else {
+            // If the file is not empty, set the new image URL
+            product.setImageURL(fileName);
+        }
+
         if (this.productService.update(product)) {
             return "redirect:/admin/product";
         }

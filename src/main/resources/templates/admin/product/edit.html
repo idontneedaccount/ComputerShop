@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/fragments/header :: header}"></head>
+<title></title>
 <body id="page-top" class="newsletter-popup-modal">
 <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
 <div id="wrapper">
@@ -31,6 +32,7 @@
                         </div>
                         <div class="card-body">
                             <form th:action="@{/admin/edit-product}" th:object="${product}" method="post" enctype="multipart/form-data">
+                                <input type="hidden" th:field="*{imageURL}" />
                                 <div class="form-group mb-3">
                                     <label for="categoryId">Mã sản phẩm</label>
                                     <textarea id="categoryId" class="form-control" th:field="*{productID}"
@@ -64,10 +66,8 @@
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="imageURL">Hình ảnh</label>
-                                    <div th:if="${product.imageURL != null}" th:each="products : ${product}">
-                                        <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product image" style="max-width: 150px; display: block; margin-bottom: 10px;">
-                                    </div>
-                                    <input type="hidden" id="imageURL" class="form-control" th:type="file" name="productImage">
+                                     <img th:src="@{'/uploads/'+${product.imageURL}}" alt="Product image" style="max-width: 150px; display: block; margin-bottom: 10px;">
+                                    <input id="imageURL" class="form-control" th:type="file" name="productImage">
                                 </div>
                                 <div class="form-group mb-4">
                                     <label>Trạng thái</label>
