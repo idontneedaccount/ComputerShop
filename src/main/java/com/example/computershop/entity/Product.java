@@ -30,6 +30,6 @@ public class Product {
     Boolean isActive = true;
     LocalDateTime createdAt = LocalDateTime.now();
     @ManyToOne
-    @JoinColumn(name = "CategoryID", referencedColumnName = "CategoryID")
+    @JoinColumn(name = "categories_id",referencedColumnName = "categoryID")
     Categories categories;
 }

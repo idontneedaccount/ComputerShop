@@ -38,15 +38,15 @@
                             <form th:action="@{/admin/add-categories}" th:object="${categories}" method="post">
                                 <div class="form-group mb-3">
                                     <label for="categoryId">Mã sản phẩm <span class="text-danger">*</span></label>
-                                    <textarea id="categoryId" class="form-control" th:field="*{CategoryID}" required></textarea>
+                                    <textarea id="categoryId" class="form-control" th:field="*{categoryID}" required></textarea>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="name">Tên hãng<span class="text-danger">*</span></label>
-                                    <textarea id="name" class="form-control" th:field="*{Name}" required></textarea>
+                                    <textarea id="name" class="form-control" th:field="*{name}" required></textarea>
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="description">Mô tả<span class="text-danger">*</span></label>
-                                    <textarea id="description" class="form-control" th:field="*{Description}" required></textarea>
+                                    <textarea id="description" class="form-control" th:field="*{description}" required></textarea>
                                 </div>
                                 <div class="d-flex justify-content-center gap-3">
                                     <a th:href="@{/admin/categories}" class="btn btn-secondary w-50" onclick="return confirm

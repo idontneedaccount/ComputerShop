@@ -12,9 +12,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-public class fileSystemStorageService implements StorageService {
+public class FileSystemStorageService implements StorageService {
     private final Path location;
-    public fileSystemStorageService() {
+    public FileSystemStorageService() {
         this.location = Paths.get("src/main/resources/static/uploads");
     }
     @Override
@@ -32,6 +32,15 @@ public class fileSystemStorageService implements StorageService {
     public void init() {
         try {
             Files.createDirectories(location);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void delete(String fileName) {
+        try {
+            Path filePath = Paths.get("src/main/resources/static/uploads").resolve(fileName).normalize().toAbsolutePath();
+            Files.deleteIfExists(filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
