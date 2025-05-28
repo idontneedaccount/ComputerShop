@@ -35,8 +35,8 @@ public class CategoriesController {
         }
     }
     @GetMapping("/edit-categories/{CategoryID}")
-    public String editCategories( Model model,@PathVariable("CategoryID") String CategoryID) {
-        Categories categories = this.service.FindById(CategoryID);
+    public String editCategories( Model model,@PathVariable("CategoryID") String categoryID) {
+        Categories categories = this.service.findById(categoryID);
             model.addAttribute("categories", categories);
             return "admin/categories/edit";
     }
@@ -49,8 +49,8 @@ public class CategoriesController {
         }
     }
     @GetMapping("/delete-categories/{CategoryID}")
-    public String deleteCategories(@PathVariable("CategoryID") String CategoryID) {
-        if (this.service.delete(CategoryID)) {
+    public String deleteCategories(@PathVariable("CategoryID") String categoryID) {
+        if (this.service.delete(categoryID)) {
             return "redirect:/admin/categories";
         } else {
             return "admin/categories/categories";

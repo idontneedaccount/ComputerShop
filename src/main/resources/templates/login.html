@@ -45,7 +45,7 @@
 					<td>
 						<input type="password" id="password" th:field="*{password}"/>
 						<br/>
-						<input type="checkbox" id="showPassword" onclick="pwd.type = this.checked ? 'text' : 'password';">
+						<input type="checkbox" id="showPassword" onclick="togglePassword()"/>
 						<label for="showPassword">Show me password</label>
 					</td>
 				</tr>

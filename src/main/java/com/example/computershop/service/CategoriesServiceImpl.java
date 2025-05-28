@@ -2,12 +2,13 @@ package com.example.computershop.service;
 import java.util.List;
 import com.example.computershop.entity.Categories;
 import com.example.computershop.repository.CategoriesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CategorieServiceImpl implements CategoriesService {
-    @Autowired
+@AllArgsConstructor
+public class CategoriesServiceImpl implements CategoriesService {
+
     private CategoriesRepository repo;
 
     @Override
@@ -27,8 +28,8 @@ public class CategorieServiceImpl implements CategoriesService {
     }
 
     @Override
-    public Categories FindById(String CategoryID) {
-        return this.repo.findById(CategoryID).get();
+    public Categories findById(String categoryID) {
+        return this.repo.findById(categoryID).get();
     }
 
     @Override
@@ -43,9 +44,9 @@ public class CategorieServiceImpl implements CategoriesService {
     }
 
     @Override
-    public Boolean delete(String CategoryID) {
+    public Boolean delete(String categoryID) {
         try {
-            this.repo.deleteById(CategoryID);
+            this.repo.deleteById(categoryID);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

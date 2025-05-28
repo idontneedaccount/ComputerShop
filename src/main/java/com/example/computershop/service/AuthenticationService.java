@@ -28,7 +28,7 @@ public class AuthenticationService {
     AuthenticationManager authenticationManager;
     EmailService emailService;
 
-    public User createUser(@NotNull UserCreationRequest request) {
+    public void     createUser(@NotNull UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Username is already taken!");
         }
@@ -55,15 +55,14 @@ public class AuthenticationService {
                 .isActive(false)
                 .createdAt(LocalDateTime.now())
                 .build();
-
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
         sendVerificationEmail(user);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 
-    public User authenticate(AuthenticationRequest request) {
+    public void authenticate(@NotNull AuthenticationRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (!user.isActive()) {
@@ -80,7 +79,6 @@ public class AuthenticationService {
             throw new IllegalArgumentException("Invalid username or password");
         }
 
-        return user;
     }
 
     public void verifyUser(VerifyUserRequest verifyUserRequest) {
@@ -115,7 +113,7 @@ public class AuthenticationService {
         }
     }
 
-    private void sendVerificationEmail(User user) { //TODO: Update with company logo
+    private void sendVerificationEmail(User user) {
         String subject = "Account Verification";
         String verificationCode = user.getVerificationCode();
         String verificationLink = "http://localhost:8080/auth/verify?email=" + user.getEmail() + "&code=" + verificationCode;

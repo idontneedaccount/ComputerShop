@@ -2,14 +2,14 @@ package com.example.computershop.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+@AllArgsConstructor
 @Service
 public class EmailService {
-    @Autowired
     private JavaMailSender emailSender;
 
     public void sendEmail(String to, String subject, String text) throws MessagingException {

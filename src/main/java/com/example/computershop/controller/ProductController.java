@@ -2,11 +2,10 @@ package com.example.computershop.controller;
 
 import com.example.computershop.entity.Categories;
 import com.example.computershop.entity.Product;
-import com.example.computershop.repository.ProductRepository;
 import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.ProductService;
 import com.example.computershop.service.StorageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +16,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
+@AllArgsConstructor
 public class ProductController {
-    @Autowired
+
     private ProductService productService;
-    @Autowired
     private CategoriesService categoriesService;
-    @Autowired
     private StorageService storageService;
 
     @RequestMapping("/product")
@@ -42,14 +40,14 @@ public class ProductController {
     }
 
     @GetMapping("/product")
-    public String showProducts(Model model){
+    public String showProducts(Model model) {
         List<Product> list = this.productService.getAll();
         model.addAttribute("product", list);
         return "admin/product/product";
     }
 
     @PostMapping("/add-product")
-    public String addProduct(@ModelAttribute("product") Product product , @RequestParam("productImage") MultipartFile file) {
+    public String addProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
         //up file
         this.storageService.store(file);
         String fileName = file.getOriginalFilename();
@@ -59,14 +57,16 @@ public class ProductController {
         }
         return "admin/product/add";
     }
+
     @GetMapping("/edit-product/{productID}")
-    public String editProduct( Model model,@PathVariable("productID") String productID) {
+    public String editProduct(Model model, @PathVariable("productID") String productID) {
         Product product = this.productService.findById(productID);
         List<Categories> list = this.categoriesService.getAll();
         model.addAttribute("categories", list);
         model.addAttribute("product", product);
         return "admin/product/edit";
     }
+
     @PostMapping("/edit-product")
     public String updateProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
         this.storageService.store(file);
@@ -77,7 +77,7 @@ public class ProductController {
             Product existingProduct = this.productService.findById(product.getProductID());
             fileName = existingProduct.getImageURL();
             product.setImageURL(fileName);
-        }else {
+        } else {
             // If the file is not empty, set the new image URL
             product.setImageURL(fileName);
         }
@@ -87,6 +87,7 @@ public class ProductController {
         }
         return "admin/product/edit";
     }
+
     @GetMapping("/delete-product/{productID}")
     public String deleteProduct(@PathVariable("productID") String productID) {
         if (this.productService.delete(productID)) {

@@ -12,9 +12,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-public class FileSystemStorageService implements StorageService {
+public class fileSystemStorageService implements StorageService {
     private final Path location;
-    public FileSystemStorageService() {
+    public fileSystemStorageService() {
         this.location = Paths.get("src/main/resources/static/uploads");
     }
     @Override

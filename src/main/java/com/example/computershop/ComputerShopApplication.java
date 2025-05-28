@@ -16,8 +16,6 @@ public class ComputerShopApplication {
     }
     @Bean
     CommandLineRunner init(UserService userService, StorageService storageService) {
-        return args -> {
-            storageService.init();
-        };
+        return args -> storageService.init();
     }
 }

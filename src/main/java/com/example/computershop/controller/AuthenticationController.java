@@ -3,9 +3,7 @@ package com.example.computershop.controller;
 import com.example.computershop.dto.request.AuthenticationRequest;
 import com.example.computershop.dto.request.UserCreationRequest;
 import com.example.computershop.dto.request.VerifyUserRequest;
-import com.example.computershop.entity.User;
 import com.example.computershop.service.AuthenticationService;
-import com.example.computershop.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,7 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     static String register = "register";
     static String login = "login";
-    static String errorPage = "error";
+    static String errorAttr = "error";
 
 
     @GetMapping("/register")
@@ -42,7 +40,7 @@ public class AuthenticationController {
             authenticationService.createUser(request);
             return "redirect:/auth/login";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute(errorAttr, e.getMessage());
             return register;
         }
     }
@@ -56,10 +54,10 @@ public class AuthenticationController {
     @PostMapping("/login")
     public String authenticate(@ModelAttribute("user") AuthenticationRequest request, Model model) {
         try {
-            User authenticated = authenticationService.authenticate(request);
+            authenticationService.authenticate(request);
             return "redirect:/home";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute(errorAttr, e.getMessage());
             return login;
         }
     }
@@ -73,8 +71,8 @@ public class AuthenticationController {
             authenticationService.verifyUser(verifyRequest);
             return "redirect:/auth/login?verified=true";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
-            return errorPage;
+            model.addAttribute(errorAttr, e.getMessage());
+            return login;
         }
     }
 
@@ -90,7 +88,7 @@ public class AuthenticationController {
             authenticationService.resendVerificationEmail(email);
             return "redirect:/auth/login?resent=true";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute(errorAttr, e.getMessage());
             return "resend-verification";
         }
     }

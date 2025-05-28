@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository repo;
+
     @Override
     public List<Product> getAll() {
         return this.repo.findAll();
@@ -17,12 +19,12 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Boolean create(Product product) {
-            try {
-                this.repo.save(product);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            this.repo.save(product);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
@@ -44,11 +46,11 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Boolean delete(String productID) {
-    try {
+        try {
             this.repo.deleteById(productID);
             return true;
         } catch (Exception e) {
-        e.printStackTrace();
+            e.printStackTrace();
         }
         return false;
     }
