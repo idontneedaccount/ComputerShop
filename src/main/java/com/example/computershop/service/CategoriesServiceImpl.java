@@ -29,7 +29,7 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public Categories findById(String categoryID) {
-        return this.repo.findById(categoryID).get();
+        return this.repo.findById(categoryID).orElse(null);
     }
 
     @Override

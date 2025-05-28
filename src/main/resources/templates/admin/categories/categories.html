@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-
-<head th:replace="~{admin/fragments/header :: header}"></head>
-
+<head th:replace="~{admin/fragments/header :: header}">
+  <title></title>
+</head>
 <body id="page-top">
 
 <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
@@ -50,14 +50,14 @@
               </thead>
               <tbody>
               <tr th:each="category : ${categories}">
-                <td th:text="${category.CategoryID}"></td>
-                <td th:text="${category.Name}"></td>
-                <td th:text="${category.Description}"></td>
+                <td th:text="${category.categoryID}"></td>
+                <td th:text="${category.name}"></td>
+                <td th:text="${category.description}"></td>
                 <td>
-                  <a th:href="@{/admin/edit-categories/{id}(id=${category.CategoryID})}" class="btn btn-primary">
+                  <a th:href="@{/admin/edit-categories/{id}(id=${category.categoryID})}" class="btn btn-primary">
                     <i class="fas fa-edit"></i>
                   </a>
-                  <a th:href="@{/admin/delete-categories/{id}(id=${category.CategoryID})}" class="btn btn-danger"
+                  <a th:href="@{/admin/delete-categories/{id}(id=${category.categoryID})}" class="btn btn-danger"
                      onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
                     <i class="fas fa-trash-alt"></i>
                   </a>

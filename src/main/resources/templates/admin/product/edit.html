@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{admin/fragments/header :: header}"></head>
-<title></title>
+<head th:replace="~{admin/fragments/header :: header}">
+    <title></title>
+</head>
 <body id="page-top" class="newsletter-popup-modal">
 <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
 <div id="wrapper">
@@ -58,10 +59,10 @@
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="category">Danh mục</label>
-                                    <select id="category" class="form-control" th:field="*{categories.CategoryID}" >
+                                    <select id="category" class="form-control" th:field="*{categories.categoryID}" >
                                         <option value="" disabled selected>Chọn danh mục</option>
-                                        <option th:each="category : ${categories}" th:value="${category.CategoryID}"
-                                                th:text="${category.Name}"></option>
+                                        <option th:each="category : ${categories}" th:value="${category.categoryID}"
+                                                th:text="${category.name}"></option>
                                     </select>
                                 </div>
                                 <div class="form-group mb-4">
@@ -73,12 +74,12 @@
                                     <label>Trạng thái</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" th:field="*{active}" value="1"
+                                            <input class="form-check-input" type="radio" th:field="*{isActive}" value="1"
                                                    id="activeTrue" checked>
                                             <label class="form-check-label" for="activeTrue">Kích hoạt</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" th:field="*{active}" value="0"
+                                            <input class="form-check-input" type="radio" th:field="*{isActive}" value="0"
                                                    id="activeFalse" checked>
                                             <label class="form-check-label" for="activeTrue">Ẩn</label>
                                         </div>

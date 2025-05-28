@@ -2,14 +2,13 @@ package com.example.computershop.service;
 
 import com.example.computershop.entity.Product;
 import com.example.computershop.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@AllArgsConstructor
 @Service
 public class ProductServiceImpl implements ProductService {
-    @Autowired
     private ProductRepository repo;
 
     @Override
@@ -30,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product findById(String productID) {
-        return this.repo.findById(productID).get();
+        return this.repo.findById(productID).orElse(null);
     }
 
     @Override

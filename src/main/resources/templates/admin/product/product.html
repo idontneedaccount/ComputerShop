@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-
-<head th:replace="~{admin/fragments/header :: header}"></head>
+<head th:replace="~{admin/fragments/header :: header}">
+    <title></title> 
+</head>
 
 <body id="page-top">
 
@@ -55,13 +56,13 @@
                             <tr th:each="products : ${product}">
                                 <td th:text="${products.productID}"></td>
                                 <td th:text="${products.name}"></td>
-                                <td th:each="category : ${products.categories}" th:text="${category.Name}">
+                                <td th:each="category : ${products.categories}" th:text="${category.name}">
                                 </td>
                                 <td th:text="${products.description}"></td>
                                 <td th:text="${products.price}"></td>
                                 <td th:text="${products.quantity}"></td>
-                                <td th:if="${products.active}"><span class="btn btn-success">Hoạt động</span></td>
-                                <td th:if="${!products.active}"><span class="btn btn-danger">Ẩn</span></td>
+                                <td th:if="${products.isActive}"><span class="btn btn-success">Hoạt động</span></td>
+                                <td th:if="${!products.iActive}"><span class="btn btn-danger">Ẩn</span></td>
                                 <td th:text="${products.createdAt}"></td>
                                 <td>
                                     <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product Image" class="img-fluid"

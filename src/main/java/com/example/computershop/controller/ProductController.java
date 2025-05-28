@@ -22,28 +22,32 @@ public class ProductController {
     private ProductService productService;
     private CategoriesService categoriesService;
     private StorageService storageService;
+    private static final String PRODUCT = "product";
+    private static final String CATEGORIES = "categories";
+    
+    private static final String  PRODUCT_VIEW = "admin/product/product";
 
     @RequestMapping("/product")
     public String index(Model model) {
         List<Product> list = this.productService.getAll();
-        model.addAttribute("product", list);
-        return "admin/product/product";
+        model.addAttribute(PRODUCT, list);
+        return PRODUCT_VIEW;
     }
 
     @RequestMapping("/add-product")
     public String add(Model model) {
-        Product product = new Product();
-        model.addAttribute("product", product);
+        Product products = new Product();
+        model.addAttribute(PRODUCT, products);
         List<Categories> list = this.categoriesService.getAll();
-        model.addAttribute("categories", list);
+        model.addAttribute(CATEGORIES, list);
         return "admin/product/add";
     }
 
     @GetMapping("/product")
     public String showProducts(Model model) {
         List<Product> list = this.productService.getAll();
-        model.addAttribute("product", list);
-        return "admin/product/product";
+        model.addAttribute(PRODUCT, list);
+        return PRODUCT_VIEW;
     }
 
     @PostMapping("/add-product")
@@ -53,17 +57,17 @@ public class ProductController {
         String fileName = file.getOriginalFilename();
         product.setImageURL(fileName);
         if (this.productService.create(product)) {
-            return "redirect:/admin/product";
+            return PRODUCT_VIEW;
         }
         return "admin/product/add";
     }
 
     @GetMapping("/edit-product/{productID}")
     public String editProduct(Model model, @PathVariable("productID") String productID) {
-        Product product = this.productService.findById(productID);
+        Product products = this.productService.findById(productID);
         List<Categories> list = this.categoriesService.getAll();
-        model.addAttribute("categories", list);
-        model.addAttribute("product", product);
+        model.addAttribute(CATEGORIES, list);
+        model.addAttribute(PRODUCT, products);
         return "admin/product/edit";
     }
 
@@ -83,17 +87,26 @@ public class ProductController {
         }
 
         if (this.productService.update(product)) {
-            return "redirect:/admin/product";
+            return PRODUCT_VIEW;
+        } else {
+            return "admin/product/edit";
         }
-        return "admin/product/edit";
     }
 
     @GetMapping("/delete-product/{productID}")
     public String deleteProduct(@PathVariable("productID") String productID) {
+        Product product = this.productService.findById(productID);
+        if (product!= null){
+            // Delete the image file from storage
+            String imageURL = product.getImageURL();
+            if (imageURL != null && !imageURL.isEmpty()) {
+                this.storageService.delete(imageURL);
+            }
+        }
         if (this.productService.delete(productID)) {
             return "redirect:/admin/product";
         } else {
-            return "admin/product/product";
+            return PRODUCT_VIEW;
         }
     }
 }
