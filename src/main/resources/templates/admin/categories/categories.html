@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/header :: header}"></head>
+
+<body id="page-top">
+
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+  <div id="content-wrapper">
+    <div class="container-fluid">
+
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="#">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">Overview</li>
+      </ol>
+
+      <!-- Icon Cards-->
+      <div th:replace="~{admin/fragments/icon-cards :: icon-cards}"></div>
+
+
+      <!-- Main body information -->
+      <!-- Categories Table -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fas fa-table"></i>
+          Danh sách thể loại
+          <div>
+            <a class="btn btn-success" th:href="@{add-categories}">Thêm danh mục mới</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tên thể loại</th>
+                <th>Mô tả</th>
+                <th>Hành động</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="category : ${categories}">
+                <td th:text="${category.CategoryID}"></td>
+                <td th:text="${category.Name}"></td>
+                <td th:text="${category.Description}"></td>
+                <td>
+                  <a th:href="@{/admin/edit-categories/{id}(id=${category.CategoryID})}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a th:href="@{/admin/delete-categories/{id}(id=${category.CategoryID})}" class="btn btn-danger"
+                     onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
+ </div>
+</div>
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+</body>
+</html>
