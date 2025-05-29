@@ -1,0 +1,152 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    background: url('/assets/images/bg/bg-image-9.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+.axil-login-area {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.form-container {
+    max-width: 400px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px 32px 32px 32px;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.form-container .logo {
+    width: 120px;
+    margin-bottom: 24px;
+}
+.form-container h3 {
+    font-weight: 700;
+    color: #3358e6;
+    margin-bottom: 24px;
+    text-align: center;
+}
+.input-group {
+    position: relative;
+    margin-bottom: 22px;
+    width: 100%;
+}
+.input-group .form-control {
+    padding-left: 45px;
+    border-radius: 8px;
+    border: 1px solid #dbeafe;
+    height: 50px;
+    transition: all 0.3s ease;
+}
+.input-group .form-control:focus {
+    border-color: #3358e6;
+    box-shadow: 0 0 0 2px rgba(51, 88, 230, 0.1);
+}
+.input-group .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+}
+.form-check {
+    margin-bottom: 24px;
+}
+.form-check-label {
+    font-size: 0.95rem;
+    color: #222;
+}
+.btn-primary {
+    background: #3358e6;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    height: 50px;
+    transition: all 0.3s ease;
+}
+.btn-primary:hover {
+    background: #2236a8;
+    transform: translateY(-1px);
+}
+.error {
+    color: #e53e3e;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    background: rgba(229, 62, 62, 0.1);
+    border-radius: 8px;
+}
+.success {
+    color: #38a169;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    background: rgba(56, 161, 105, 0.1);
+    border-radius: 8px;
+}
+.mt-3.text-center p {
+    margin-bottom: 8px;
+    color: #222;
+}
+.mt-3.text-center a {
+    color: #3358e6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+.mt-3.text-center a:hover {
+    color: #2236a8;
+    text-decoration: underline;
+}
+.social-login {
+    text-align: center;
+    margin: 24px 0 0 0;
+}
+.social-login span {
+    display: block;
+    margin-bottom: 10px;
+    color: #888;
+    font-size: 0.98rem;
+}
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    color: #444;
+    font-size: 1.3rem;
+    transition: background 0.2s, color 0.2s;
+    border: 1px solid #eee;
+}
+.social-btn:hover {
+    background: #e0e7ef;
+    color: #111;
+}
+.social-btn.facebook svg { fill: #1877f3; }
+.social-btn.google svg { fill: #ea4335; }
+.social-btn.github svg { fill: #222; }
+.form-container a {
+    color: #3358e6;
+    text-decoration: underline;
+    transition: color 0.2s;
+}

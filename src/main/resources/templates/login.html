@@ -3,72 +3,64 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Login - Computer Shop</title>
-	<style>
-        .error {
-            color: red;
-            font-size: 0.8em;
-        }
-        .form-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-        }
-        td {
-            padding: 5px;
-        }
-	</style>
+	<link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css" th:href="@{/assets/css/vendor/bootstrap.min.css}"/>
+	<link rel="stylesheet" href="/assets/css/style.min.css" th:href="@{/assets/css/style.min.css}"/>
+	<link rel="stylesheet" href="/assets/css/login-custom.css" th:href="@{/assets/css/login-custom.css}"/>
 </head>
 <body>
+<div class="axil-login-area">
 	<div class="form-container">
-		<h2>Login to Your Account</h2>
-		<div th:if="${error}" class="error" role="alert">
-			<p th:text="${error}"></p>
+		<img src="/assets/images/logo/logo.png" th:src="@{/assets/images/logo/logo.png}" alt="Logo" class="logo">
+		<h3>Đăng nhập tài khoản</h3>
+
+		<!-- Error and Success Messages -->
+		<div th:if="${error}" class="error" role="alert" th:text="${error}"></div>
+		<div th:if="${param.verified}" class="success" role="alert">
+			Tài khoản đã xác thực thành công. Bạn có thể đăng nhập.
 		</div>
-		<div th:if="${param.verified}" class="success" role="alert" style="color: green; font-size: 0.9em;">
-			<p>Your account has been successfully verified. You can now login.</p>
-		</div>
-		<div th:if="${param.resent}" class="success" role="alert" style="color: green; font-size: 0.9em;">
-			<p>Verification email resent successfully. Please check your email.</p>
+		<div th:if="${param.resent}" class="success" role="alert">
+			Đã gửi lại email xác thực. Vui lòng kiểm tra email của bạn.
 		</div>
 
-		<form th:action="@{/auth/login}" method="post" th:object="${user}">
-			<table th:role="login-form">
-				<tr>
-					<td><label for="username">Username:</label></td>
-					<td><input type="text" id="username" th:field="*{username}"/></td>
-				</tr>
-				<tr>
-					<td><label for="password">Password:</label></td>
-					<td>
-						<input type="password" id="password" th:field="*{password}"/>
-						<br/>
-						<input type="checkbox" id="showPassword" onclick="togglePassword()"/>
-						<label for="showPassword">Show me password</label>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2" style="text-align: end;">
-						<button type="submit">Login</button>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<p>Don't have an account? <a th:href="@{/auth/register}">Register here</a></p>
-						<p>Haven't received verification email? <a th:href="@{/auth/resend-verification}">Resend verification</a></p>
-					</td>
-				</tr>
-			</table>
+		<form th:action="@{/auth/login-process}" method="post" style="width:100%">
+			<div class="input-group">
+				<img src="/assets/images/icons/service1.png" th:src="@{/assets/images/icons/service1.png}" alt="User" class="input-icon">
+				<input id="username" name="username" type="text" class="form-control" placeholder="Tên đăng nhập" required>
+			</div>
+			<div class="input-group">
+				<img src="/assets/images/icons/protection.png" th:src="@{/assets/images/icons/protection.png}" alt="Lock" class="input-icon">
+				<input id="password" name="password" type="password" class="form-control" placeholder="Mật khẩu" required>
+			</div>
+			<div class="form-check">
+				<input type="checkbox" id="showPassword" class="form-check-input" onclick="togglePassword()">
+				<label for="showPassword" class="form-check-label">Hiện mật khẩu</label>
+			</div>
+			<div class="d-grid gap-2">
+				<button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+			</div>
+			<div class="mt-3">
+				<p>Chưa có tài khoản? <a th:href="@{/auth/register}">Đăng ký ngay</a></p>
+				<p>Chưa nhận được email xác thực? <br/><a th:href="@{/auth/resend-verification}">Gửi lại email xác thực</a></p>
+			</div>
+			<div class="social-login">
+				<span>Hoặc đăng nhập bằng</span>
+				<div class="social-icons">
+					<a href="#" class="social-btn google" title="Sign in with Google">
+						<svg width="24" height="24" viewBox="0 0 24 24"><g><path fill="#EA4335" d="M12 10.8v3.6h5.1c-.2 1.1-1.3 3.2-5.1 3.2-3.1 0-5.6-2.6-5.6-5.6s2.5-5.6 5.6-5.6c1.8 0 3 .7 3.7 1.4l2.5-2.5C16.7 3.5 14.6 2.4 12 2.4 6.8 2.4 2.4 6.8 2.4 12s4.4 9.6 9.6 9.6c5.5 0 9.1-3.8 9.1-9.1 0-.6-.1-1-.2-1.4H12z"/><path fill="#34A853" d="M12 21.6c2.6 0 4.8-.9 6.4-2.4l-3-2.5c-.8.6-1.9 1-3.4 1-2.6 0-4.8-1.7-5.6-4.1H3.3v2.6C5 19.7 8.2 21.6 12 21.6z"/><path fill="#4A90E2" d="M18.4 14.7c-.4 1.1-1.5 3.2-5.1 3.2-3.1 0-5.6-2.6-5.6-5.6s2.5-5.6 5.6-5.6c1.8 0 3 .7 3.7 1.4l2.5-2.5C16.7 3.5 14.6 2.4 12 2.4 6.8 2.4 2.4 6.8 2.4 12s4.4 9.6 9.6 9.6c5.5 0 9.1-3.8 9.1-9.1 0-.6-.1-1-.2-1.4H12z"/><path fill="#FBBC05" d="M3.3 7.4l2.6 2c.7-2.1 2.7-3.6 5.1-3.6 1.5 0 2.8.5 3.7 1.4l2.5-2.5C16.7 3.5 14.6 2.4 12 2.4c-3.8 0-7 2.1-8.7 5z"/><path fill="none" d="M0 0h24v24H0z"/></g></svg>
+					</a>
+					<a href="#" class="social-btn github" title="Sign in with Github">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="#222"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.2-1.2-1.5-1.2-1.5-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 .1.7 1.6 1.7 2.1.2.2.5.1.7.1.2-.1.4-.2.5-.3.1-.1.2-.2.2-.3.1-.2.1-.4.1-.6v-2.2c-2.7.6-3.3-1.3-3.3-1.3-.5-1.2-1.2-1.5-1.2-1.5-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 .1.7 1.6 1.7 2.1.2.2.5.1.7.1.2-.1.4-.2.5-.3.1-.1.2-.2.2-.3.1-.2.1-.4.1-.6V2.1c0-.3.2-.7.8-.6A12 12 0 0 0 12 .3z"/></svg>
+					</a>
+				</div>
+			</div>
 		</form>
 	</div>
-
-	<script>
-        function togglePassword() {
-            var pwd = document.getElementById('password');
-            pwd.type = pwd.type === 'password' ? 'text' : 'password';
-        }
-	</script>
+</div>
+<script>
+    function togglePassword() {
+        const pwd = document.getElementById("password");
+        pwd.type = pwd.type === "password" ? "text" : "password";
+    }
+</script>
 </body>
 </html>
