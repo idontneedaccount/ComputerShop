@@ -1,10 +1,7 @@
 package com.example.computershop.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigInteger;
@@ -22,7 +19,7 @@ public class Product {
 
     String name;
     String description;
-
+    String brand;
     BigInteger price;
     Integer quantity;
     String imageURL;
@@ -31,5 +28,5 @@ public class Product {
     LocalDateTime createdAt = LocalDateTime.now();
     @ManyToOne
     @JoinColumn(name = "categories_id",referencedColumnName = "categoryID")
-    Categories categories;
+    private Categories categories;
 }

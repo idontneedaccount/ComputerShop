@@ -24,7 +24,7 @@ public class ProductController {
     private StorageService storageService;
     private static final String PRODUCT = "product";
     private static final String CATEGORIES = "categories";
-    
+
     private static final String  PRODUCT_VIEW = "admin/product/product";
 
     @RequestMapping("/product")
@@ -52,11 +52,10 @@ public class ProductController {
 
     @PostMapping("/add-product")
     public String addProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
-        //up file
         this.storageService.store(file);
         String fileName = file.getOriginalFilename();
         product.setImageURL(fileName);
-        if (this.productService.create(product)) {
+        if (Boolean.TRUE.equals(this.productService.create(product))) {
             return PRODUCT_VIEW;
         }
         return "admin/product/add";
@@ -73,21 +72,19 @@ public class ProductController {
 
     @PostMapping("/edit-product")
     public String updateProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
-        this.storageService.store(file);
-        String fileName = file.getOriginalFilename();
-        // Check if the file is empty
+        String fileName;
         if (file.isEmpty()) {
-            // If the file is empty, keep the existing image URL
             Product existingProduct = this.productService.findById(product.getProductID());
             fileName = existingProduct.getImageURL();
             product.setImageURL(fileName);
         } else {
-            // If the file is not empty, set the new image URL
+            this.storageService.store(file);
+            fileName = file.getOriginalFilename();
             product.setImageURL(fileName);
         }
 
-        if (this.productService.update(product)) {
-            return PRODUCT_VIEW;
+        if (Boolean.TRUE.equals(this.productService.update(product))) {
+            return "redirect:/admin/product";
         } else {
             return "admin/product/edit";
         }
@@ -97,13 +94,12 @@ public class ProductController {
     public String deleteProduct(@PathVariable("productID") String productID) {
         Product product = this.productService.findById(productID);
         if (product!= null){
-            // Delete the image file from storage
             String imageURL = product.getImageURL();
             if (imageURL != null && !imageURL.isEmpty()) {
                 this.storageService.delete(imageURL);
             }
         }
-        if (this.productService.delete(productID)) {
+        if (Boolean.TRUE.equals(this.productService.delete(productID))) {
             return "redirect:/admin/product";
         } else {
             return PRODUCT_VIEW;
