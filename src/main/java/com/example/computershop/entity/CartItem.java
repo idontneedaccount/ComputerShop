@@ -1,10 +1,8 @@
 package com.example.computershop.entity;
 
-import com.example.computershop.entity.Product;
-
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -13,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CartItem {
     private Product product;
-    private int quantity;
+    private Integer quantity;
 
+    
 }

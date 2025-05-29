@@ -43,7 +43,17 @@ public class CartController {
     @GetMapping("/view")
     public String view(Model model, @ModelAttribute("cart") List<CartItem> cart) {
         model.addAttribute("cartItems", cart);
-        return "/slot5/cart";
+
+        // Tính tổng tiền
+        java.math.BigDecimal total = java.math.BigDecimal.ZERO;
+        for (CartItem item : cart) {
+            java.math.BigDecimal price = new java.math.BigDecimal(item.getProduct().getPrice().toString());
+            int quantity = item.getQuantity();
+            total = total.add(price.multiply(java.math.BigDecimal.valueOf(quantity)));
+        }
+        model.addAttribute("total", total);
+
+        return "Cart/cart";
     }
 
     @PostMapping("/update/{id}")
