@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>eTrade || Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS giữ nguyên -->
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.min.css}">
+    <!-- Thêm các file CSS khác nếu cần -->
+</head>
+<body class="sticky-header">
+<header th:replace="~{/fragments/header :: header}"></header>
+<main class="main-wrapper">
+    <div class="axil-checkout-area axil-section-gap">
+        <div class="container">
+            <form th:action="@{/checkout}" method="post">
+                <div class="row">
+                    <!-- Billing details -->
+                    <div class="col-lg-6">
+                        <div class="axil-checkout-billing">
+                            <h4 class="title mb--40">Billing details</h4>
+                            <div class="form-group">
+                                <label>Full Name <span>*</span></label>
+                                <input type="text" name="fullName" th:value="${order.fullName}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Country/Region <span>*</span></label>
+                                <input type="text" name="country" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Street Address <span>*</span></label>
+                                <input type="text" name="address" th:value="${order.address}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Town/City <span>*</span></label>
+                                <input type="text" name="city" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone <span>*</span></label>
+                                <input type="tel" name="phone" th:value="${order.phone}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address <span>*</span></label>
+                                <input type="email" name="email" th:value="${order.email}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Shipping Address <span>*</span></label>
+                                <input type="text" name="shippingAddress" th:value="${order.shippingAddress}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Other Notes (optional)</label>
+                                <textarea name="note" rows="2" th:text="${order.note}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Order summary -->
+                    <div class="col-lg-6">
+                        <div class="axil-order-summery order-checkout-summery">
+                            <h5 class="title mb--20">Your Order</h5>
+                            <div class="summery-table-wrap">
+                                <table class="table summery-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${cartItems}">
+                                            <td th:text="${item.product.name} + ' x' + ${item.quantity}"></td>
+                                            <td th:text="${#numbers.formatDecimal(item.product.price.multiply(T(java.math.BigDecimal).valueOf(item.quantity)), 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                        </tr>
+                                        <tr class="order-subtotal">
+                                            <td>Subtotal</td>
+                                            <td th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                        </tr>
+                                        <tr class="order-shipping">
+                                            <td colspan="2">
+                                                <div class="shipping-amount">
+                                                    <span class="title">Shipping Method</span>
+                                                </div>
+                                                <div class="input-group">
+                                                    <input type="radio" id="radio1" name="shippingMethod" value="Free Shipping" checked>
+                                                    <label for="radio1">Free Shipping</label>
+                                                </div>
+                                                <div class="input-group">
+                                                    <input type="radio" id="radio2" name="shippingMethod" value="Local">
+                                                    <label for="radio2">Local</label>
+                                                </div>
+                                                <div class="input-group">
+                                                    <input type="radio" id="radio3" name="shippingMethod" value="Flat rate">
+                                                    <label for="radio3">Flat rate</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="order-total">
+                                            <td>Total</td>
+                                            <td class="order-total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="order-payment-method">
+                                <div class="single-payment">
+                                    <div class="input-group">
+                                        <input type="radio" id="radio4" name="paymentMethod" value="Bank" required>
+                                        <label for="radio4">Direct bank transfer</label>
+                                    </div>
+                                </div>
+                                <div class="single-payment">
+                                    <div class="input-group">
+                                        <input type="radio" id="radio5" name="paymentMethod" value="COD">
+                                        <label for="radio5">Cash on delivery</label>
+                                    </div>
+                                </div>
+                                <div class="single-payment">
+                                    <div class="input-group justify-content-between align-items-center">
+                                        <input type="radio" id="radio6" name="paymentMethod" value="Paypal">
+                                        <label for="radio6">Paypal</label>
+                                        <img th:src="@{/assets/images/others/payment.png}" alt="Paypal payment">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="axil-btn btn-bg-primary checkout-btn w-100">Process to Checkout</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+<!-- JS giữ nguyên -->
+<script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery.js}"></script>
+<script th:src="@{/assets/js/vendor/popper.min.js}"></script>
+<script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+</body>
+</html>

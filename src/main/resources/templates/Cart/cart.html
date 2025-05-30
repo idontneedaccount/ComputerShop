@@ -46,13 +46,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="item : ${cartItems}">
+                                <tr th:if="${cartItems == null || cartItems.isEmpty()}">
+                                    <td colspan="6" class="text-center">Your cart is empty</td>
+                                </tr>
+                                <tr th:each="item : ${cartItems}" th:if="${item != null && item.product != null}">
                                     <td class="product-remove">
                                         <a th:href="@{/cart/remove/{id}(id=${item.product.productID})}" class="remove-wishlist"><i class="fal fa-times"></i></a>
                                     </td>
                                     <td class="product-thumbnail">
                                         <a th:href="@{'/product/' + ${item.product.productID}}">
-                                            <img th:src="@{'/assets/images/product/' + ${item.product.imageURL}}" alt="Product Image">
+                                            <img th:if="${item.product.imageURL != null}" th:src="@{'/assets/images/product/' + ${item.product.imageURL}}" alt="Product Image">
+                                            <img th:unless="${item.product.imageURL != null}" th:src="@{/assets/images/product/placeholder.jpg}" alt="Product Image">
                                         </a>
                                     </td>
                                     <td class="product-title">
@@ -67,7 +71,7 @@
                                             <button type="button" class="dec qtybtn" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">-</button>
                                             <input type="number" name="sl" th:value="${item.quantity}" min="1" class="quantity-input">
                                             <button type="button" class="inc qtybtn" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">+</button>
-                                            <button type="submit" class="axil-btn btn-outline btn-sm ms-2">Cập nhật</button>
+                                            <button type="submit" class="axil-btn btn-outline btn-sm ms-2">Update</button>
                                         </form>
                                     </td>
                                     <td class="product-subtotal" data-title="Subtotal">
@@ -78,20 +82,9 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="cart-update-btn-area d-flex justify-content-between align-items-center">
-                        <div class="input-group product-cupon">
-                            <input placeholder="Enter coupon code" type="text" class="form-control">
-                            <div class="product-cupon-btn">
-                                <button type="submit" class="axil-btn btn-outline">Apply</button>
-                            </div>
-                        </div>
-                        <div class="update-btn">
-                            <a href="#" class="axil-btn btn-outline">Update Cart</a>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-xl-5 col-lg-7 offset-xl-7 offset-lg-5">
-                            <div class="axil-order-summery mt--80">
+                            <div class="axil-order-summery order-checkout-summery">
                                 <h5 class="title mb--20">Order Summary</h5>
                                 <div class="summery-table-wrap">
                                     <table class="table summery-table mb--30">
@@ -128,8 +121,8 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <form th:action="@{/cart/checkout}" method="post">
-                                    <button type="submit" class="axil-btn btn-bg-primary checkout-btn w-100">Process to Checkout</button>
+                                <form th:action="@{/cart/checkout}" method="get" th:if="${cartItems != null && !cartItems.isEmpty()}">
+                                    <button type="submit" class="axil-btn btn-bg-primary checkout-btn w-100">Proceed to Checkout</button>
                                 </form>
                             </div>
                         </div>

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,20 +16,34 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Entity
+@Table(name = "products")
 public class Product {
     @Id
-    String productID;
+    @Column(name = "productID")
+    private String productID;
 
-    String name;
-    String description;
+    @Column(name = "name")
+    private String name;
 
-    BigInteger price;
-    Integer quantity;
-    String imageURL;
+    @Column(name = "description")
+    private String description;
 
-    Boolean isActive = true;
-    LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "price")
+    private BigDecimal price;
+
+    @Column(name = "quantity")
+    private Integer quantity;
+
+    @Column(name = "imageURL")
+    private String imageURL;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     @ManyToOne
-    @JoinColumn(name = "categories_id",referencedColumnName = "categoryID")
-    Categories categories;
+    @JoinColumn(name = "categoryID", referencedColumnName = "categoryID")
+    private Categories categories;
 }
