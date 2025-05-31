@@ -22,6 +22,6 @@ public class Categories {
     String name;
     String description;
     @OneToMany(mappedBy = "categories")
-    Set<Product> products;
+    Set<Products> products;
 
 }

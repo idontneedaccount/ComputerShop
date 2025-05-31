@@ -55,7 +55,7 @@ public class AuthenticationController {
     public String authenticate(@ModelAttribute("user") AuthenticationRequest request, Model model) {
         try {
             authenticationService.authenticate(request);
-            return "redirect:/home";
+            return "redirect:/admin/home";
         } catch (IllegalArgumentException e) {
             model.addAttribute(errorAttr, e.getMessage());
             return login;
