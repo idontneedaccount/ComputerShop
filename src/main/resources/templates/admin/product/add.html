@@ -47,8 +47,8 @@
                                     <textarea id="brand" class="form-control" th:field="*{brand}" required></textarea>
                                 </div>
                                 <div class="form-group mb-4">
-                                    <label for="editor">Mô tả<span class="text-danger">*</span></label>
-                                    <textarea id="editor" name="editor" class="form-control" th:field="*{description}"
+                                    <label for="description">Mô tả<span class="text-danger">*</span></label>
+                                    <textarea id="description" class="form-control" th:field="*{description}"
                                               required></textarea>
                                 </div>
                                 <div class="form-group mb-4">
@@ -102,22 +102,6 @@
         <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
     </div>
 </div>
-<script th:src="@{/assets/ckeditor/ckeditor.js}"></script>
-<script>
-    CKEDITOR.replace('editor', {
-        removePlugins: 'elementspath,resize',
-        allowedContent: true,
-        on: {
-            instanceReady: function(evt) {
-                // Remove any existing bootstrapiso divs
-                var editor = evt.editor;
-                editor.on('change', function() {
-                    var data = editor.getData();
-                    data = data.replace(/<div class="bootstrapiso[^>]*>.*?<\/div>/gs, '');
-                    editor.setData(data);
-                });
-            }}});
-     </script>
 </body>
 
 <!-- Scroll to Top Button-->
@@ -126,6 +110,5 @@
 </a>
 
 <!-- Logout Modal-->
-<div th:replace="~{admin/fragments/logout :: logout}"></div>
-
+<div  th:replace="~{admin/fragments/logout :: logout}"></div>
 </html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/fragments/header :: header}">
@@ -48,8 +49,9 @@
                                     <textarea id="brand" class="form-control" th:field="*{brand}" ></textarea>
                                 </div>
                                 <div class="form-group mb-4">
-                                    <label for="editor">Mô tả</label>
-                                    <textarea id="editor" class="form-control" th:field="*{description}"></textarea>
+                                    <label for="description">Mô tả</label>
+                                    <textarea id="description" class="form-control" th:field="*{description}"
+                                    ></textarea>
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="price">Giá</label>
@@ -58,7 +60,7 @@
                                 <div class="form-group mb-4">
                                     <label for="quantity">Số lượng</label>
                                     <textarea id="quantity" class="form-control" th:field="*{quantity}"
-                                              ></textarea>
+                                    ></textarea>
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="category">Danh mục</label>
@@ -70,7 +72,7 @@
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="imageURL">Hình ảnh</label>
-                                     <img th:src="@{'/uploads/'+${product.imageURL}}" alt="Product image" style="max-width: 150px; display: block; margin-bottom: 10px;">
+                                    <img th:src="@{'/uploads/'+${product.imageURL}}" alt="Product image" style="max-width: 150px; display: block; margin-bottom: 10px;">
                                     <input id="imageURL" class="form-control" th:type="file" name="productImage">
                                 </div>
                                 <div class="form-group mb-4">
@@ -106,18 +108,12 @@
         <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
     </div>
 </div>
-<script th:src="@{/assets/ckeditor/ckeditor.js}"></script>
-<script>
-    CKEDITOR.replace( 'editor' );
-</script>
 </body>
 
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
-
 <!-- Logout Modal-->
 <div  th:replace="~{admin/fragments/logout :: logout}"></div>
-z
 </html>

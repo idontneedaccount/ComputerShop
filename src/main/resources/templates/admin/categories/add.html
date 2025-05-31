@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-
 <head th:replace="~{admin/fragments/header :: header}">
     <title></title>
 </head>
@@ -46,8 +45,8 @@
                                     <textarea id="name" class="form-control" th:field="*{name}" required></textarea>
                                 </div>
                                 <div class="form-group mb-4">
-                                    <label for="editor">Mô tả<span class="text-danger">*</span></label>
-                                    <textarea id="editor" class="form-control" name="editor" th:field="*{description}" required></textarea>
+                                    <label for="description">Mô tả<span class="text-danger">*</span></label>
+                                    <textarea id="description" class="form-control" th:field="*{description}" required></textarea>
                                 </div>
                                 <div class="d-flex justify-content-center gap-3">
                                     <a th:href="@{/admin/categories}" class="btn btn-secondary w-50" onclick="return confirm
@@ -68,30 +67,10 @@
         <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
     </div>
 </div>
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
 </body>
-<script th:src="@{/assets/ckeditor/ckeditor.js}"></script>
-<script>
-    CKEDITOR.replace('editor', {
-        removePlugins: 'elementspath,resize',
-        allowedContent: true,
-        on: {
-            instanceReady: function(evt) {
-                // Remove any existing bootstrapiso divs
-                var editor = evt.editor;
-                editor.on('change', function() {
-                    var data = editor.getData();
-                    data = data.replace(/<div class="bootstrapiso[^>]*>.*?<\/div>/gs, '');
-                    editor.setData(data);
-                });
-            }
-        }
-    });
-</script>
-
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
-<!-- Logout Modal-->
-<div th:replace="~{admin/fragments/logout :: logout}"></div>
 </html>
