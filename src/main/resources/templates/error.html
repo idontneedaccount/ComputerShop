@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Error - Computer Shop</title>
+	<style>
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h2>Error</h2>
+		<div class="error" role="alert">
+			<p th:text="${error}">An error occurred</p>
+		</div>
+		
+		<a class="btn" th:href="@{/auth/login}">Return to Login</a>
+	</div>
+</body>
+</html>

@@ -14,14 +14,18 @@ import java.util.List;
 @RequestMapping("/admin")
 @AllArgsConstructor
 public class UserController {
+<<<<<<< HEAD
     private UserService userService;
     private UserRepository userRepository;
     private static final String USER2="redirect:/admin/user";
     private static final String USER_VIEW= "admin/user/user";
     private static final String USER = "user";
+=======
+
+>>>>>>> ba7f7168e3fa4a0216bdfe36122b74359f7ffee8
     @GetMapping("/home")
     public String home() {
-        return "home"; // Returns the home view
+        return "home";
     }
 
 
