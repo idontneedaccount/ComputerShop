@@ -1,6 +1,6 @@
 package com.example.computershop.service;
 
-import com.example.computershop.entity.Product;
+import com.example.computershop.entity.Products;
 import com.example.computershop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,12 +12,12 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository repo;
 
     @Override
-    public List<Product> getAll() {
+    public List<Products> getAll() {
         return this.repo.findAll();
     }
 
     @Override
-    public Boolean create(Product product) {
+    public Boolean create(Products product) {
         try {
             this.repo.save(product);
             return true;
@@ -28,12 +28,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product findById(String productID) {
+    public Products findById(String productID) {
         return this.repo.findById(productID).orElse(null);
     }
 
     @Override
-    public Boolean update(Product product) {
+    public Boolean update(Products product) {
         try {
             this.repo.save(product);
             return true;

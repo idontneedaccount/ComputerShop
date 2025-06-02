@@ -43,6 +43,7 @@
                                 <th>ID</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Tên danh mục</th>
+                                <th>Tên hãng</th>
                                 <th>Mô tả</th>
                                 <th>Giá</th>
                                 <th>Số lượng</th>
@@ -56,13 +57,13 @@
                             <tr th:each="products : ${product}">
                                 <td th:text="${products.productID}"></td>
                                 <td th:text="${products.name}"></td>
-                                <td th:each="category : ${products.categories}" th:text="${category.name}">
-                                </td>
+                                <td th:text="${products.categories.name}"></td>
+                                <td th:text="${products.brand}"></td>
                                 <td th:text="${products.description}"></td>
                                 <td th:text="${products.price}"></td>
                                 <td th:text="${products.quantity}"></td>
                                 <td th:if="${products.isActive}"><span class="btn btn-success">Hoạt động</span></td>
-                                <td th:if="${!products.iActive}"><span class="btn btn-danger">Ẩn</span></td>
+                                <td th:if="${!products.isActive}"><span class="btn btn-danger">Ẩn</span></td>
                                 <td th:text="${products.createdAt}"></td>
                                 <td>
                                     <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product Image" class="img-fluid"

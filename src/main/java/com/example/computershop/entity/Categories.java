@@ -1,5 +1,4 @@
 package com.example.computershop.entity;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -23,6 +22,6 @@ public class Categories {
     String name;
     String description;
     @OneToMany(mappedBy = "categories")
-    Set<Product> products;
+    Set<Products> products;
 
 }

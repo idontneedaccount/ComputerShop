@@ -31,7 +31,7 @@ public class CategoriesController {
     }
     @PostMapping("/add-categories")
     public String addCategories(@ModelAttribute("categories") Categories categories , Model model) {
-        if (this.service.create(categories)) {
+        if (Boolean.TRUE.equals(this.service.create(categories))) {
             return CATEGORIES2;
         } else {
             return "admin/categories/add";
@@ -45,7 +45,7 @@ public class CategoriesController {
     }
     @PostMapping("/edit-categories")
     public String updateCategories(@ModelAttribute("categories") Categories categories, Model model) {
-        if (this.service.update(categories)) {
+        if (Boolean.TRUE.equals(this.service.update(categories))) {
             return CATEGORIES2;
         } else {
             return "admin/categories/edit";
@@ -53,7 +53,7 @@ public class CategoriesController {
     }
     @GetMapping("/delete-categories/{categoryID}")
     public String deleteCategories(@PathVariable("categoryID") String categoryID) {
-        if (this.service.delete(categoryID)) {
+        if (Boolean.TRUE.equals(this.service.delete(categoryID))) {
             return CATEGORIES2;
         } else {
             return CATEGORIES_VIEW;

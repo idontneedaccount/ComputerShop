@@ -1,7 +1,7 @@
 package com.example.computershop.controller;
 
 import com.example.computershop.entity.Categories;
-import com.example.computershop.entity.Product;
+import com.example.computershop.entity.Products;
 import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.ProductService;
 import com.example.computershop.service.StorageService;
@@ -24,19 +24,20 @@ public class ProductController {
     private StorageService storageService;
     private static final String PRODUCT = "product";
     private static final String CATEGORIES = "categories";
-    
+
     private static final String  PRODUCT_VIEW = "admin/product/product";
+    private static final String PRODUCT_VIEW2 = "redirect:/admin/product";
 
     @RequestMapping("/product")
     public String index(Model model) {
-        List<Product> list = this.productService.getAll();
+        List<Products> list = this.productService.getAll();
         model.addAttribute(PRODUCT, list);
         return PRODUCT_VIEW;
     }
 
     @RequestMapping("/add-product")
     public String add(Model model) {
-        Product products = new Product();
+        Products products = new Products();
         model.addAttribute(PRODUCT, products);
         List<Categories> list = this.categoriesService.getAll();
         model.addAttribute(CATEGORIES, list);
@@ -45,26 +46,25 @@ public class ProductController {
 
     @GetMapping("/product")
     public String showProducts(Model model) {
-        List<Product> list = this.productService.getAll();
+        List<Products> list = this.productService.getAll();
         model.addAttribute(PRODUCT, list);
         return PRODUCT_VIEW;
     }
 
     @PostMapping("/add-product")
-    public String addProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
-        //up file
+    public String addProduct(@ModelAttribute("product") Products product, @RequestParam("productImage") MultipartFile file) {
         this.storageService.store(file);
         String fileName = file.getOriginalFilename();
         product.setImageURL(fileName);
-        if (this.productService.create(product)) {
-            return PRODUCT_VIEW;
+        if (Boolean.TRUE.equals(this.productService.create(product))) {
+            return PRODUCT_VIEW2;
         }
         return "admin/product/add";
     }
 
     @GetMapping("/edit-product/{productID}")
     public String editProduct(Model model, @PathVariable("productID") String productID) {
-        Product products = this.productService.findById(productID);
+        Products products = this.productService.findById(productID);
         List<Categories> list = this.categoriesService.getAll();
         model.addAttribute(CATEGORIES, list);
         model.addAttribute(PRODUCT, products);
@@ -72,22 +72,20 @@ public class ProductController {
     }
 
     @PostMapping("/edit-product")
-    public String updateProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
-        this.storageService.store(file);
-        String fileName = file.getOriginalFilename();
-        // Check if the file is empty
+    public String updateProduct(@ModelAttribute("product") Products product, @RequestParam("productImage") MultipartFile file) {
+        String fileName;
         if (file.isEmpty()) {
-            // If the file is empty, keep the existing image URL
-            Product existingProduct = this.productService.findById(product.getProductID());
+            Products existingProduct = this.productService.findById(product.getProductID());
             fileName = existingProduct.getImageURL();
             product.setImageURL(fileName);
         } else {
-            // If the file is not empty, set the new image URL
+            this.storageService.store(file);
+            fileName = file.getOriginalFilename();
             product.setImageURL(fileName);
         }
 
-        if (this.productService.update(product)) {
-            return PRODUCT_VIEW;
+        if (Boolean.TRUE.equals(this.productService.update(product))) {
+            return PRODUCT_VIEW2;
         } else {
             return "admin/product/edit";
         }
@@ -95,16 +93,15 @@ public class ProductController {
 
     @GetMapping("/delete-product/{productID}")
     public String deleteProduct(@PathVariable("productID") String productID) {
-        Product product = this.productService.findById(productID);
+        Products product = this.productService.findById(productID);
         if (product!= null){
-            // Delete the image file from storage
             String imageURL = product.getImageURL();
             if (imageURL != null && !imageURL.isEmpty()) {
                 this.storageService.delete(imageURL);
             }
         }
-        if (this.productService.delete(productID)) {
-            return "redirect:/admin/product";
+        if (Boolean.TRUE.equals(this.productService.delete(productID))) {
+            return PRODUCT_VIEW2;
         } else {
             return PRODUCT_VIEW;
         }
