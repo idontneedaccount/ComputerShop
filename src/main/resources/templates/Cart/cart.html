@@ -22,8 +22,9 @@
     <link rel="stylesheet" th:href="@{/assets/css/style.min.css}">
 </head>
 <body class="sticky-header">
-    <!-- Header, Banner, ... (giữ nguyên layout mẫu eTrade) -->
+    <!-- Header -->
     <header th:replace="~{/fragments/header :: header}"></header>
+    
     <main class="main-wrapper">
         <!-- Start Cart Area  -->
         <div class="axil-product-cart-area axil-section-gap">
@@ -46,43 +47,63 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Empty Cart Row -->
                                 <tr th:if="${cartItems == null || cartItems.isEmpty()}">
-                                    <td colspan="6" class="text-center">Your cart is empty</td>
+                                    <td colspan="6" class="text-center">
+                                        <div class="empty-cart-message">
+                                            <h4>Your cart is empty</h4>
+                                            <p>Start shopping to add items to your cart!</p>
+                                            <a href="/test-cart.html" class="axil-btn btn-bg-primary">Browse Products</a>
+                                        </div>
+                                    </td>
                                 </tr>
+                                
+                                <!-- Cart Items -->
                                 <tr th:each="item : ${cartItems}" th:if="${item != null && item.product != null}">
                                     <td class="product-remove">
-                                        <a th:href="@{/cart/remove/{id}(id=${item.product.productID})}" class="remove-wishlist"><i class="fal fa-times"></i></a>
+                                        <a th:href="@{/cart/remove/{id}(id=${item.product.productID})}" class="remove-wishlist">
+                                            <i class="fal fa-times"></i>
+                                        </a>
                                     </td>
                                     <td class="product-thumbnail">
                                         <a th:href="@{'/product/' + ${item.product.productID}}">
-                                            <img th:if="${item.product.imageURL != null}" th:src="@{'/assets/images/product/' + ${item.product.imageURL}}" alt="Product Image">
-                                            <img th:unless="${item.product.imageURL != null}" th:src="@{/assets/images/product/placeholder.jpg}" alt="Product Image">
+                                            <img th:if="${item.product.imageURL != null}" 
+                                                 th:src="@{'/assets/images/product/' + ${item.product.imageURL}}" 
+                                                 alt="Product Image"
+                                                 onerror="this.src='/assets/images/product/placeholder.jpg'">
+                                            <img th:unless="${item.product.imageURL != null}" 
+                                                 th:src="@{/assets/images/product/placeholder.jpg}" 
+                                                 alt="Product Image">
                                         </a>
                                     </td>
                                     <td class="product-title">
-                                        <a th:href="@{'/product/' + ${item.product.productID}}" th:text="${item.product.name}"></a>
+                                        <a th:href="@{'/product/' + ${item.product.productID}}" 
+                                           th:text="${item.product.name}">Product Name</a>
+                                        <div class="product-brand" th:if="${item.product.brand != null}">
+                                            <small th:text="${item.product.brand}">Brand</small>
+                                        </div>
                                     </td>
                                     <td class="product-price" data-title="Price">
                                         <span class="currency-symbol">₫</span>
-                                        <span th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                                        <span th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
                                     </td>
                                     <td class="product-quantity" data-title="Qty">
-                                        <form th:action="@{/cart/update/{id}(id=${item.product.productID})}" method="post" class="pro-qty d-flex align-items-center">
-                                            <button type="button" class="dec qtybtn" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">-</button>
+                                        <form th:action="@{/cart/update/{id}(id=${item.product.productID})}" method="post" class="quantity-form d-flex align-items-center">
                                             <input type="number" name="sl" th:value="${item.quantity}" min="1" class="quantity-input">
-                                            <button type="button" class="inc qtybtn" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">+</button>
                                             <button type="submit" class="axil-btn btn-outline btn-sm ms-2">Update</button>
                                         </form>
                                     </td>
                                     <td class="product-subtotal" data-title="Subtotal">
                                         <span class="currency-symbol">₫</span>
-                                        <span th:text="${#numbers.formatDecimal(item.product.price.multiply(T(java.math.BigDecimal).valueOf(item.quantity)), 0, 'COMMA', 0, 'POINT')}"></span>
+                                        <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="row">
+                    
+                    <!-- Order Summary Section -->
+                    <div class="row" th:if="${cartItems != null && !cartItems.isEmpty()}">
                         <div class="col-xl-5 col-lg-7 offset-xl-7 offset-lg-5">
                             <div class="axil-order-summery order-checkout-summery">
                                 <h5 class="title mb--20">Order Summary</h5>
@@ -91,7 +112,7 @@
                                         <tbody>
                                             <tr class="order-subtotal">
                                                 <td>Subtotal</td>
-                                                <td th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                                <td th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
                                             </tr>
                                             <tr class="order-shipping">
                                                 <td>Shipping</td>
@@ -116,14 +137,19 @@
                                             </tr>
                                             <tr class="order-total">
                                                 <td>Total</td>
-                                                <td class="order-total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                                <td class="order-total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <form th:action="@{/cart/checkout}" method="get" th:if="${cartItems != null && !cartItems.isEmpty()}">
-                                    <button type="submit" class="axil-btn btn-bg-primary checkout-btn w-100">Proceed to Checkout</button>
-                                </form>
+                                <!-- TEST CHECKOUT BUTTON - NO JS INTERFERENCE -->
+                                <div style="margin-bottom: 10px;">
+                                    <a href="/cart/checkout" style="display: block; background: #ff6b35; color: white; padding: 15px; text-align: center; text-decoration: none; border-radius: 4px;">
+                                        🚀 TEST CHECKOUT (Direct Link)
+                                    </a>
+                                </div>
+                                
+                                <a th:href="@{/cart/checkout}" class="axil-btn btn-bg-primary checkout-btn w-100">Proceed to Checkout</a>
                             </div>
                         </div>
                     </div>
@@ -132,8 +158,10 @@
         </div>
         <!-- End Cart Area  -->
     </main>
-    <!-- Footer (giữ nguyên layout mẫu eTrade) -->
+    
+    <!-- Footer -->
     <footer th:replace="~{/fragments/footer :: footer}"></footer>
+    
     <!-- JS -->
     <script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery.js}"></script>
@@ -151,5 +179,46 @@
     <script th:src="@{/assets/js/vendor/counterup.js}"></script>
     <script th:src="@{/assets/js/vendor/waypoints.min.js}"></script>
     <script th:src="@{/assets/js/main.js}"></script>
+
+    <style>
+        .empty-cart-message {
+            padding: 40px;
+            text-align: center;
+        }
+        .product-brand {
+            color: #777;
+            font-size: 12px;
+        }
+        .quantity-form {
+            display: flex !important;
+            align-items: center;
+            gap: 10px;
+            max-width: 200px;
+        }
+        .quantity-input {
+            width: 80px !important;
+            height: 40px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .quantity-input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .axil-btn.btn-outline.btn-sm {
+            height: 40px;
+            padding: 8px 16px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        /* Clean up any theme conflicts */
+        .product-quantity .quantity-form {
+            margin: 0;
+        }
+    </style>
 </body>
 </html>

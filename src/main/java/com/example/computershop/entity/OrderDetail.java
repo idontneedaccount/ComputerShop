@@ -5,26 +5,27 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "OrderDetails")
+@Table(name = "order_details")
 public class OrderDetail {
     @Id
-    @Column(name = "OrderDetailID")
-    private String orderDetailID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_detailid")
+    private Long orderDetailID;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OrderID")
+    @JoinColumn(name = "orderid")
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductID")
+    @JoinColumn(name = "productid")
     private Product product;
 
-    @Column(name = "Quantity", nullable = false)
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "UnitPrice", nullable = false)
+    @Column(name = "unit_price", nullable = false)
     private Long unitPrice;
 
-    @Column(name = "TotalPrice", nullable = false)
+    @Column(name = "total_price", nullable = false)
     private Long totalPrice;
 } 

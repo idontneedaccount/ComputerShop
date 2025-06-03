@@ -16,34 +16,37 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Entity
-@Table(name = "products")
+@Table(name = "Products")
 public class Product {
     @Id
     @Column(name = "productID")
     private String productID;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "brand", nullable = false)
+    private String brand;
+
+    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
     private String description;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     @Column(name = "imageURL")
     private String imageURL;
 
     @Column(name = "is_active")
-    private Boolean isActive;
+    private Boolean isActive = true;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "categoryID", referencedColumnName = "categoryID")
+    @JoinColumn(name = "categories_id", referencedColumnName = "categoryID")
     private Categories categories;
 }

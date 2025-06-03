@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
-@RequestMapping("/checkout")
-@SessionAttributes("cart")
+// TEMPORARILY DISABLED TO AVOID CONFLICT WITH CartController
+// @Controller
+// @RequestMapping("/checkout")
+// @SessionAttributes("cart")
 public class OrderController {
     @Autowired
     private OrderService orderService;
