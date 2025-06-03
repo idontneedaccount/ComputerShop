@@ -40,11 +40,6 @@
                             </div>
                             <form th:action="@{/admin/add-product}" th:object="${product}" method="post" enctype="multipart/form-data">
                                 <div class="form-group mb-3">
-                                    <label for="categoryId">Mã sản phẩm<span class="text-danger">*</span></label>
-                                    <textarea id="categoryId" class="form-control" th:field="*{productID}"
-                                              required></textarea>
-                                </div>
-                                <div class="form-group mb-3">
                                     <label for="name">Tên sản phẩm<span class="text-danger">*</span></label>
                                     <textarea id="name" class="form-control" th:field="*{name}" required></textarea>
                                 </div>

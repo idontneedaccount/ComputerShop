@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Products {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     String productID;
 
     String name;

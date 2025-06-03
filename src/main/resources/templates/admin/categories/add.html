@@ -43,10 +43,6 @@
                             </div>
                             <form th:action="@{/admin/add-categories}" th:object="${categories}" method="post">
                                 <div class="form-group mb-3">
-                                    <label for="categoryId">Mã danh mục <span class="text-danger">*</span></label>
-                                    <textarea id="categoryId" class="form-control" th:field="*{categoryID}" required></textarea>
-                                </div>
-                                <div class="form-group mb-3">
                                     <label for="name">Tên danh mục<span class="text-danger">*</span></label>
                                     <textarea id="name" class="form-control" th:field="*{name}" required></textarea>
                                 </div>
