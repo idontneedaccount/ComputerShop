@@ -27,7 +27,8 @@ public class ProductController {
 
     private static final String  PRODUCT_VIEW = "admin/product/product";
     private static final String PRODUCT_VIEW2 = "redirect:/admin/product";
-
+    private static final String PRODUCT_ADD = "admin/product/add";
+    private static final String PRODUCT_EDIT =  "admin/product/edit";
     @RequestMapping("/product")
     public String index(Model model) {
         List<Products> list = this.productService.getAll();
@@ -41,7 +42,7 @@ public class ProductController {
         model.addAttribute(PRODUCT, products);
         List<Categories> list = this.categoriesService.getAll();
         model.addAttribute(CATEGORIES, list);
-        return "admin/product/add";
+        return PRODUCT_ADD;
     }
 
     @GetMapping("/product")
@@ -52,14 +53,23 @@ public class ProductController {
     }
 
     @PostMapping("/add-product")
-    public String addProduct(@ModelAttribute("product") Products product, @RequestParam("productImage") MultipartFile file) {
+    public String addProduct(@ModelAttribute("product") Products product, 
+                           @RequestParam("productImage") MultipartFile file,
+                           Model model) {
+        if (productService.existsByName(product.getName())) {
+            model.addAttribute("error", "Sản phẩm đã tồn tại.");
+            List<Categories> categories = this.categoriesService.getAll();
+            model.addAttribute(CATEGORIES, categories);
+            return PRODUCT_ADD;
+        }
+
         this.storageService.store(file);
         String fileName = file.getOriginalFilename();
         product.setImageURL(fileName);
         if (Boolean.TRUE.equals(this.productService.create(product))) {
             return PRODUCT_VIEW2;
         }
-        return "admin/product/add";
+        return PRODUCT_ADD;
     }
 
     @GetMapping("/edit-product/{productID}")
@@ -68,14 +78,26 @@ public class ProductController {
         List<Categories> list = this.categoriesService.getAll();
         model.addAttribute(CATEGORIES, list);
         model.addAttribute(PRODUCT, products);
-        return "admin/product/edit";
+        return PRODUCT_EDIT;
     }
 
     @PostMapping("/edit-product")
-    public String updateProduct(@ModelAttribute("product") Products product, @RequestParam("productImage") MultipartFile file) {
+    public String updateProduct(@ModelAttribute("product") Products product, 
+                              @RequestParam("productImage") MultipartFile file,
+                              Model model) {
+        Products existingProduct = this.productService.findById(product.getProductID());
+        
+        if (!existingProduct.getName().equals(product.getName()) && 
+            productService.existsByName(product.getName())) {
+            model.addAttribute("error", "Sản phẩm đã tồn tại.");
+            List<Categories> categories = this.categoriesService.getAll();
+            model.addAttribute(CATEGORIES, categories);
+            model.addAttribute(PRODUCT, product);
+            return PRODUCT_EDIT;
+        }
+
         String fileName;
         if (file.isEmpty()) {
-            Products existingProduct = this.productService.findById(product.getProductID());
             fileName = existingProduct.getImageURL();
             product.setImageURL(fileName);
         } else {
@@ -87,7 +109,7 @@ public class ProductController {
         if (Boolean.TRUE.equals(this.productService.update(product))) {
             return PRODUCT_VIEW2;
         } else {
-            return "admin/product/edit";
+            return PRODUCT_EDIT;
         }
     }
 
