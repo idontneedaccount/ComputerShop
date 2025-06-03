@@ -22,8 +22,8 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "userId")
-    String userId;
+    @Column(name = "userid", length = 255)
+    private String userId;
     @Column(name = "username", unique = true)
     String username;
     @Column(name = "password")
@@ -64,4 +64,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return isActive;
     }
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
+
 }

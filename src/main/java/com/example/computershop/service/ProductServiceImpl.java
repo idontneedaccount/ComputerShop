@@ -1,8 +1,12 @@
 package com.example.computershop.service;
 
+import com.example.computershop.dto.ProductSalesDTO;
 import com.example.computershop.entity.Products;
 import com.example.computershop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.hibernate.internal.util.collections.ArrayHelper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,4 +57,21 @@ public class ProductServiceImpl implements ProductService {
         }
         return false;
     }
+
+    @Override
+    public List<Products> findTop5ProductsByStock() {
+        return repo.findTop5ProductsByStock(PageRequest.of(0,5));
+    }
+
+    @Override
+    public List<ProductSalesDTO> findTop5BestSellingProducts() {
+        return repo.findTop5BestSellingProducts(PageRequest.of(0,5));
+    }
+
+    @Override
+    public long countProducts() {
+        return repo.countProducts();
+    }
+
+
 }
