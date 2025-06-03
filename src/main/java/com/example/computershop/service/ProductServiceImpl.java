@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false; // Placeholder return statement
+        return false;
     }
 
     @Override
@@ -52,5 +52,10 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return repo.existsByName(name);
     }
 }

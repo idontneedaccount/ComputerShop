@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/fragments/header :: header}">
@@ -33,6 +32,12 @@
                             <h4 class="mb-0">Chỉnh sửa sản phẩm</h4>
                         </div>
                         <div class="card-body">
+                            <!-- Error message display -->
+                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span th:text="${error}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             <form th:action="@{/admin/edit-product}" th:object="${product}" method="post" enctype="multipart/form-data">
                                 <input type="hidden" th:field="*{imageURL}" />
                                 <div class="form-group mb-3">

@@ -10,6 +10,6 @@ public interface  CategoriesService {
     Categories findById(String categoryID);
     Boolean update(Categories categories);
     Boolean delete(String categoryID);
-
+    boolean existsByName(String name);
 
 }

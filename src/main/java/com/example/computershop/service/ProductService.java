@@ -1,8 +1,8 @@
 package com.example.computershop.service;
 
-import com.example.computershop.entity.Products;
-
 import java.util.List;
+
+import com.example.computershop.entity.Products;
 
 public interface ProductService {
     List<Products> getAll();
@@ -10,4 +10,5 @@ public interface ProductService {
     Products findById(String productID);
     Boolean update(Products product);
     Boolean delete(String productID);
+    boolean existsByName(String name);
 }

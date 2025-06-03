@@ -53,4 +53,8 @@ public class CategoriesServiceImpl implements CategoriesService {
         }
         return  false;
     }
+    @Override
+    public boolean existsByName(String name) {
+        return repo.existsByName(name);
+    }
 }
