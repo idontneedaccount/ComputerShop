@@ -40,7 +40,12 @@ public class FileSystemStorageService implements StorageService {
     public void delete(String fileName) {
         try {
             Path filePath = Paths.get("src/main/resources/static/uploads").resolve(fileName).normalize().toAbsolutePath();
-            Files.deleteIfExists(filePath);
+            if (Files.isDirectory(filePath)) {
+                // If it's a directory, we should not try to delete it
+                System.out.println("Cannot delete directory: " + filePath);
+            } else {
+                Files.deleteIfExists(filePath);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

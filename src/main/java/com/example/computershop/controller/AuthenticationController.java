@@ -1,8 +1,8 @@
 package com.example.computershop.controller;
 
-import com.example.computershop.dto.request.AuthenticationRequest;
 import com.example.computershop.dto.request.UserCreationRequest;
 import com.example.computershop.dto.request.VerifyUserRequest;
+import com.example.computershop.exception.AuthenticationException;
 import com.example.computershop.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -22,7 +22,7 @@ public class AuthenticationController {
     static String register = "register";
     static String login = "login";
     static String errorAttr = "error";
-
+    static String messageAttr = "message";
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
@@ -31,46 +31,47 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") @Valid UserCreationRequest request, BindingResult result, Model model) {
+    public String registerUser(@Valid @ModelAttribute("user") UserCreationRequest request, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute(errorAttr, "Vui lòng kiểm tra lại thông tin đăng ký.");
             return register;
         }
 
         try {
             authenticationService.createUser(request);
+            model.addAttribute(messageAttr, "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
             return "redirect:/auth/login";
-        } catch (IllegalArgumentException e) {
+        } catch (AuthenticationException e) {
             model.addAttribute(errorAttr, e.getMessage());
             return register;
         }
     }
 
     @GetMapping("/login")
-    public String showLoginForm(Model model) {
-        model.addAttribute("user", new AuthenticationRequest());
-        return login;
-    }
-
-    @PostMapping("/login")
-    public String authenticate(@ModelAttribute("user") AuthenticationRequest request, Model model) {
-        try {
-            authenticationService.authenticate(request);
-            return "redirect:/home";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute(errorAttr, e.getMessage());
-            return login;
+    public String showLoginForm(@RequestParam(required = false) String error, Model model) {
+        if (error != null) {
+            model.addAttribute(errorAttr, error);
         }
+        return login;
     }
 
     @GetMapping("/verify")
     public String verifyUserByLink(@RequestParam("email") String email, @RequestParam("code") String code, Model model) {
+        VerifyUserRequest verifyRequest = new VerifyUserRequest();
+        verifyRequest.setEmail(email);
+        verifyRequest.setVerificationCode(code);
+        
         try {
-            VerifyUserRequest verifyRequest = new VerifyUserRequest();
-            verifyRequest.setEmail(email);
-            verifyRequest.setVerificationCode(code);
+            // Kiểm tra xem tài khoản đã được kích hoạt chưa
+            if (authenticationService.isUserActive(email)) {
+                model.addAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
+                return "redirect:/auth/login";
+            }
+
             authenticationService.verifyUser(verifyRequest);
+            model.addAttribute(messageAttr, "Tài khoản đã xác thực thành công. Bạn có thể đăng nhập.");
             return "redirect:/auth/login?verified=true";
-        } catch (IllegalArgumentException e) {
+        } catch (AuthenticationException e) {
             model.addAttribute(errorAttr, e.getMessage());
             return login;
         }
@@ -78,16 +79,22 @@ public class AuthenticationController {
 
     @GetMapping("/resend-verification")
     public String showResendVerificationForm(Model model) {
-        model.addAttribute("email", "");
+        model.addAttribute("verifyRequest", new VerifyUserRequest());
         return "resend-verification";
     }
 
     @PostMapping("/resend-verification")
-    public String resendVerificationEmail(@RequestParam("email") String email, Model model) {
+    public String resendVerificationEmail(@Valid @ModelAttribute("verifyRequest") VerifyUserRequest request, 
+                                        BindingResult result, Model model) {
         try {
-            authenticationService.resendVerificationEmail(email);
+            if (authenticationService.isUserActive(request.getEmail())) {
+                model.addAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
+                return "resend-verification";
+            }
+            authenticationService.resendVerificationEmail(request.getEmail());
+            model.addAttribute(messageAttr, "Đã gửi lại email xác thực. Vui lòng kiểm tra email của bạn.");
             return "redirect:/auth/login?resent=true";
-        } catch (IllegalArgumentException e) {
+        } catch (AuthenticationException e) {
             model.addAttribute(errorAttr, e.getMessage());
             return "resend-verification";
         }
