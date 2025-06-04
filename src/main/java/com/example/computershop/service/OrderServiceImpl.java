@@ -24,7 +24,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             order.setOrderDate(LocalDateTime.now());
             order.setStatus("PENDING");
-            order.setOrderDetails(null); // Tránh vòng lặp vô hạn khi lưu
+            order.setOrderDetails(null);
             
             System.out.println("Saving order to database...");
             System.out.println("Order details: " + order.getFullName() + ", " + order.getEmail() + ", Total: " + order.getTotalAmount());
