@@ -2,19 +2,17 @@ package com.example.computershop.controller;
 
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
-import com.example.computershop.entity.Product;
+import com.example.computershop.entity.Products;
 import com.example.computershop.entity.CartItem;
 import com.example.computershop.service.OrderService;
 import com.example.computershop.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +41,7 @@ public class OrderController {
         List<OrderDetail> orderDetails = new ArrayList<>();
         long total = 0;
         for (int i = 0; i < productIds.size(); i++) {
-            Product product = productRepository.findById(productIds.get(i)).orElse(null);
+            Products product = productRepository.findById(productIds.get(i)).orElse(null);
             if (product != null) {
                 OrderDetail detail = new OrderDetail();
                 detail.setProduct(product);

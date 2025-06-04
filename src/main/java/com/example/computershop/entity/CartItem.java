@@ -16,7 +16,7 @@ public class CartItem implements Serializable {
     private Integer quantity;
     
     // Constructor for backward compatibility
-    public CartItem(Product product, Integer quantity) {
+    public CartItem(Products product, Integer quantity) {
         this.productId = product.getProductID();
         this.quantity = quantity;
     }

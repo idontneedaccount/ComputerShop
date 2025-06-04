@@ -2,7 +2,7 @@ package com.example.computershop.controller;
 
 import com.example.computershop.entity.CartItem;
 import com.example.computershop.entity.Order;
-import com.example.computershop.entity.Product;
+import com.example.computershop.entity.Products;
 import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.repository.ProductRepository;
 import com.example.computershop.service.OrderService;
@@ -37,21 +37,21 @@ public class CartController {
     }
 
     // Helper method to load product for CartItem
-    private Product loadProduct(CartItem cartItem) {
+    private Products loadProduct(CartItem cartItem) {
         return repo.findById(cartItem.getProductId()).orElse(null);
     }
 
     // Display class for template
     public static class CartItemDisplay {
-        private Product product;
+        private Products product;
         private Integer quantity;
         
-        public CartItemDisplay(Product product, Integer quantity) {
+        public CartItemDisplay(Products product, Integer quantity) {
             this.product = product;
             this.quantity = quantity;
         }
         
-        public Product getProduct() { return product; }
+        public Products getProduct() { return product; }
         public Integer getQuantity() { return quantity; }
     }
 
@@ -59,7 +59,7 @@ public class CartController {
     public String add(@PathVariable String id, @RequestParam(defaultValue = "1") int sl,
                       @ModelAttribute("cart") List<CartItem> cart) {
         try {
-            Product sp = repo.findById(id).orElse(null);
+            Products sp = repo.findById(id).orElse(null);
             if(sp == null){
                 return "redirect:/error";
             }
@@ -90,7 +90,7 @@ public class CartController {
             java.math.BigDecimal total = java.math.BigDecimal.ZERO;
             
             for (CartItem item : cart) {
-                Product product = loadProduct(item);
+                Products product = loadProduct(item);
                 if (product != null) {
                     displayItems.add(new CartItemDisplay(product, item.getQuantity()));
                     
@@ -156,7 +156,7 @@ public class CartController {
             java.math.BigDecimal total = java.math.BigDecimal.ZERO;
             
             for (CartItem item : cart) {
-                Product product = loadProduct(item);
+                Products product = loadProduct(item);
                 if (product != null) {
                     displayItems.add(new CartItemDisplay(product, item.getQuantity()));
                     java.math.BigDecimal price = new java.math.BigDecimal(product.getPrice().toString());
@@ -213,7 +213,7 @@ public class CartController {
             long total = 0;
             
             for (CartItem cartItem : cart) {
-                Product product = loadProduct(cartItem);
+                Products product = loadProduct(cartItem);
                 if (product != null) {
                     OrderDetail detail = new OrderDetail();
                     detail.setProduct(product);
