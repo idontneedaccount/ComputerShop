@@ -60,12 +60,11 @@
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="price">Giá</label>
-                                    <textarea id="price" class="form-control" th:field="*{price}" ></textarea>
+                                    <input type="number" id="price" class="form-control" th:field="*{price}" >
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="quantity">Số lượng</label>
-                                    <textarea id="quantity" class="form-control" th:field="*{quantity}"
-                                    ></textarea>
+                                    <input type="number" id="quantity" class="form-control" th:field="*{quantity}">
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="category">Danh mục</label>
@@ -117,6 +116,7 @@
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
+</a>
 <!-- Logout Modal-->
 <div  th:replace="~{admin/fragments/logout :: logout}"></div>
 </html>

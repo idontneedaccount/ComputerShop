@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigInteger;
 import java.util.List;
 
 
@@ -24,6 +25,7 @@ public class ProductController {
     private StorageService storageService;
     private static final String PRODUCT = "product";
     private static final String CATEGORIES = "categories";
+    private static final String ERROR = "error";
 
     private static final String  PRODUCT_VIEW = "admin/product/product";
     private static final String PRODUCT_VIEW2 = "redirect:/admin/product";
@@ -56,8 +58,15 @@ public class ProductController {
     public String addProduct(@ModelAttribute("product") Products product, 
                            @RequestParam("productImage") MultipartFile file,
                            Model model) {
+        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0) {
+            model.addAttribute(ERROR, "Thông tin sản phẩm không hợp lệ.");
+            List<Categories> categories = this.categoriesService.getAll();
+            model.addAttribute(CATEGORIES, categories);
+            return PRODUCT_ADD;
+        }
+
         if (productService.existsByName(product.getName())) {
-            model.addAttribute("error", "Sản phẩm đã tồn tại.");
+            model.addAttribute(ERROR, "Sản phẩm đã tồn tại.");
             List<Categories> categories = this.categoriesService.getAll();
             model.addAttribute(CATEGORIES, categories);
             return PRODUCT_ADD;
@@ -86,10 +95,16 @@ public class ProductController {
                               @RequestParam("productImage") MultipartFile file,
                               Model model) {
         Products existingProduct = this.productService.findById(product.getProductID());
-        
+        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0) {
+            model.addAttribute(ERROR, "Thông tin sản phẩm không hợp lệ.");
+            List<Categories> categories = this.categoriesService.getAll();
+            model.addAttribute(CATEGORIES, categories);
+            model.addAttribute(PRODUCT, product);
+            return PRODUCT_ADD;
+        }
         if (!existingProduct.getName().equals(product.getName()) && 
             productService.existsByName(product.getName())) {
-            model.addAttribute("error", "Sản phẩm đã tồn tại.");
+            model.addAttribute(ERROR, "Sản phẩm đã tồn tại.");
             List<Categories> categories = this.categoriesService.getAll();
             model.addAttribute(CATEGORIES, categories);
             model.addAttribute(PRODUCT, product);
