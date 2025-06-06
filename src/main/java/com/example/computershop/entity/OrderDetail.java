@@ -8,24 +8,24 @@ import lombok.Data;
 @Table(name = "order_details")
 public class OrderDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_detailid")
-    private Long orderDetailID;
+     String orderDetailID;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderid")
-    private Order order;
+     Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
-    private Products product;
+     Products product;
 
     @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+     Integer quantity;
 
     @Column(name = "unit_price", nullable = false)
-    private Long unitPrice;
+     Long unitPrice;
 
     @Column(name = "total_price", nullable = false)
-    private Long totalPrice;
+     Long totalPrice;
 } 
