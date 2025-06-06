@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/auth/**", "/home", "/css/**",
-                                        "/js/**", "/images/**", "/assets/**","/cart/**","/error/**")
+                                        "/js/**", "/images/**", "/assets/**","/cart/**","/error/**","/assets2/**","/uploads/**")
                                 .permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/user/**").hasRole("USER")
