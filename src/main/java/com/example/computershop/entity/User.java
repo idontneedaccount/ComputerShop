@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -22,41 +21,30 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "userId")
+    @Column(name = "userId" , columnDefinition = "nvarchar(255)")
     String userId;
-    @Column(name = "username", unique = true)
+    @Column(name = "username", unique = true , columnDefinition = "nvarchar(255)")
     String username;
-    @Column(name = "password")
+    @Column(name = "password" , columnDefinition = "nvarchar(255)")
     String password;
-    @Column(name = "fullName")
+    @Column(name = "fullName" , columnDefinition = "nvarchar(255)")
     String fullName;
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true , columnDefinition = "nvarchar(255)")
     String email;
-    @Column(name = "phoneNumber", unique = true)
+    @Column(name = "phoneNumber", unique = true , columnDefinition = "nvarchar(255)")
     String phoneNumber;
-    @Column(name = "role")
+    @Column(name = "role" , columnDefinition = "nvarchar(255)")
     String role;
-    @Column(name = "createdAt")
+    @Column(name = "createdAt" , columnDefinition = "datetime")
     LocalDateTime createdAt;
-    @Column(name = "isActive")
+    @Column(name = "isActive" , columnDefinition = "bit")
     boolean isActive;
-    public boolean getIsActive() {
-        return isActive;
-    }
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        this.isActive = active;
-    }
-    @Column(name = "verification_code")
+    @Column(name = "verification_code" , columnDefinition = "nvarchar(255)")
     String verificationCode;
-    @Column(name = "verification_expiration")
+    @Column(name = "verification_expiration" , columnDefinition = "datetime")
     LocalDateTime verificationExpiration;
+    @Column(name = "provider", columnDefinition = "nvarchar(255)")
+    String provider;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(() -> "ROLE_" + role.toUpperCase());
