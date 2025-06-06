@@ -63,7 +63,7 @@
                                 <td th:text="${users.role}"></td>
                                 <td th:if="${users.isActive}"><span class="btn btn-success">Hoạt động</span></td>
                                 <td th:if="${!users.isActive}"><span class="btn btn-danger">Ẩn</span></td>
-                                <td th:text="${users.createdAt}"></td>
+                                <td th:text="${#temporals.format(users.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
                                     <a th:href="@{/admin/edit-user/{id}(id=${users.userId})}" class="btn btn-primary">
                                         <i class="fas fa-edit"></i>
