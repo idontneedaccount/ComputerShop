@@ -9,8 +9,10 @@
     <!-- Sidebar -->
     <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
 
+
     <div id="content-wrapper" class="flex-grow-1">
         <div class="container-fluid">
+
 
             <!-- Breadcrumbs-->
             <ol class="breadcrumb">
@@ -20,8 +22,11 @@
                 <li class="breadcrumb-item active">Overview</li>
             </ol>
 
+
             <!-- Icon Cards-->
             <div th:replace="~{admin/fragments/icon-cards :: icon-cards}"></div>
+
+
 
 
             <!-- Main body information -->
@@ -29,48 +34,46 @@
                 <div class="col-md-8 col-lg-6">
                     <div class="card shadow mb-4">
                         <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0">Thêm sản phẩm mới</h4>
+                            <h4 class="mb-0">Thêm người dùng mới</h4>
                         </div>
                         <div class="card-body">
-                            <!-- Error message display -->
-                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span th:text="${error}"></span>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            <form th:action="@{/admin/add-product}" th:object="${product}" method="post" enctype="multipart/form-data">
+                            <form th:action="@{/admin/add-user}" th:object="${user}" method="post" enctype="multipart/form-data">
                                 <div class="form-group mb-3">
-                                    <label for="name">Tên sản phẩm<span class="text-danger">*</span></label>
-                                    <textarea id="name" class="form-control" th:field="*{name}" required></textarea>
+                                    <label for="name">Họ và tên<span class="text-danger">*</span></label>
+                                    <textarea id="name" class="form-control" th:field="*{fullName}"
+                                              required></textarea>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="brand">Hãng sản phẩm<span class="text-danger">*</span></label>
-                                    <textarea id="brand" class="form-control" th:field="*{brand}" required></textarea>
+                                    <label for="email">Email<span class="text-danger">*</span></label>
+                                    <textarea id="email" class="form-control" th:field="*{email}" required></textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="username">Username<span class="text-danger">*</span></label>
+                                    <textarea id="username" class="form-control" th:field="*{username}" required></textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="password">Password<span class="text-danger">*</span></label>
+                                    <textarea id="password" class="form-control" th:field="*{password}" required></textarea>
                                 </div>
                                 <div class="form-group mb-4">
-                                    <label for="description">Mô tả<span class="text-danger">*</span></label>
-                                    <textarea id="description" class="form-control" th:field="*{description}" required></textarea>
+                                    <label for="phonenumber">Số điện thoại<span class="text-danger">*</span></label>
+                                    <textarea id="phonenumber" class="form-control" th:field="*{phoneNumber}"
+                                              required></textarea>
                                 </div>
                                 <div class="form-group mb-4">
-                                    <label for="price">Giá<span class="text-danger">*</span></label>
-                                    <input type="number" id="price" class="form-control" th:field="*{price}" required>
-                                </div>
-                                <div class="form-group mb-4">
-                                    <label for="quantity">Số lượng<span class="text-danger">*</span></label>
-                                    <input type="number" id="quantity" class="form-control" th:field="*{quantity}" required>
-                                </div>
-                                <div class="form-group mb-4">
-                                    <label for="category">Danh mục<span class="text-danger">*</span></label>
-                                    <select id="category" class="form-control" th:field="*{categories.categoryID}" required>
-                                        <option value="" disabled selected>Chọn danh mục</option>
-                                        <option th:each="category : ${categories}" th:value="${category.categoryID}"
-                                                th:text="${category.name}"></option>
-                                    </select>
-                                </div>
-                                <div class="form-group mb-4">
-                                    <label for="imageURL">Hình ảnh<span class="text-danger">*</span></label>
-                                    <input id="imageURL" class="form-control" th:type="file" name="productImage"
-                                           required>
+                                    <label>Vai trò<span class="text-danger">*</span></label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" th:field="*{role}" value="admin"
+                                                   id="admin" checked>
+                                            <label class="form-check-label" for="activeTrue">ADMIN</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" th:field="*{role}" value="user"
+                                                   id="user" checked>
+                                            <label class="form-check-label" for="activeTrue">Người dùng</label>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group mb-4">
                                     <label>Trạng thái<span class="text-danger">*</span></label>
@@ -89,7 +92,7 @@
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-success w-100">
-                                        <i class="fas fa-save"></i> Thêm sản phẩm
+                                        <i class="fas fa-save"></i> Thêm tài khoản
                                     </button>
                                 </div>
                             </form>
@@ -103,6 +106,7 @@
 </div>
 </body>
 
+
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
@@ -111,5 +115,5 @@
 
 <!-- Logout Modal-->
 <div  th:replace="~{admin/fragments/logout :: logout}"></div>
-
+z
 </html>

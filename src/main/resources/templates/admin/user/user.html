@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/fragments/header :: header}">
-    <title></title> 
+    <title></title>
 </head>
 
 <body id="page-top">
@@ -33,47 +33,42 @@
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>
-                    Danh sách sản phẩm
+                    Danh sách tài khoản
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Tên danh mục</th>
-                                <th>Tên hãng</th>
-                                <th>Mô tả</th>
-                                <th>Giá</th>
-                                <th>Số lượng</th>
+                                <th>Tên tài khoản</th>
+                                <th>Mật khẩu</th>
+                                <th>Tên đầy đủ </th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Vai trò</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
-                                <th>Hình ảnh</th>
                                 <th>Hành động</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="products : ${product}">
-                                <td th:text="${products.productID}"></td>
-                                <td th:text="${products.name}"></td>
-                                <td th:text="${products.categories.name}"></td>
-                                <td th:text="${products.brand}"></td>
-                                <td th:text="${products.description}"></td>
-                                <td th:text="${products.price}"></td>
-                                <td th:text="${products.quantity}"></td>
-                                <td th:if="${products.isActive}"><span class="btn btn-success">Hoạt động</span></td>
-                                <td th:if="${!products.isActive}"><span class="btn btn-danger">Ẩn</span></td>
-                                <td th:text="${#temporals.format(products.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <tr th:each="users : ${user}">
+                                <td th:text="${users.userId}"></td>
+                                <td th:text="${users.username}"></td>
+                                <td th:text="${users.password}"></td>
+                                <td th:text="${users.fullName}"></td>
+                                <td th:text="${users.email}"></td>
+                                <td th:text="${users.phoneNumber}"></td>
+                                <td th:text="${users.role}"></td>
+                                <td th:if="${users.isActive}"><span class="btn btn-success">Hoạt động</span></td>
+                                <td th:if="${!users.isActive}"><span class="btn btn-danger">Ẩn</span></td>
+                                <td th:text="${#temporals.format(users.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
-                                    <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product Image" class="img-fluid"
-                                         style="max-width: 100px; max-height: 100px;">
-                                </td>
-                                <td>
-                                    <a th:href="@{/admin/edit-product/{id}(id=${products.productID})}" class="btn btn-primary">
+                                    <a th:href="@{/admin/edit-user/{id}(id=${users.userId})}" class="btn btn-primary">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a th:href="@{/admin/delete-product/{id}(id=${products.productID})}" class="btn btn-danger"
+                                    <a th:href="@{/admin/delete-user/{id}(id=${users.userId})}" class="btn btn-danger"
                                        onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
@@ -95,5 +90,7 @@
     <i class="fas fa-angle-up"></i>
 </a>
 
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
 </body>
 </html>

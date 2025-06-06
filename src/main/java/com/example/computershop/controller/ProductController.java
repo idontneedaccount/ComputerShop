@@ -1,7 +1,7 @@
 package com.example.computershop.controller;
 
 import com.example.computershop.entity.Categories;
-import com.example.computershop.entity.Product;
+import com.example.computershop.entity.Products;
 import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.ProductService;
 import com.example.computershop.service.StorageService;
@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigInteger;
 import java.util.List;
 
 
@@ -24,87 +25,120 @@ public class ProductController {
     private StorageService storageService;
     private static final String PRODUCT = "product";
     private static final String CATEGORIES = "categories";
-    
-    private static final String  PRODUCT_VIEW = "admin/product/product";
+    private static final String ERROR = "error";
 
+    private static final String  PRODUCT_VIEW = "admin/product/product";
+    private static final String PRODUCT_VIEW2 = "redirect:/admin/product";
+    private static final String PRODUCT_ADD = "admin/product/add";
+    private static final String PRODUCT_EDIT =  "admin/product/edit";
     @RequestMapping("/product")
     public String index(Model model) {
-        List<Product> list = this.productService.getAll();
+        List<Products> list = this.productService.getAll();
         model.addAttribute(PRODUCT, list);
         return PRODUCT_VIEW;
     }
 
     @RequestMapping("/add-product")
     public String add(Model model) {
-        Product products = new Product();
+        Products products = new Products();
         model.addAttribute(PRODUCT, products);
         List<Categories> list = this.categoriesService.getAll();
         model.addAttribute(CATEGORIES, list);
-        return "admin/product/add";
+        return PRODUCT_ADD;
     }
 
     @GetMapping("/product")
     public String showProducts(Model model) {
-        List<Product> list = this.productService.getAll();
+        List<Products> list = this.productService.getAll();
         model.addAttribute(PRODUCT, list);
         return PRODUCT_VIEW;
     }
 
     @PostMapping("/add-product")
-    public String addProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
-        //up file
+    public String addProduct(@ModelAttribute("product") Products product, 
+                           @RequestParam("productImage") MultipartFile file,
+                           Model model) {
+        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0) {
+            model.addAttribute(ERROR, "Thông tin sản phẩm không hợp lệ.");
+            List<Categories> categories = this.categoriesService.getAll();
+            model.addAttribute(CATEGORIES, categories);
+            return PRODUCT_ADD;
+        }
+
+        if (productService.existsByName(product.getName())) {
+            model.addAttribute(ERROR, "Sản phẩm đã tồn tại.");
+            List<Categories> categories = this.categoriesService.getAll();
+            model.addAttribute(CATEGORIES, categories);
+            return PRODUCT_ADD;
+        }
+
         this.storageService.store(file);
         String fileName = file.getOriginalFilename();
         product.setImageURL(fileName);
-        if (this.productService.create(product)) {
-            return PRODUCT_VIEW;
+        if (Boolean.TRUE.equals(this.productService.create(product))) {
+            return PRODUCT_VIEW2;
         }
-        return "admin/product/add";
+        return PRODUCT_ADD;
     }
 
     @GetMapping("/edit-product/{productID}")
     public String editProduct(Model model, @PathVariable("productID") String productID) {
-        Product products = this.productService.findById(productID);
+        Products products = this.productService.findById(productID);
         List<Categories> list = this.categoriesService.getAll();
         model.addAttribute(CATEGORIES, list);
         model.addAttribute(PRODUCT, products);
-        return "admin/product/edit";
+        return PRODUCT_EDIT;
     }
 
     @PostMapping("/edit-product")
-    public String updateProduct(@ModelAttribute("product") Product product, @RequestParam("productImage") MultipartFile file) {
-        this.storageService.store(file);
-        String fileName = file.getOriginalFilename();
-        // Check if the file is empty
+    public String updateProduct(@ModelAttribute("product") Products product, 
+                              @RequestParam("productImage") MultipartFile file,
+                              Model model) {
+        Products existingProduct = this.productService.findById(product.getProductID());
+        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0) {
+            model.addAttribute(ERROR, "Thông tin sản phẩm không hợp lệ.");
+            List<Categories> categories = this.categoriesService.getAll();
+            model.addAttribute(CATEGORIES, categories);
+            model.addAttribute(PRODUCT, product);
+            return PRODUCT_ADD;
+        }
+        if (!existingProduct.getName().equals(product.getName()) && 
+            productService.existsByName(product.getName())) {
+            model.addAttribute(ERROR, "Sản phẩm đã tồn tại.");
+            List<Categories> categories = this.categoriesService.getAll();
+            model.addAttribute(CATEGORIES, categories);
+            model.addAttribute(PRODUCT, product);
+            return PRODUCT_EDIT;
+        }
+
+        String fileName;
         if (file.isEmpty()) {
-            // If the file is empty, keep the existing image URL
-            Product existingProduct = this.productService.findById(product.getProductID());
             fileName = existingProduct.getImageURL();
             product.setImageURL(fileName);
         } else {
-            // If the file is not empty, set the new image URL
+            this.storageService.store(file);
+            fileName = file.getOriginalFilename();
             product.setImageURL(fileName);
         }
 
-        if (this.productService.update(product)) {
-            return PRODUCT_VIEW;
+        if (Boolean.TRUE.equals(this.productService.update(product))) {
+            return PRODUCT_VIEW2;
         } else {
-            return "admin/product/edit";
+            return PRODUCT_EDIT;
         }
     }
 
     @GetMapping("/delete-product/{productID}")
     public String deleteProduct(@PathVariable("productID") String productID) {
-        Product product = this.productService.findById(productID);
+        Products product = this.productService.findById(productID);
         if (product!= null){
-            // Delete the image file from storage
             String imageURL = product.getImageURL();
             if (imageURL != null && !imageURL.isEmpty()) {
                 this.storageService.delete(imageURL);
             }
         }
-        if (this.productService.delete(productID)) {
-            return "redirect:/admin/product";
+        if (Boolean.TRUE.equals(this.productService.delete(productID))) {
+            return PRODUCT_VIEW2;
         } else {
             return PRODUCT_VIEW;
         }

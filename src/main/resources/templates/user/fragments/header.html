@@ -2,7 +2,6 @@
 <div class="no-js" th:fragment="header">
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>eTrade || Home-01</title>
     <meta name="robots" content="noindex, follow" />
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -10,6 +9,7 @@
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/images/favicon.png}">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" th:href="@{/assets/css/vendor/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/font-awesome.css}">
     <link rel="stylesheet" th:href="@{/assets/css/vendor/flaticon/flaticon.css}">
     <link rel="stylesheet" th:href="@{/assets/css/vendor/slick.css}">
     <link rel="stylesheet" th:href="@{/assets/css/vendor/slick-theme.css}">
@@ -21,14 +21,6 @@
     <!-- HEADER START -->
     <a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
     <header class="header axil-header header-style-1">
-        <div class="header-top-campaign">
-            <div class="container position-relative">
-                <div class="campaign-content">
-                    <p>Open Doors To A World Of Fashion <a href="#">Discover More</a></p>
-                </div>
-            </div>
-            <button class="remove-campaign"><i class="fal fa-times"></i></button>
-        </div>
         <div class="axil-header-top">
             <div class="container">
                 <div class="row align-items-center">
@@ -106,8 +98,8 @@
                                 </a>
                             </li>
                             <li class="shopping-cart">
-                                <a th:href="@{/cart.html}" class="cart-dropdown-btn">
-                                    <span class="cart-count">3</span>
+                                <a href="#" class="cart-dropdown-btn">
+                                    <span class="cart-count" th:text="${cartCount}">0</span>
                                     <i class="flaticon-shopping-cart"></i>
                                 </a>
                             </li>

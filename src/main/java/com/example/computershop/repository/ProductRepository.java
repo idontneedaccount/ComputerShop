@@ -1,8 +1,9 @@
 package com.example.computershop.repository;
 
-import com.example.computershop.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProductRepository extends JpaRepository<Product, String> {
+import com.example.computershop.entity.Products;
 
+public interface ProductRepository extends JpaRepository<Products, String> {
+    boolean existsByName(String name);
 }
