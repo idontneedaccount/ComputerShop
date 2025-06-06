@@ -64,7 +64,7 @@
                                 <td th:text="${products.quantity}"></td>
                                 <td th:if="${products.isActive}"><span class="btn btn-success">Hoạt động</span></td>
                                 <td th:if="${!products.isActive}"><span class="btn btn-danger">Ẩn</span></td>
-                                <td th:text="${products.createdAt}"></td>
+                                <td th:text="${#temporals.format(products.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
                                     <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product Image" class="img-fluid"
                                          style="max-width: 100px; max-height: 100px;">
