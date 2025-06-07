@@ -30,4 +30,7 @@ public class Products {
     @ManyToOne
     @JoinColumn(name = "categories_id",referencedColumnName = "categoryID")
     private Categories categories;
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    private ProductSpecifications specifications;
 }
