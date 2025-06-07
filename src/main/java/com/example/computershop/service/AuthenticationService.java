@@ -3,6 +3,7 @@ package com.example.computershop.service;
 import com.example.computershop.dto.request.UserCreationRequest;
 import com.example.computershop.dto.request.VerifyUserRequest;
 import com.example.computershop.entity.User;
+import com.example.computershop.entity.Role;
 import com.example.computershop.exception.AuthenticationException;
 import com.example.computershop.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -54,7 +55,7 @@ public class AuthenticationService {
                     .fullName(request.getFullName())
                     .email(request.getEmail())
                     .phoneNumber(request.getPhoneNumber())
-                    .role("User")
+                    .role(Role.USER)
                     .isActive(false)
                     .createdAt(LocalDateTime.now())
                     .build();

@@ -33,8 +33,9 @@ public class User implements UserDetails {
     String email;
     @Column(name = "phoneNumber", unique = true , columnDefinition = "nvarchar(255)")
     String phoneNumber;
+    @Enumerated(EnumType.STRING)
     @Column(name = "role" , columnDefinition = "nvarchar(255)")
-    String role;
+    Role role;
     @Column(name = "createdAt" , columnDefinition = "datetime")
     LocalDateTime createdAt;
     @Column(name = "isActive" , columnDefinition = "bit")
@@ -47,7 +48,7 @@ public class User implements UserDetails {
     String provider;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_" + role.toUpperCase());
+        return List.of(() -> "ROLE_" + role.name());
     }
     @Override
     public boolean isAccountNonExpired() {

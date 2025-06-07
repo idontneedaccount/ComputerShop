@@ -19,8 +19,9 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
-    static String register = "register";
-    static String login = "login";
+    static String register = "auth/register";
+    static String login = "auth/login";
+    static String resendVerification = "auth/resend-verification";
     static String errorAttr = "error";
     static String messageAttr = "message";
 
@@ -62,7 +63,6 @@ public class AuthenticationController {
         verifyRequest.setVerificationCode(code);
         
         try {
-            // Kiểm tra xem tài khoản đã được kích hoạt chưa
             if (authenticationService.isUserActive(email)) {
                 model.addAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
                 return "redirect:/auth/login";
@@ -80,23 +80,23 @@ public class AuthenticationController {
     @GetMapping("/resend-verification")
     public String showResendVerificationForm(Model model) {
         model.addAttribute("verifyRequest", new VerifyUserRequest());
-        return "resend-verification";
+        return resendVerification;
     }
 
     @PostMapping("/resend-verification")
     public String resendVerificationEmail(@Valid @ModelAttribute("verifyRequest") VerifyUserRequest request, 
-                                        BindingResult result, Model model) {
+                                        Model model) {
         try {
             if (authenticationService.isUserActive(request.getEmail())) {
                 model.addAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
-                return "resend-verification";
+                return resendVerification;
             }
             authenticationService.resendVerificationEmail(request.getEmail());
             model.addAttribute(messageAttr, "Đã gửi lại email xác thực. Vui lòng kiểm tra email của bạn.");
             return "redirect:/auth/login?resent=true";
         } catch (AuthenticationException e) {
             model.addAttribute(errorAttr, e.getMessage());
-            return "resend-verification";
+            return resendVerification;
         }
     }
 }

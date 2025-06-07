@@ -21,6 +21,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 return;
             }
         }
-        response.sendRedirect("/home");
+        response.sendRedirect("/user/shopping-page");
     }
 }
