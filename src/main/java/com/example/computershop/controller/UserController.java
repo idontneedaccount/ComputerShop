@@ -25,7 +25,6 @@ public class UserController {
         return "home";
     }
 
-
     @RequestMapping("/user")
     public String showUsers(Model model) {
         List<User> users = userService.getAll();
