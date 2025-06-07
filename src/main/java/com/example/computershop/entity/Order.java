@@ -10,39 +10,39 @@ import java.util.List;
 @Table(name = "orders")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "orderid")
-    private Long id;
+     String id;
 
     @Column(name = "full_name", nullable = false)
-    private String fullName;
+     String fullName;
 
     @Column(name = "email", nullable = false)
-    private String email;
+     String email;
 
     @Column(name = "phone", nullable = false)
-    private String phone;
+     String phone;
 
     @Column(name = "address", nullable = false)
-    private String address;
+     String address;
 
     @Column(name = "shipping_address", nullable = false)
-    private String shippingAddress;
+     String shippingAddress;
 
     @Column(name = "payment_method", nullable = false)
-    private String paymentMethod;
+     String paymentMethod;
 
     @Column(name = "note")
-    private String note;
+     String note;
 
     @Column(name = "total_amount", nullable = false)
-    private Long totalAmount;
+     Long totalAmount;
 
     @Column(name = "order_date", nullable = false)
-    private LocalDateTime orderDate;
+     LocalDateTime orderDate;
 
     @Column(name = "status", nullable = false)
-    private String status;
+     String status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
