@@ -86,10 +86,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 // GitHub có thể trả về email trong nhiều trường khác nhau
                 String email = (String) attributes.get("email");
                 if (email == null) {
-                    // Thử lấy từ node_id nếu email không có
-                    String nodeId = (String) attributes.get("node_id");
-                    if (nodeId != null) {
-                        email = nodeId + "@github.com";
+                    // Sử dụng username để tạo email nếu không có email
+                    String username = (String) attributes.get("login");
+                    if (username != null) {
+                        email = username + "@github.com";
                     }
                 }
                 return email;

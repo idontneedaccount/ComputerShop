@@ -58,6 +58,7 @@ public class AuthenticationService {
                     .role(Role.USER)
                     .isActive(false)
                     .createdAt(LocalDateTime.now())
+                    .address(request.getAddress())
                     .build();
             user.setVerificationCode(generateVerificationCode());
             user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
@@ -113,7 +114,7 @@ public class AuthenticationService {
             String subject = "Xác thực tài khoản Computer Shop";
             String verificationCode = user.getVerificationCode();
             String verificationLink = "http://localhost:8080/auth/verify?email=" + user.getEmail() + "&code=" + verificationCode;
-
+            String manualverificationLink = "http://localhost:8080/auth/manual-verify";
             String htmlMessage = "<html>"
                     + "<head><meta charset=\"UTF-8\"></head>"
                     + "<body style=\"font-family: Arial, sans-serif;\">"
@@ -122,7 +123,13 @@ public class AuthenticationService {
                     + "<p style=\"font-size: 16px;\">Vui lòng nhấn vào nút bên dưới để xác thực tài khoản của bạn:</p>"
                     + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
                     + "<a href=\"" + verificationLink + "\" style=\"display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;\">Xác thực tài khoản</a>"
-                    + "<p style=\"margin-top: 20px; font-size: 14px; color: #666;\">Nếu nút không hoạt động, bạn có thể sử dụng mã xác thực này: <span style=\"font-weight: bold;\">" + verificationCode + "</span></p>"
+                    + "<p style=\"margin-top: 20px; font-size: 14px; color: #666;\">Nếu nút không hoạt động, bạn có thể:</p>"
+                    + "<p style=\"font-size: 14px; color: #666;\">1. Truy cập link này: <a href=\"" + manualverificationLink + "\" style=\"color: #007bff;\">" + manualverificationLink + "</a></p>"
+                    + "<p style=\"font-size: 14px; color: #666;\">2. Nhập thông tin xác thực:</p>"
+                    + "<ul style=\"font-size: 14px; color: #666;\">"
+                    + "<li>Email: <span style=\"font-weight: bold;\">" + user.getEmail() + "</span></li>"
+                    + "<li>Mã xác thực: <span style=\"font-weight: bold;\">" + verificationCode + "</span></li>"
+                    + "</ul>"
                     + "</div>"
                     + "</div>"
                     + "</body>"

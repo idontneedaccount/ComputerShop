@@ -11,4 +11,8 @@ public class AdminController {
     }
     @RequestMapping("/user/shopping-page")
     public String showShoppingPage(){ return "user/shoppingpage";}
+    @RequestMapping("/home")
+    public String showProfilePage() {
+        return "home";
+    }
 }

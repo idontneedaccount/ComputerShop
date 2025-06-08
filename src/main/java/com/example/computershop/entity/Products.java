@@ -16,16 +16,23 @@ import java.time.LocalDateTime;
 public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+            @Column(unique = true, nullable = false,columnDefinition = "nvarchar(255)")
     String productID;
-
+    @Column(columnDefinition = "nvarchar(255)")
     String name;
+    @Column(columnDefinition = "nvarchar(255)")
     String description;
+    @Column(columnDefinition = "nvarchar(255)")
     String brand;
+    @Column(columnDefinition = "bigint")
     BigInteger price;
+    @Column(columnDefinition = "int")
     Integer quantity;
+    @Column(columnDefinition = "nvarchar(255)")
     String imageURL;
-
+    @Column(columnDefinition = "bit")
     Boolean isActive = true;
+    @Column(columnDefinition = "datetime")
     LocalDateTime createdAt = LocalDateTime.now();
     @ManyToOne
     @JoinColumn(name = "categories_id",referencedColumnName = "categoryID")

@@ -21,7 +21,8 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     static String register = "auth/register";
     static String login = "auth/login";
-    static String resendVerification = "auth/resend-verification";
+    static String resendVerification = "auth/resendVerification";
+    static String manualVerify = "auth/manual-verify";
     static String errorAttr = "error";
     static String messageAttr = "message";
 
@@ -37,7 +38,6 @@ public class AuthenticationController {
             model.addAttribute(errorAttr, "Vui lòng kiểm tra lại thông tin đăng ký.");
             return register;
         }
-
         try {
             authenticationService.createUser(request);
             model.addAttribute(messageAttr, "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
@@ -79,24 +79,62 @@ public class AuthenticationController {
 
     @GetMapping("/resend-verification")
     public String showResendVerificationForm(Model model) {
-        model.addAttribute("verifyRequest", new VerifyUserRequest());
+        if (!model.containsAttribute("verifyRequest")) {
+            model.addAttribute("verifyRequest", new VerifyUserRequest());
+        }
         return resendVerification;
     }
 
     @PostMapping("/resend-verification")
-    public String resendVerificationEmail(@Valid @ModelAttribute("verifyRequest") VerifyUserRequest request, 
-                                        Model model) {
+    public String resendVerificationEmail(
+            @Valid @ModelAttribute("verifyRequest") VerifyUserRequest request,
+            BindingResult result,
+            Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("error", "Vui lòng kiểm tra lại thông tin.");
+            return resendVerification;
+        }
+        try {
+            if (authenticationService.isUserActive(request.getEmail())) {
+                model.addAttribute("message", "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
+                return login;
+            }
+            authenticationService.resendVerificationEmail(request.getEmail());
+            model.addAttribute("message", "Đã gửi lại email xác thực. Vui lòng kiểm tra email của bạn.");
+            return login;
+        } catch (AuthenticationException e) {
+            model.addAttribute("error", e.getMessage());
+            return resendVerification;
+        }
+    }
+
+    @GetMapping("/manual-verify")
+    public String showManualVerifyForm(Model model) {
+        model.addAttribute("verifyRequest", new VerifyUserRequest());
+        return manualVerify;
+    }
+
+    @PostMapping("/manual-verify")
+    public String verifyUserManually(@Valid @ModelAttribute("verifyRequest") VerifyUserRequest request,
+                                   BindingResult result,
+                                   Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute(errorAttr, "Vui lòng kiểm tra lại thông tin xác thực.");
+            return manualVerify;
+        }
+
         try {
             if (authenticationService.isUserActive(request.getEmail())) {
                 model.addAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
-                return resendVerification;
+                return "redirect:/auth/login";
             }
-            authenticationService.resendVerificationEmail(request.getEmail());
-            model.addAttribute(messageAttr, "Đã gửi lại email xác thực. Vui lòng kiểm tra email của bạn.");
-            return "redirect:/auth/login?resent=true";
+
+            authenticationService.verifyUser(request);
+            model.addAttribute(messageAttr, "Tài khoản đã xác thực thành công. Bạn có thể đăng nhập.");
+            return "redirect:/auth/login?verified=true";
         } catch (AuthenticationException e) {
             model.addAttribute(errorAttr, e.getMessage());
-            return resendVerification;
+            return manualVerify;
         }
     }
 }
