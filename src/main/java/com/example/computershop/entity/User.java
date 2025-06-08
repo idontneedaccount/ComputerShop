@@ -49,6 +49,8 @@ public class User implements UserDetails, OAuth2User {
     String provider;
     @Column(name = "address", columnDefinition = "nvarchar(255)")
     String address;
+    @Column(name = "isAccountLocked", columnDefinition = "bit")
+    Boolean isAccountLocked;
     @Transient
     private Map<String, Object> attributes;
 

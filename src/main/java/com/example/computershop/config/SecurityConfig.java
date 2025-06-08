@@ -2,7 +2,6 @@ package com.example.computershop.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,13 +14,13 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final AuthenticationProvider authenticationProvider;
+    private final CustomAuthenticationProvider authenticationProvider;
     private final AuthenticationSuccessHandler successHandler;
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    public SecurityConfig(AuthenticationProvider authenticationProvider, 
+    public SecurityConfig(CustomAuthenticationProvider authenticationProvider, 
                          @Qualifier("customAuthenticationSuccessHandler") AuthenticationSuccessHandler successHandler, 
                          AuthenticationFailureHandler customAuthenticationFailureHandler,
                          @Qualifier("oauth2SuccessHandler") OAuth2SuccessHandler oauth2SuccessHandler,

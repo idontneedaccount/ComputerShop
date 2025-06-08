@@ -69,6 +69,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                             .createdAt(LocalDateTime.now())
                             .provider(provider)
                             .address("")
+                            .isAccountLocked(false)
                             .build();
                     userRepository.save(newUser);
                 }
