@@ -67,6 +67,12 @@
 				</div>
 				<div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error"></div>
 
+				<div class="input-group">
+					<span class="input-icon"><i class="fas fa-map-marker-alt"></i></span>
+					<label for="address" class="form-label" hidden="hidden">Địa chỉ</label>
+					<input type="text" id="address" th:field="*{address}" class="form-control" placeholder="Địa chỉ" required>
+				</div>
+				<div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="error"></div>
 
 				<div class="d-grid gap-2">
 					<button type="submit" class="btn btn-primary w-100">Đăng ký</button>

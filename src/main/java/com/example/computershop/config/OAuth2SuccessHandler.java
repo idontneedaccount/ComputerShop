@@ -1,8 +1,8 @@
 package com.example.computershop.config;
 
+import com.example.computershop.entity.Role;
 import com.example.computershop.entity.User;
 import com.example.computershop.repository.UserRepository;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,67 +30,90 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException, ServletException {
+            Authentication authentication) throws IOException {
         try {
-            if (authentication instanceof OAuth2AuthenticationToken) {
-                OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+            if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
+                String provider = oauthToken.getAuthorizedClientRegistrationId();
                 OAuth2User oauth2User = oauthToken.getPrincipal();
                 Map<String, Object> attributes = oauth2User.getAttributes();
-                String email = getEmailFromAttributes(attributes);
+                
+                String email = getEmailFromAttributes(provider, attributes);
                 if (email == null) {
                     getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=email_not_found");
                     return;
                 }
-                String name = getNameFromAttributes(attributes);
+
+                String name = getNameFromAttributes(provider, attributes);
                 Optional<User> existingUser = userRepository.findByEmail(email);
+
                 if (existingUser.isPresent()) {
                     User user = existingUser.get();
                     if (user.getProvider() == null || user.getProvider().equalsIgnoreCase("local")) {
-                        // Nếu tài khoản đã tạo bằng local, không cho đăng nhập Google
                         getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=provider_conflict");
                         return;
                     }
-                    // Nếu provider là google, cho đăng nhập bình thường
+                    // Allow login if provider matches
+                    if (!user.getProvider().equalsIgnoreCase(provider)) {
+                        getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=provider_mismatch");
+                        return;
+                    }
                 } else {
-                    // Tạo user mới với provider = google
+                    // Create new user with the provider
                     User newUser = User.builder()
                             .email(email)
                             .username(email)
                             .password("")
-                            .role("User")
+                            .role(Role.USER)
                             .isActive(true)
                             .fullName(name != null ? name : email)
                             .createdAt(LocalDateTime.now())
-                            .provider("google")
+                            .provider(provider)
+                            .address("")
                             .build();
                     userRepository.save(newUser);
                 }
             }
-            getRedirectStrategy().sendRedirect(request, response, "/home");
+            String targetUrl = "/home";
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } catch (Exception e) {
             getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=oauth2_error");
         }
     }
 
-    private String getEmailFromAttributes(Map<String, Object> attributes) {
+    private String getEmailFromAttributes(String provider, Map<String, Object> attributes) {
         try {
-            String email = (String) attributes.get("email");
-            if (email == null) {
-                email = (String) attributes.get("sub");
+            if ("github".equals(provider)) {
+                // GitHub có thể trả về email trong nhiều trường khác nhau
+                String email = (String) attributes.get("email");
+                if (email == null) {
+                    // Thử lấy từ node_id nếu email không có
+                    String nodeId = (String) attributes.get("node_id");
+                    if (nodeId != null) {
+                        email = nodeId + "@github.com";
+                    }
+                }
+                return email;
+            } else if ("facebook".equals(provider)) {
+                return (String) attributes.get("email");
             }
-            return email;
+            return null;
         } catch (Exception e) {
             return null;
         }
     }
 
-    private String getNameFromAttributes(Map<String, Object> attributes) {
+    private String getNameFromAttributes(String provider, Map<String, Object> attributes) {
         try {
-            String name = (String) attributes.get("name");
-            if (name == null) {
-                name = (String) attributes.get("given_name");
+            if ("github".equals(provider)) {
+                String name = (String) attributes.get("name");
+                if (name == null) {
+                    name = (String) attributes.get("login");
+                }
+                return name;
+            } else if ("facebook".equals(provider)) {
+                return (String) attributes.get("name");
             }
-            return name;
+            return null;
         } catch (Exception e) {
             return null;
         }
