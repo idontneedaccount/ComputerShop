@@ -121,7 +121,7 @@ public class ProductController {
             product.setImageURL(fileName);
         }
 
-        if (Boolean.TRUE.equals(this.productService.update(product))) {
+        if (Boolean.TRUE.equals(this.productService.create(product))) {
             return PRODUCT_VIEW2;
         } else {
             return PRODUCT_EDIT;
