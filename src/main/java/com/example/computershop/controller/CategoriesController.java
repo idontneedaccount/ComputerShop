@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoriesController {
     private CategoriesService service;
+    private static final String ERROR = "error";
     private static final String CATEGORIES = "categories";
     private static final String CATEGORIES_VIEW = "admin/categories/categories";
     private static final String CATEGORIES2 = "redirect:/admin/categories";
@@ -36,9 +37,14 @@ public class CategoriesController {
 
     @PostMapping("/add-categories")
     public String addCategories(@ModelAttribute("categories") Categories categories, Model model) {
+        if (!categories.getName().matches("^[\\p{L}\\s]+$")) {
+            model.addAttribute(ERROR, "Tên danh mục không hợp lệ.");
+            model.addAttribute(CATEGORIES, categories);
+            return CATEGORIES_EDIT;
+        }
         if (service.existsByName(categories.getName())) {
-            model.addAttribute("error", "Danh mục đã tồn tại.");
-            return CATEGORIES_ADD;
+            model.addAttribute(ERROR, "Danh mục đã tồn tại.");
+            return CATEGORIES_EDIT;
         }
         if (Boolean.TRUE.equals(this.service.create(categories))) {
             return CATEGORIES2;
@@ -57,9 +63,14 @@ public class CategoriesController {
     @PostMapping("/edit-categories")
     public String updateCategories(@ModelAttribute("categories") Categories categories, Model model) {
         Categories existingCategory = this.service.findById(categories.getCategoryID());
+        if (!categories.getName().matches("^[\\p{L}\\s]+$")) {
+            model.addAttribute(ERROR, "Tên danh mục không hợp lệ.");
+            model.addAttribute(CATEGORIES, categories);
+            return CATEGORIES_EDIT;
+        }
         if (!existingCategory.getName().equals(categories.getName()) && 
             service.existsByName(categories.getName())) {
-            model.addAttribute("error", "Danh mục đã tồn tại.");
+            model.addAttribute(ERROR, "Danh mục đã tồn tại.");
             model.addAttribute(CATEGORIES, categories);
             return CATEGORIES_EDIT;
         }
