@@ -19,6 +19,7 @@ public class SecurityConfig {
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
     private final ClientRegistrationRepository clientRegistrationRepository;
+    private static final String LOGIN ="/auth/login";
 
     public SecurityConfig(CustomAuthenticationProvider authenticationProvider, 
                          @Qualifier("customAuthenticationSuccessHandler") AuthenticationSuccessHandler successHandler, 
@@ -46,18 +47,18 @@ public class SecurityConfig {
                                 .requestMatchers("/user/**").hasRole("USER")
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
-                        .loginPage("/auth/login")
+                        .loginPage(LOGIN)
                         .loginProcessingUrl("/auth/login-process")
                         .successHandler(successHandler)
                         .failureHandler(customAuthenticationFailureHandler)
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/auth/login")
+                        .logoutSuccessUrl(LOGIN)
                         .permitAll())
                 .authenticationProvider(authenticationProvider)
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/auth/login")
+                        .loginPage(LOGIN)
                         .successHandler(oauth2SuccessHandler)
                         .failureHandler(oauth2FailureHandler)
                         .clientRegistrationRepository(clientRegistrationRepository)

@@ -145,4 +145,71 @@ public class AuthenticationService {
     private String generateVerificationCode() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
+
+    public void sendPasswordResetEmail(String username) {
+        try {
+            Optional<User> userOpt = userRepository.findByUsernameOrEmail(username, username);
+            if (userOpt.isEmpty()) {
+                throw new AuthenticationException("Không tìm thấy tài khoản với thông tin này.");
+            }
+
+            User user = userOpt.get();
+            String resetToken = generateVerificationCode();
+            user.setVerificationCode(resetToken);
+            user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
+            userRepository.save(user);
+
+            String subject = "Đặt lại mật khẩu - Computer Shop";
+            String resetLink = "http://localhost:8080/auth/reset-password?email=" + user.getEmail() + "&token=" + resetToken;
+            String htmlMessage = "<html>"
+                    + "<head><meta charset=\"UTF-8\"></head>"
+                    + "<body style=\"font-family: Arial, sans-serif;\">"
+                    + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
+                    + "<h2 style=\"color: #333;\">Yêu cầu đặt lại mật khẩu</h2>"
+                    + "<p style=\"font-size: 16px;\">Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng nhấn vào nút bên dưới để tiếp tục:</p>"
+                    + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
+                    + "<a href=\"" + resetLink + "\" style=\"display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;\">Đặt lại mật khẩu</a>"
+                    + "<p style=\"margin-top: 20px; font-size: 14px; color: #666;\">Link này sẽ hết hạn sau 15 phút.</p>"
+                    + "<p style=\"font-size: 14px; color: #666;\">Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>"
+                    + "</div>"
+                    + "</div>"
+                    + "</body>"
+                    + "</html>";
+
+            emailService.sendEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            throw new AuthenticationException("Lỗi khi gửi email đặt lại mật khẩu: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean validatePasswordResetToken(String email, String token) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return false;
+        }
+
+        User user = userOpt.get();
+        return user.getVerificationCode() != null &&
+               user.getVerificationCode().equals(token) &&
+               user.getVerificationExpiration() != null &&
+               user.getVerificationExpiration().isAfter(LocalDateTime.now());
+    }
+
+    public void resetPassword(String email, String token, String newPassword) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            throw new AuthenticationException("Không tìm thấy tài khoản.");
+        }
+
+        User user = userOpt.get();
+        if (!validatePasswordResetToken(email, token)) {
+            throw new AuthenticationException("Token không hợp lệ hoặc đã hết hạn.");
+        }
+
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPassword(encoder.encode(newPassword));
+        user.setVerificationCode(null);
+        user.setVerificationExpiration(null);
+        userRepository.save(user);
+    }
 }

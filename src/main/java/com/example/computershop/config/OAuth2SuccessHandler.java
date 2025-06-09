@@ -83,7 +83,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private String getEmailFromAttributes(String provider, Map<String, Object> attributes) {
         try {
-            if ("github".equals(provider)) {
+            if ("google".equals(provider)) {
+                return (String) attributes.get("email");
+            } else if ("github".equals(provider)) {
                 // GitHub có thể trả về email trong nhiều trường khác nhau
                 String email = (String) attributes.get("email");
                 if (email == null) {
@@ -105,7 +107,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private String getNameFromAttributes(String provider, Map<String, Object> attributes) {
         try {
-            if ("github".equals(provider)) {
+            if ("google".equals(provider)) {
+                return (String) attributes.get("name");
+            } else if ("github".equals(provider)) {
                 String name = (String) attributes.get("name");
                 if (name == null) {
                     name = (String) attributes.get("login");
