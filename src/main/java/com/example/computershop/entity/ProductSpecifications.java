@@ -25,7 +25,7 @@ public class ProductSpecifications {
     @Column(name = "screen")
      String screen;
     @Column(name = "weight")
-     Integer weight;
+     Float weight;
     @Column(name = "connect")
      String connect;
     @Column(name = "battery")

@@ -40,7 +40,6 @@ public class CategoriesController {
             model.addAttribute("error", "Danh mục đã tồn tại.");
             return CATEGORIES_ADD;
         }
-
         if (Boolean.TRUE.equals(this.service.create(categories))) {
             return CATEGORIES2;
         } else {
@@ -65,7 +64,7 @@ public class CategoriesController {
             return CATEGORIES_EDIT;
         }
 
-        if (Boolean.TRUE.equals(this.service.update(categories))) {
+        if (Boolean.TRUE.equals(this.service.create(categories))) {
             return CATEGORIES2;
         } else {
             return CATEGORIES_EDIT;
