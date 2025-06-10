@@ -40,7 +40,6 @@
             axilInit.magnificPopupActivation();
             axilInit.colorVariantActive();
             axilInit.headerCampaignRemove();
-            // axilInit.offerPopupActivation();
             axilInit.axilMasonary();
             axilInit.counterUpActivation();
             axilInit.scrollSmoth();

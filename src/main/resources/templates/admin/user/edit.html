@@ -42,9 +42,16 @@
                                     <h6 class="m-0 font-weight-bold text-primary">Thông tin người dùng</h6>
                                 </div>
                                 <div class="card-body">
-                                    <form th:action="@{/admin/edit-user}" th:object="${user}" method="post">
-                                        <input type="hidden" th:field="*{id}" />
-                                        
+                                    <!-- Hiển thị thông báo lỗi -->
+                                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        <span th:text="${error}"></span>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+
+                                    <form th:object="${userUpdateByAdmin}" th:action="@{/admin/edit-user}" method="post">
+                                        <input type="hidden" th:field="*{userId}" />
+                                        <input type="hidden" th:field="*{isAccountLocked}" />
                                         <!-- Basic Information -->
                                         <div class="row mb-4">
                                             <div class="col-md-6">
@@ -151,22 +158,22 @@
                                                 <div class="col-md-6">
                                                     <div class="custom-control custom-radio">
                                                         <input type="radio" class="custom-control-input" 
-                                                               th:field="*{isActive}" th:value="true" 
+                                                               th:field="*{active}" th:value="true"
                                                                id="statusActive">
                                                         <label class="custom-control-label" for="statusActive">
                                                             <i class="fas fa-check-circle text-success mr-1"></i>
-                                                            Đang hoạt động
+                                                            Đã kích hoạt
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="custom-control custom-radio">
                                                         <input type="radio" class="custom-control-input" 
-                                                               th:field="*{isActive}" th:value="false" 
+                                                               th:field="*{active}" th:value="false"
                                                                id="statusInactive">
                                                         <label class="custom-control-label" for="statusInactive">
                                                             <i class="fas fa-ban text-danger mr-1"></i>
-                                                            Đã khóa
+                                                            Chưa kích hoạt
                                                         </label>
                                                     </div>
                                                 </div>
@@ -208,8 +215,5 @@
 
     <!-- Logout Modal-->
     <div th:replace="~{admin/fragments/logout :: logout}"></div>
-
-    <!-- Bootstrap core JavaScript-->
-    <div th:replace="~{admin/fragments/scripts :: scripts}"></div>
 </body>
 </html>
