@@ -15,4 +15,6 @@ public class AdminController {
     public String showProfilePage() {
         return "home";
     }
+    @RequestMapping("/user/user-profile")
+    public String showUserProfilePage() { return "user/userprofile";}
 }
