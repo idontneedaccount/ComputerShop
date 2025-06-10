@@ -247,7 +247,7 @@ public class CartController {
     }
 
     @GetMapping("/order/{orderId}")
-    public String viewOrder(@PathVariable Long orderId, Model model) {
+    public String viewOrder(@PathVariable String orderId, Model model) {
         try {
             Order order = orderService.getOrderById(orderId);
             if (order == null) {
