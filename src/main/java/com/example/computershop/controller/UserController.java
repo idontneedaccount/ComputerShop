@@ -1,14 +1,18 @@
 package com.example.computershop.controller;
 
+import com.example.computershop.dto.request.UserCreateByAdmin;
+import com.example.computershop.dto.request.UserUpdateByAdmin;
 import com.example.computershop.entity.User;
 import com.example.computershop.repository.UserRepository;
 import com.example.computershop.service.UserService;
+
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
 
 @Controller
 @RequestMapping("/admin")
@@ -16,9 +20,15 @@ import java.util.List;
 public class UserController {
     private UserService userService;
     private UserRepository userRepository;
-    private static final String USER2="redirect:/admin/user";
-    private static final String USER_VIEW= "admin/user/user";
+    private static final String USER2 = "redirect:/admin/user";
+    private static final String USER_VIEW = "admin/user/user";
+    private static final String ADD_USER = "admin/user/add";
     private static final String USER = "user";
+    private static final String ERROR = "error";
+    private static final String MESSAGE = "message";
+    private static final String EDIT_USER = "admin/user/edit";
+    private static final String USER_CREATE_BY_ADMIN = "userCreateByAdmin";
+    private static final String USER_UPDATE_BY_ADMIN = "userUpdateByAdmin";
 
     @GetMapping("/home")
     public String home() {
@@ -31,41 +41,83 @@ public class UserController {
         model.addAttribute(USER, users);
         return USER_VIEW;
     }
+
     @RequestMapping("/add-user")
     public String addUser(Model model) {
-        User user = new User();
-        model.addAttribute(USER, user);
-        return "admin/user/add";
+        model.addAttribute(USER_CREATE_BY_ADMIN, new UserCreateByAdmin());
+        return ADD_USER;
     }
 
     @PostMapping("/add-user")
-    public String addUser(@ModelAttribute(USER) User user) {
-        if (Boolean.TRUE.equals(this.userService.create(user))) {
+    public String addUser(@Valid @ModelAttribute("userCreateByAdmin") UserCreateByAdmin user, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute(ERROR, "Vui lòng kiểm tra lại thông tin đăng ký.");
+            model.addAttribute(USER_CREATE_BY_ADMIN, user);
+            return ADD_USER;
+        }
+        try {
+            userService.createUserByAdmin(user);
+            model.addAttribute(MESSAGE, "Thêm người dùng thành công!");
             return USER2;
-        } else {
-            return "admin/user/add";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute(ERROR, e.getMessage());
+            model.addAttribute(USER_CREATE_BY_ADMIN, user);
+            return ADD_USER;
         }
     }
+
     @GetMapping("/edit-user/{userId}")
-    public String editUser(Model model, @PathVariable("userId") String userId) {
-        User user = this.userRepository.findById(userId).orElse(null);
-        model.addAttribute(USER, user);
-        return "admin/user/edit";
+    public String editUser(@PathVariable("userId") String userId, Model model) {
+        try {
+            User user = this.userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+            UserUpdateByAdmin dto = UserUpdateByAdmin.builder()
+                    .userId(user.getUserId())
+                    .username(user.getUsername())
+                    .fullName(user.getFullName())
+                    .email(user.getEmail())
+                    .phoneNumber(user.getPhoneNumber())
+                    .address(user.getAddress())
+                    .role(user.getRole())
+                    .active(user.isActive())
+                    .isAccountLocked(user.getIsAccountLocked())
+                    .build();
+            model.addAttribute(USER_UPDATE_BY_ADMIN, dto);
+            return EDIT_USER;
+        } catch (IllegalArgumentException e) {
+            model.addAttribute(ERROR, e.getMessage());
+            return USER2;
+        }
     }
+
     @PostMapping("/edit-user")
-    public String updateUser(@ModelAttribute(USER) User user) {
-        if (Boolean.TRUE.equals(this.userService.update(user))) {
+    public String updateUser(@Valid @ModelAttribute("userUpdateByAdmin") UserUpdateByAdmin user,BindingResult result,Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute(ERROR, "Vui lòng kiểm tra lại thông tin." + result.getFieldError().getDefaultMessage());
+            model.addAttribute(USER_UPDATE_BY_ADMIN, user);
+            return EDIT_USER;
+        }
+        try {
+            userService.updateByAdmin(user);
+            model.addAttribute(MESSAGE, "Cập nhật người dùng thành công!");
             return USER2;
-        } else  {
-            return "admin/user/edit";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute(ERROR, e.getMessage());
+            model.addAttribute(USER_UPDATE_BY_ADMIN, user);
+            return EDIT_USER;
         }
     }
+
     @GetMapping("/delete-user/{userId}")
-    public String deleteUser(@PathVariable("userId") String userId) {
-        if (Boolean.TRUE.equals(this.userService.delete(userId))) {
-            return USER2;
-        } else {
-            return USER_VIEW;
+    public String deleteUser(@PathVariable("userId") String userId, Model model) {
+        try {
+            if (Boolean.TRUE.equals(this.userService.delete(userId))) {
+                model.addAttribute(MESSAGE, "Xóa người dùng thành công!");
+                return USER2;
+            }
+        } catch (IllegalArgumentException e) {
+            model.addAttribute(ERROR, e.getMessage());
         }
+        return USER_VIEW;
     }
 }
