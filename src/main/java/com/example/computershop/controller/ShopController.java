@@ -34,26 +34,21 @@ public class ShopController {
             @RequestParam(required = false) String screen,
             Model model) {
         
-        // Lấy danh sách categories
         List<Categories> categories = categoriesService.getAll();
         model.addAttribute("categories", categories);
         
-        // Lấy danh sách brands
         List<String> brands = productService.getDistinctBrands();
         model.addAttribute("brands", brands);
-        
-        // Lấy danh sách sản phẩm (có thể filter theo parameters)
+
         List<Products> products = productService.getAll();
         model.addAttribute("products", products);
         
-        // Lấy danh sách thông số kỹ thuật
         model.addAttribute("cpus", specificationService.getDistinctCpus());
         model.addAttribute("rams", specificationService.getDistinctRams());
         model.addAttribute("ssds", specificationService.getDistinctSsds());
         model.addAttribute("vgas", specificationService.getDistinctVgas());
         model.addAttribute("screens", specificationService.getDistinctScreens());
         
-        // Truyền filter parameters để maintain state
         model.addAttribute("selectedCategory", category);
         model.addAttribute("selectedBrand", brand);
         model.addAttribute("selectedCpu", cpu);
