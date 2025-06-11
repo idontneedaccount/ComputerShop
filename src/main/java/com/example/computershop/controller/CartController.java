@@ -1,15 +1,19 @@
 package com.example.computershop.controller;
 
-import com.example.computershop.entity.CartItem;
+import com.example.computershop.entity.Cart;
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.Products;
 import com.example.computershop.entity.OrderDetail;
+import com.example.computershop.entity.User;
 import com.example.computershop.repository.ProductRepository;
 import com.example.computershop.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.computershop.repository.CartRepository;
+import com.example.computershop.repository.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
+import java.security.Principal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,26 +23,36 @@ import java.time.LocalDateTime;
 @RequestMapping("/cart")
 @SessionAttributes("cart")
 public class CartController {
-    @Autowired
-    ProductRepository repo;
-    
-    @Autowired
-    private OrderService orderService;
+    private static final String REDIRECT_ERROR = "redirect:/error";
+    private static final String REDIRECT_CART_VIEW = "redirect:/cart/view";
+    private static final String ORDER = "order";
+    private static final String ERROR = "error";
+    private final ProductRepository repo;
+    private final OrderService orderService;
+    private final CartRepository cartRepository;
+    private final UserRepository userRepository;
+
+    public CartController(ProductRepository repo, OrderService orderService, CartRepository cartRepository, UserRepository userRepository) {
+        this.repo = repo;
+        this.orderService = orderService;
+        this.cartRepository = cartRepository;
+        this.userRepository = userRepository;
+    }
 
     @ModelAttribute("cart")
-    public List<CartItem> cart() {
+    public List<Cart> cart() {
         return new ArrayList<>();
     }
 
     @ModelAttribute("cartCount")
-    public int cartCount(@ModelAttribute("cart") List<CartItem> cart) {
+    public int cartCount(@ModelAttribute("cart") List<Cart> cart) {
         if (cart == null) return 0;
-        return cart.stream().mapToInt(CartItem::getQuantity).sum();
+        return cart.stream().mapToInt(Cart::getQuantity).sum();
     }
 
     // Helper method to load product for CartItem
-    private Products loadProduct(CartItem cartItem) {
-        return repo.findById(cartItem.getProductId()).orElse(null);
+    private Products loadProduct(Cart cartItem) {
+        return repo.findById(cartItem.getProduct().getProductID()).orElse(null);
     }
 
     // Display class for template
@@ -57,39 +71,50 @@ public class CartController {
 
     @RequestMapping(value = "/add/{id}", method = {RequestMethod.GET, RequestMethod.POST})
     public String add(@PathVariable String id, @RequestParam(defaultValue = "1") int sl,
-                      @ModelAttribute("cart") List<CartItem> cart) {
+                      @ModelAttribute("cart") List<Cart> cart,
+                      Principal principal) {
         try {
             Products sp = repo.findById(id).orElse(null);
             if(sp == null){
-                return "redirect:/error";
+                return REDIRECT_ERROR;
             }
+            // Lấy user hiện tại
+            if (principal == null) return REDIRECT_ERROR;
+            String username = principal.getName();
             
-            // Check if product already exists in cart
-            for(CartItem c : cart){
-                if(c.getProductId().equals(id)){
+            // Lấy user hiện tại từ username
+            User user = userRepository.findByUsername(username).orElse(null);
+            if (user == null) return REDIRECT_ERROR;
+            // Kiểm tra sản phẩm đã có trong giỏ của user chưa
+            for(Cart c : cart){
+                if(c.getProduct().getProductID().equals(id) && c.getUser().getUserId().equals(user.getUserId())){
                     c.setQuantity(c.getQuantity()+sl);
-                    return "redirect:/cart/view";
+                    cartRepository.save(c);
+                    return REDIRECT_CART_VIEW;
                 }
             }
-            
-            // Add new item to cart
-            CartItem newItem = new CartItem(sp, sl);
+            // Thêm mới vào giỏ hàng
+            Cart newItem = new Cart();
+            newItem.setProduct(sp);
+            newItem.setQuantity(sl);
+            newItem.setUser(user);
             cart.add(newItem);
-            return "redirect:/cart/view";
+            cartRepository.save(newItem);
+            return REDIRECT_CART_VIEW;
             
         } catch (Exception e) {
-            return "redirect:/error";
+            return REDIRECT_ERROR;
         }
     }
 
     @GetMapping("/view")
-    public String view(Model model, @ModelAttribute("cart") List<CartItem> cart) {
+    public String view(Model model, @ModelAttribute("cart") List<Cart> cart) {
         try {
             // Create list of cart items with loaded products for display
             List<CartItemDisplay> displayItems = new ArrayList<>();
             java.math.BigDecimal total = java.math.BigDecimal.ZERO;
             
-            for (CartItem item : cart) {
+            for (Cart item : cart) {
                 Products product = loadProduct(item);
                 if (product != null) {
                     displayItems.add(new CartItemDisplay(product, item.getQuantity()));
@@ -105,57 +130,57 @@ public class CartController {
 
             return "Cart/cart";
         } catch (Exception e) {
-            return "redirect:/error";
+            return REDIRECT_ERROR;
         }
     }
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable String id, @RequestParam int sl,
-                         @ModelAttribute("cart") List<CartItem> cart) {
+                         @ModelAttribute("cart") List<Cart> cart) {
         try {
             cart.forEach(c->{
-                if(c.getProductId().equals(id)){
+                if(c.getProduct().getProductID().equals(id)){
                     c.setQuantity(sl);
                 }
             });
-            return "redirect:/cart/view";
+            return REDIRECT_CART_VIEW;
         } catch (Exception e) {
-            return "redirect:/error";
+            return REDIRECT_ERROR;
         }
     }
 
     @GetMapping("/remove/{id}")
-    public String remove(@PathVariable String id, @ModelAttribute("cart") List<CartItem> cart) {
+    public String remove(@PathVariable String id, @ModelAttribute("cart") List<Cart> cart) {
         try {
-            cart.removeIf(c->c.getProductId().equals(id));
-            return "redirect:/cart/view";
+            cart.removeIf(c->c.getProduct().getProductID().equals(id));
+            return REDIRECT_CART_VIEW;
         } catch (Exception e) {
-            return "redirect:/error";
+            return REDIRECT_ERROR;
         }
     }
 
     @GetMapping("/clear")
-    public String clear(@ModelAttribute("cart") List<CartItem> cart) {
+    public String clear(@ModelAttribute("cart") List<Cart> cart) {
         try {
             cart.clear();
-            return "redirect:/cart/view";
+            return REDIRECT_CART_VIEW;
         } catch (Exception e) {
-            return "redirect:/error";
+            return REDIRECT_ERROR;
         }
     }
 
     @GetMapping("/checkout")
-    public String checkout(Model model, @ModelAttribute("cart") List<CartItem> cart) {
+    public String checkout(Model model, @ModelAttribute("cart") List<Cart> cart) {
         try {
             if (cart == null || cart.isEmpty()) {
-                return "redirect:/cart/view";
+                return REDIRECT_CART_VIEW;
             }
             
             // Create display items for checkout
             List<CartItemDisplay> displayItems = new ArrayList<>();
             java.math.BigDecimal total = java.math.BigDecimal.ZERO;
             
-            for (CartItem item : cart) {
+            for (Cart item : cart) {
                 Products product = loadProduct(item);
                 if (product != null) {
                     displayItems.add(new CartItemDisplay(product, item.getQuantity()));
@@ -166,13 +191,13 @@ public class CartController {
             }
             
             model.addAttribute("cartItems", displayItems);
-            model.addAttribute("order", new Order());
+            model.addAttribute(ORDER, new Order());
             model.addAttribute("total", total);
             
             return "Cart/checkout";
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "error";
+            model.addAttribute(ERROR, e.getMessage());
+            return ERROR;
         }
     }
 
@@ -185,11 +210,12 @@ public class CartController {
                                   @RequestParam("region") String region,
                                   @RequestParam(value = "note", required = false) String note,
                                   @RequestParam("paymentMethod") String paymentMethod,
-                                  @ModelAttribute("cart") List<CartItem> cart,
-                                  Model model) {
+                                  @ModelAttribute("cart") List<Cart> cart,
+                                  Model model,
+                                  SessionStatus sessionStatus) {
         try {
             if (cart == null || cart.isEmpty()) {
-                return "redirect:/cart/view";
+                return REDIRECT_CART_VIEW;
             }
             
             // Create order object
@@ -206,7 +232,7 @@ public class CartController {
             List<OrderDetail> orderDetails = new ArrayList<>();
             long total = 0;
             
-            for (CartItem cartItem : cart) {
+            for (Cart cartItem : cart) {
                 Products product = loadProduct(cartItem);
                 if (product != null) {
                     OrderDetail detail = new OrderDetail();
@@ -235,13 +261,14 @@ public class CartController {
             
             // Clear cart after successful order
             cart.clear();
+            sessionStatus.setComplete();
             
             // Redirect to success page with order info
-            model.addAttribute("order", savedOrder);
+            model.addAttribute(ORDER, savedOrder);
             return "Cart/orderDetails";
             
         } catch (Exception e) {
-            model.addAttribute("error", "Error processing order: " + e.getMessage());
+            model.addAttribute(ERROR, "Error processing order: " + e.getMessage());
             return "Cart/checkout";
         }
     }
@@ -251,12 +278,12 @@ public class CartController {
         try {
             Order order = orderService.getOrderById(orderId);
             if (order == null) {
-                return "redirect:/cart/view";
+                return REDIRECT_CART_VIEW;
             }
-            model.addAttribute("order", order);
+            model.addAttribute(ORDER, order);
             return "Cart/orderDetails";
         } catch (Exception e) {
-            return "redirect:/error";
+            return REDIRECT_ERROR;
         }
     }
 }

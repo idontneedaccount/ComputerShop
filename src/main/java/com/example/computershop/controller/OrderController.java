@@ -3,10 +3,9 @@ package com.example.computershop.controller;
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.entity.Products;
-import com.example.computershop.entity.CartItem;
+import com.example.computershop.entity.Cart;
 import com.example.computershop.service.OrderService;
 import com.example.computershop.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,10 +20,13 @@ import java.util.List;
 // @RequestMapping("/checkout")
 // @SessionAttributes("cart")
 public class OrderController {
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private ProductRepository productRepository;
+    private final OrderService orderService;
+    private final ProductRepository productRepository;
+
+    public OrderController(OrderService orderService, ProductRepository productRepository) {
+        this.orderService = orderService;
+        this.productRepository = productRepository;
+    }
 
     @GetMapping
     public String showCheckoutForm(Model model) {
@@ -60,8 +62,8 @@ public class OrderController {
     }
 
     @ModelAttribute("cartCount")
-    public int cartCount(@ModelAttribute("cart") List<CartItem> cart) {
+    public int cartCount(@ModelAttribute("cart") List<Cart> cart) {
         if (cart == null) return 0;
-        return cart.stream().mapToInt(CartItem::getQuantity).sum();
+        return cart.stream().mapToInt(Cart::getQuantity).sum();
     }
 } 

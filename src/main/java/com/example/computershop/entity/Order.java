@@ -11,7 +11,7 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "orderid")
+    @Column(name = "order_id")
      String id;
 
     @Column(name = "full_name", nullable = false)
@@ -46,4 +46,12 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "productId", nullable = true)
+    private Products product;
 } 
