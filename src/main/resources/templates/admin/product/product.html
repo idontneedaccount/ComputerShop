@@ -52,24 +52,24 @@
                                 <td th:text="${products.description}"></td>
                                 <td th:text="${products.price}"></td>
                                 <td th:text="${products.quantity}"></td>
-                                <td th:if="${products.isActive}"><span class="btn btn-success">Hoạt động</span></td>
-                                <td th:if="${!products.isActive}"><span class="btn btn-danger">Ẩn</span></td>
+                                <td th:if="${products.isActive}"><span class="badge bg-success">Hoạt động</span></td>
+                                <td th:if="${!products.isActive}"><span class="badge bg-danger">Ẩn</span></td>
                                 <td th:text="${#temporals.format(products.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
                                     <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product Image" class="img-fluid"
                                          style="max-width: 100px; max-height: 100px;">
                                 </td>
                                 <td>
-                                    <a th:href="@{/admin/edit-product/{id}(id=${products.productID})}" class="btn btn-primary">
+                                    <a th:href="@{/admin/edit-product/{id}(id=${products.productID})}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a th:href="@{/admin/delete-product/{id}(id=${products.productID})}" class="btn btn-danger"
+                                    <a th:href="@{/admin/delete-product/{id}(id=${products.productID})}" class="btn btn-sm btn-danger"
                                        onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                 </td>
                                 <td>
-                                    <a th:href="@{/admin/product/{id}/specification(id=${products.productID})}" class="btn btn-info">
+                                    <a th:href="@{/admin/product/{id}/specification(id=${products.productID})}" class="btn btn-sm btn-info">
                                         <i class="fas fa-cogs"></i> Cấu hình
                                     </a>
                                 </td>

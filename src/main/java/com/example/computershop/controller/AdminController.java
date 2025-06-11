@@ -9,8 +9,6 @@ public class AdminController {
     public String showAdminPage(){
         return "admin/dashboard";
     }
-    @RequestMapping("/user/shopping-page")
-    public String showShoppingPage(){ return "user/shoppingpage";}
     @RequestMapping("/home")
     public String showProfilePage() {
         return "home";

@@ -45,4 +45,8 @@ public class ProductService {
     public boolean existsByName(String name) {
         return repo.existsByName(name);
     }
+
+    public List<String> getDistinctBrands() {
+        return repo.findDistinctBrands();
+    }
 }
