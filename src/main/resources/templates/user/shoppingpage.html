@@ -1,10 +1,21 @@
 <!doctype html>
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shopping Page</title>
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- CSS -->
+<link rel="stylesheet" th:href="@{/css/vendor/bootstrap.min.css}">
+<link rel="stylesheet" th:href="@{/css/vendor/font-awesome.min.css}">
+<link rel="stylesheet" th:href="@{/css/vendor/slick.min.css}">
+<link rel="stylesheet" th:href="@{/css/vendor/slick-theme.min.css}">
+<link rel="stylesheet" th:href="@{/css/vendor/base.min.css}">
+<link rel="stylesheet" th:href="@{/css/plugins/plugins.min.css}">
+<link rel="stylesheet" th:href="@{/css/style.min.css}">
+<link rel="stylesheet" th:href="@{/css/sidebar.css}">
+</head>
 <body class="sticky-header">
 
 <a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
@@ -308,6 +319,8 @@
 
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
 
-
+<script th:src="@{/assets/js/product-filter.js}"></script>
+<script th:src="@{/assets/js/sidebar-toggle.js}"></script>
+<link rel="stylesheet" th:href="@{/assets/css/sidebar.css}">
 </body>
 </html>

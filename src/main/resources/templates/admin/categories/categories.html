@@ -54,10 +54,10 @@
                 <td th:text="${category.name}"></td>
                 <td th:text="${category.description}"></td>
                 <td>
-                  <a th:href="@{/admin/edit-categories/{id}(id=${category.categoryID})}" class="btn btn-primary">
+                  <a th:href="@{/admin/edit-categories/{id}(id=${category.categoryID})}" class="btn btn-sm btn-primary">
                     <i class="fas fa-edit"></i>
                   </a>
-                  <a th:href="@{/admin/delete-categories/{id}(id=${category.categoryID})}" class="btn btn-danger"
+                  <a th:href="@{/admin/delete-categories/{id}(id=${category.categoryID})}" class="btn btn-sm btn-danger"
                      onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
                     <i class="fas fa-trash-alt"></i>
                   </a>
