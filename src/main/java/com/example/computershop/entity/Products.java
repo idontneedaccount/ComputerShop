@@ -3,6 +3,7 @@ package com.example.computershop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Entity
+@JsonIgnoreProperties({"specifications"})
 public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

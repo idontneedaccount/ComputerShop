@@ -84,7 +84,7 @@ public class ProductController {
                            @RequestParam("productImage") MultipartFile file,
                            Model model) {
         if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0 ||
-                !product.getName().matches("^[\\p{L}\\p{N}\\s]+$")) {
+                !product.getName().matches("^[\\-\\p{L}\\p{N}\\s]+$")) {
             return handleInvalidProduct(product, file, model, "Thông tin sản phẩm không hợp lệ.", null, false);
         }
         if (productService.existsByName(product.getName())) {
@@ -114,7 +114,7 @@ public class ProductController {
                               Model model) {
         Products existingProduct = this.productService.findById(product.getProductID());
         if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0 ||
-               !product.getName().matches("^[\\p{L}\\p{N}\\s]+$")) {
+               !product.getName().matches("^[\\-\\p{L}\\p{N}\\s]+$")) {
             return handleInvalidProduct(product, file, model, "Thông tin sản phẩm không hợp lệ.", existingProduct, true);
         }
         if (!existingProduct.getName().equals(product.getName()) && 

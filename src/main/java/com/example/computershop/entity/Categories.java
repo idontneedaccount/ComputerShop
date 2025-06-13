@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Set;
 
@@ -21,6 +22,7 @@ public class Categories {
     String name;
     String description;
     @OneToMany(mappedBy = "categories")
+    @JsonIgnore
     Set<Products> products;
 
 }
