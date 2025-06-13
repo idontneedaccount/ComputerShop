@@ -12,13 +12,10 @@ import java.util.List;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    private final OrderRepository orderRepository;
-    private final OrderDetailRepository orderDetailRepository;
-
-    public OrderServiceImpl(OrderRepository orderRepository, OrderDetailRepository orderDetailRepository) {
-        this.orderRepository = orderRepository;
-        this.orderDetailRepository = orderDetailRepository;
-    }
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
 
     @Override
     @Transactional
@@ -29,29 +26,23 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderDetails(null);
             
             Order savedOrder = orderRepository.save(order);
-
+            
             for (OrderDetail detail : orderDetails) {
                 detail.setOrder(savedOrder);
                 detail.setTotalPrice(detail.getUnitPrice() * detail.getQuantity());
-                OrderDetail savedDetail = orderDetailRepository.save(detail);
+                orderDetailRepository.save(detail);
             }
+            
             return savedOrder;
         } catch (Exception e) {
-            throw e;
+            throw e; // Re-throw to trigger rollback
         }
     }
 
     @Override
-    public Order getOrderById(Long id) {
-        try {
-            Order order = orderRepository.findById(id).orElse(null);
-            if (order != null) {
-                int detailsCount = order.getOrderDetails().size();
-            }
-            return order;
-        } catch (Exception e) {
-            return null;
-        }
+    @Transactional(readOnly = true)
+    public Order getOrderById(String id) {
+        return orderRepository.findById(id).orElse(null);
     }
 
     @Override
