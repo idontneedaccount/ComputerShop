@@ -95,10 +95,8 @@ public class ShopController {
             @RequestParam(defaultValue = "1") int page) {
 
         List<Products> allProducts = productService.getAll();
-
         int startIndex = page * PRODUCTS_PER_PAGE;
         int endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, allProducts.size());
-        
         Map<String, Object> response = new HashMap<>();
         
         if (startIndex < allProducts.size()) {
