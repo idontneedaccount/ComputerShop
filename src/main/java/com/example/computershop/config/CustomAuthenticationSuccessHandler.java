@@ -20,7 +20,18 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 response.sendRedirect("/admin/dashboard");
                 return;
             }
+            if ("ROLE_USER".equals(auth.getAuthority())) {
+                response.sendRedirect("/user/shopping-page");
+                return;
+            }
+            if("ROLE_USER".equals(auth.getAuthority())){
+                response.sendRedirect("/user/shopping-page");
+                return;
+            }
+            if("ROLE_USER".equals(auth.getAuthority())){
+                response.sendRedirect("/user/shopping-page");
+                return;
+            }
         }
-        response.sendRedirect("/user/shopping-page");
     }
 }

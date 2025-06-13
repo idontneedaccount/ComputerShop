@@ -143,7 +143,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/forgot-password")
-    public String showForgotPasswordForm(Model model) {
+    public String showForgotPasswordForm() {
         return forgotPassword;
     }
 
@@ -175,17 +175,43 @@ public class AuthenticationController {
         }
     }
 
+    private String validatePassword(String password) {
+        if (password.length() < 8) {
+            return "Mật khẩu phải có ít nhất 8 ký tự";
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            return "Mật khẩu phải chứa ít nhất 1 chữ hoa";
+        }
+        if (!password.matches(".*[a-z].*")) {
+            return "Mật khẩu phải chứa ít nhất 1 chữ thường";
+        }
+        if (!password.matches(".*[0-9].*")) {
+            return "Mật khẩu phải chứa ít nhất 1 số";
+        }
+        if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            return "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt";
+        }
+        return null;
+    }
+
     @PostMapping("/reset-password")
     public String processResetPassword(@RequestParam String email,
                                      @RequestParam String token,
                                      @RequestParam String password,
                                      @RequestParam String passwordConfirm,
                                      Model model) {
-        try {
+        try {   
             if (!password.equals(passwordConfirm)) {
                 model.addAttribute(errorAttr, "Mật khẩu xác nhận không khớp!");
                 return resetPassword;
             }
+
+            String passwordError = validatePassword(password);
+            if (passwordError != null) {
+                model.addAttribute(errorAttr, passwordError);
+                return resetPassword;
+            }
+
             authenticationService.resetPassword(email, token, password);
             model.addAttribute(messageAttr, "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập với mật khẩu mới.");
             return redirectlogin;
