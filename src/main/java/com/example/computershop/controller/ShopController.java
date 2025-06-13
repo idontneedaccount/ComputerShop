@@ -1,15 +1,14 @@
 package com.example.computershop.controller;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.computershop.entity.Categories;
 import com.example.computershop.entity.Products;
@@ -26,10 +25,7 @@ public class ShopController {
     private final ProductSpecificationService specificationService;
     private static final String TOTAL_PRODUCTS = "totalProducts";
     private static final String PRODUCTS = "products";
-    private static final String CURRENT_PAGE = "currentPage";
     private static final String CATEGORIES = "categories";
-    private static final String DISPLAYED_PRODUCTS = "displayedProducts";
-    private static final String HAS_MORE_PRODUCTS = "hasMoreProducts";
 
     public ShopController(CategoriesService categoriesService, 
                          ProductService productService, 
@@ -38,8 +34,6 @@ public class ShopController {
         this.productService = productService;
         this.specificationService = specificationService;
     }
-    
-    private static final int PRODUCTS_PER_PAGE = 30;
     
     @GetMapping("/shopping-page")
     public String showShoppingPage(
@@ -50,7 +44,6 @@ public class ShopController {
             @RequestParam(required = false) String ssd,
             @RequestParam(required = false) String vga,
             @RequestParam(required = false) String screen,
-            @RequestParam(defaultValue = "0") int page,
             Model model) {
         
         List<Categories> categories = categoriesService.getAll();
@@ -59,18 +52,10 @@ public class ShopController {
         List<String> brands = productService.getDistinctBrands();
         model.addAttribute("brands", brands);
 
-        List<Products> allProducts = productService.getAll();
+        List<Products> filteredProducts = filterProducts(category, brand);
         
-        int startIndex = page * PRODUCTS_PER_PAGE;
-        int endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, allProducts.size());
-        List<Products> products = allProducts.subList(startIndex, endIndex);
-        
-        model.addAttribute(PRODUCTS, products);
-        model.addAttribute(TOTAL_PRODUCTS, allProducts.size());
-        model.addAttribute(CURRENT_PAGE, page);
-        model.addAttribute("productsPerPage", PRODUCTS_PER_PAGE);
-        model.addAttribute(HAS_MORE_PRODUCTS, endIndex < allProducts.size());
-        model.addAttribute(DISPLAYED_PRODUCTS, endIndex);
+        model.addAttribute(PRODUCTS, filteredProducts);
+        model.addAttribute(TOTAL_PRODUCTS, filteredProducts.size());
         
         model.addAttribute("cpus", specificationService.getDistinctCpus());
         model.addAttribute("rams", specificationService.getDistinctRams());
@@ -89,31 +74,62 @@ public class ShopController {
         return "user/shoppingpage";
     }
     
-    @GetMapping("/load-more-products")
-    @ResponseBody
-    public Map<String, Object> loadMoreProducts(
-            @RequestParam(defaultValue = "1") int page) {
-
+    private List<Products> filterProducts(String category, String brand) {
         List<Products> allProducts = productService.getAll();
-        int startIndex = page * PRODUCTS_PER_PAGE;
-        int endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, allProducts.size());
-        Map<String, Object> response = new HashMap<>();
-        
-        if (startIndex < allProducts.size()) {
-            List<Products> products = allProducts.subList(startIndex, endIndex);
-            response.put(PRODUCTS, products);
-            response.put(HAS_MORE_PRODUCTS, endIndex < allProducts.size());
-            response.put(CURRENT_PAGE, page);
-            response.put(TOTAL_PRODUCTS, allProducts.size());
-            response.put(DISPLAYED_PRODUCTS, endIndex);
-        } else {
-            response.put(PRODUCTS, List.of());
-            response.put(HAS_MORE_PRODUCTS, false);
-            response.put(CURRENT_PAGE, page);
-            response.put(TOTAL_PRODUCTS, allProducts.size());
-            response.put(DISPLAYED_PRODUCTS, allProducts.size());
+        return allProducts.stream()
+            .filter(product -> {
+                try {
+                    Boolean isActive = (Boolean) product.getClass().getMethod("getIsActive").invoke(product);
+                    return isActive != null && isActive;
+                } catch (Exception e) {
+                    return true; // If can't check, include it
+                }
+            })
+            .filter(product -> filterByCategory(product, category))
+            .filter(product -> filterByBrand(product, brand))
+            .toList();
+    }
+    
+    private boolean filterByCategory(Products product, String categoryFilter) {
+        if (categoryFilter == null || categoryFilter.trim().isEmpty()) {
+            return true;
         }
-        return response;
+        
+        try {
+            Categories productCategory = (Categories) product.getClass().getMethod("getCategories").invoke(product);
+            if (productCategory == null) {
+                return false;
+            }
+            
+            String categoryName = (String) productCategory.getClass().getMethod("getName").invoke(productCategory);
+            if (categoryName == null) {
+                return false;
+            }
+            
+            List<String> categoryNames = Arrays.asList(categoryFilter.split(","));
+            return categoryNames.stream()
+                .anyMatch(name -> name.trim().equalsIgnoreCase(categoryName));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    private boolean filterByBrand(Products product, String brandFilter) {
+        if (brandFilter == null || brandFilter.trim().isEmpty()) {
+            return true; // No filter applied
+        }
+        try {
+            String productBrand = (String) product.getClass().getMethod("getBrand").invoke(product);
+            if (productBrand == null) {
+                return false;
+            }
+            
+            List<String> brandNames = Arrays.asList(brandFilter.split(","));
+            return brandNames.stream()
+                .anyMatch(brand -> brand.trim().equalsIgnoreCase(productBrand));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 } 

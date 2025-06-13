@@ -1,110 +1,150 @@
 <div class="col-lg-3" th:fragment="sidebar">
-<div class="axil-shop-sidebar" >
+<div class="axil-shop-sidebar">
     <div class="d-lg-none">
         <button class="sidebar-close filter-close-btn"><i class="fas fa-times"></i></button>
     </div>
-    <div class="toggle-list product-categories active">
-        <h6 class="title">Nhu Cầu</h6>
-        <div class="shop-submenu">
-            <ul>
-                <li class="chosen"><a href="#">Tất Cả</a></li>
-                <li th:each="category : ${categories}">
-                    <a href="#" th:text="${category.name}"></a>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="toggle-list product-categories active">
-        <h6 class="title">Thương Hiệu</h6>
-        <div class="shop-submenu">
-            <ul>
-                <li class="chosen"><a href="#">Tất Cả</a></li>
-                <li th:each="brand : ${brands}">
-                    <a href="#" th:text="${brand}"></a>
-                </li>
-            </ul>
-        </div>
-    </div>
     
-    <!-- Product Specifications Section -->
-    <div class="toggle-list product-specifications active">
-        <h6 class="title">CPU</h6>
-        <div class="shop-submenu">
-            <ul>
-                <li class="chosen"><a href="#" data-filter-type="cpu" data-filter-value="all">Tất Cả</a></li>
-                <li th:each="cpu : ${cpus}">
-                    <a href="#" th:text="${cpu}"
-                       th:attr="data-filter-type='cpu',data-filter-value=${cpu}"></a>
-                </li>
-            </ul>
+    <!-- Search Form -->
+    <form id="product-filter-form" method="get" action="/user/shopping-page">
+        
+        <!-- Categories Section -->
+        <div class="toggle-list product-categories active">
+            <h6 class="title">Nhu Cầu</h6>
+            <div class="shop-submenu">
+                <ul>
+                    <li>
+                        <div class="checkbox-container">
+                            <input type="checkbox" 
+                                   id="category-all"
+                                   name="category" 
+                                   value="" 
+                                   class="sidebar-checkbox"
+                                   th:checked="${#strings.isEmpty(selectedCategory)}" 
+                                   onchange="handleAllCheckbox(this, 'category')">
+                            <label for="category-all" class="sidebar-label">Tất Cả</label>
+                        </div>
+                    </li>
+                    <li th:each="category, iterStat : ${categories}">
+                        <div class="checkbox-container">
+                            <input type="checkbox" 
+                                   th:id="|category-${iterStat.index}|"
+                                   name="category" 
+                                   th:value="${category.name}"
+                                   class="sidebar-checkbox"
+                                   th:checked="${selectedCategory != null && selectedCategory.contains(category.name)}"
+                                   onchange="handleCategoryCheckbox(this)">
+                            <label th:for="|category-${iterStat.index}|" 
+                                   class="sidebar-label" 
+                                   th:text="${category.name}"></label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-    
-    <div class="toggle-list product-specifications active">
-        <h6 class="title">RAM</h6>
-        <div class="shop-submenu">
-            <ul>
-                <li class="chosen"><a href="#" data-filter-type="ram" data-filter-value="all">Tất Cả</a></li>
-                <li th:each="ram : ${rams}">
-                    <a href="#" th:text="${ram}"
-                       th:attr="data-filter-type='ram',data-filter-value=${ram}"></a>
-                </li>
-            </ul>
+        
+        <!-- Brands Section -->
+        <div class="toggle-list product-categories active">
+            <h6 class="title">Thương Hiệu</h6>
+            <div class="shop-submenu">
+                <ul>
+                    <li>
+                        <div class="checkbox-container">
+                            <input type="checkbox" 
+                                   id="brand-all"
+                                   name="brand" 
+                                   value="" 
+                                   class="sidebar-checkbox"
+                                   th:checked="${#strings.isEmpty(selectedBrand)}" 
+                                   onchange="handleAllCheckbox(this, 'brand')">
+                            <label for="brand-all" class="sidebar-label">Tất Cả</label>
+                        </div>
+                    </li>
+                    <li th:each="brand, iterStat : ${brands}">
+                        <div class="checkbox-container">
+                            <input type="checkbox" 
+                                   th:id="|brand-${iterStat.index}|"
+                                   name="brand" 
+                                   th:value="${brand}"
+                                   class="sidebar-checkbox"
+                                   th:checked="${selectedBrand != null && selectedBrand.contains(brand)}"
+                                   onchange="handleCategoryCheckbox(this)">
+                            <label th:for="|brand-${iterStat.index}|" 
+                                   class="sidebar-label" 
+                                   th:text="${brand}"></label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-    
-    <div class="toggle-list product-specifications active">
-        <h6 class="title">SSD</h6>
-        <div class="shop-submenu">
-            <ul>
-                <li class="chosen"><a href="#" data-filter-type="ssd" data-filter-value="all">Tất Cả</a></li>
-                <li th:each="ssd : ${ssds}">
-                    <a href="#" th:text="${ssd}"
-                       th:attr="data-filter-type='ssd',data-filter-value=${ssd}"></a>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="toggle-list product-specifications active">
-        <h6 class="title">VGA</h6>
-        <div class="shop-submenu">
-            <ul>
-                <li class="chosen"><a href="#" data-filter-type="vga" data-filter-value="all">Tất Cả</a></li>
-                <li th:each="vga : ${vgas}">
-                    <a href="#" th:text="${vga}"
-                       th:attr="data-filter-type='vga',data-filter-value=${vga}"></a>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="toggle-list product-specifications active">
-     <h6 class="title">Màn hình</h6>
-        <div class="shop-submenu">
-            <ul>
-                <li class="chosen"><a href="#" data-filter-type="screen" data-filter-value="all">Tất Cả</a></li>
-                <li th:each="screen : ${screens}">
-                    <a href="#" th:text="${screen}"
-                       th:attr="data-filter-type='screen',data-filter-value=${screen}"></a>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="toggle-list product-price-range active">
-        <h6 class="title">GIÁ</h6>
-        <div class="shop-submenu">
-            <ul>
-                <li class="chosen"><a href="#">30</a></li>
-                <li><a href="#">5000</a></li>
-            </ul>
-            <form action="#" class="mt--25">
-                <div id="slider-range"></div>
-                <div class="flex-center mt--20">
-                    <span class="input-range">Giá: </span>
-                    <input type="text" id="amount" class="amount-range" readonly>
-                </div>
-            </form>
-        </div>
-    </div>
-    <button class="axil-btn btn-bg-primary">All Reset</button>
+        
+        <!-- Search Button -->
+        <button type="submit" class="axil-btn btn-bg-primary">Tìm Kiếm</button>
+    </form>
 </div>
+
+<script>
+console.log('🔧 Sidebar Enhanced Script Loaded');
+
+function handleAllCheckbox(allCheckbox, groupName) {
+    console.log('🔄 handleAllCheckbox called for group:', groupName);
+    const checkboxes = document.querySelectorAll(`input.sidebar-checkbox[name="${groupName}"]`);
+    console.log('Found checkboxes in group:', checkboxes.length);
+    checkboxes.forEach(checkbox => {
+        if (checkbox !== allCheckbox) {
+            checkbox.checked = false;
+        }
+    });
+}
+
+function handleCategoryCheckbox(checkbox) {
+    console.log('✅ handleCategoryCheckbox called:', checkbox.name, '=', checkbox.value);
+    if (checkbox.checked) {
+        const allCheckbox = document.querySelector(`input.sidebar-checkbox[name="${checkbox.name}"][value=""]`);
+        if (allCheckbox) {
+            allCheckbox.checked = false;
+            console.log('Unchecked "Tất Cả" for group:', checkbox.name);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Sidebar DOM loaded');
+    
+    const form = document.getElementById('product-filter-form');
+    if (form) {
+        console.log('📝 Form found:', form);
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('🛑 Form submit prevented');
+            
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+            
+            const groups = {};
+            for (const [key, value] of formData.entries()) {
+                console.log('📊 Form data:', key, '=', value);
+                if (value && value.trim() !== '') {
+                    if (!groups[key]) {
+                        groups[key] = [];
+                    }
+                    groups[key].push(value);
+                }
+            }
+            
+            for (const [key, values] of Object.entries(groups)) {
+                if (values.length > 0) {
+                    params.append(key, values.join(','));
+                }
+            }
+            
+            const searchUrl = '/user/shopping-page' + (params.toString() ? '?' + params.toString() : '');
+            console.log('🔗 Redirecting to:', searchUrl);
+            window.location.href = searchUrl;
+        });
+    } else {
+        console.error('❌ Form not found!');
+    }
+});
+</script>
 </div>

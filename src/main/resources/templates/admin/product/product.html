@@ -56,7 +56,7 @@
                                 <td th:if="${!products.isActive}"><span class="badge bg-danger">Ẩn</span></td>
                                 <td th:text="${#temporals.format(products.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
-                                    <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product Image" class="img-fluid"
+                                    <img th:src="@{'/assets/images/product/laptop/'+${products.name}+'.jpg'}" alt="Product Image" class="img-fluid"
                                          style="max-width: 100px; max-height: 100px;">
                                 </td>
                                 <td>

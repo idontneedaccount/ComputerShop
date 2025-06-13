@@ -23,7 +23,7 @@
                         <div class="col-lg-12">
                             <div class="axil-shop-top mb--40">
                                 <div class="category-select align-items-center justify-content-lg-end justify-content-between">
-                                    <span class="filter-results" th:text="'Hiển thị ' + ${displayedProducts} + ' / ' + ${totalProducts} + ' sản phẩm'">Showing products</span>
+                                    <span class="filter-results" th:text="'Hiển thị ' + ${totalProducts} + ' sản phẩm'">Showing products</span>
                                     <select class="single-select">
                                         <option>Sắp xếp theo mới nhất</option>
                                         <option>Sắp xếp theo cũ nhất</option>
@@ -84,21 +84,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Load more button -->
-                    <div class="text-center pt--20" th:if="${hasMoreProducts}">
-                        <button id="load-more-btn" class="axil-btn btn-bg-lighter btn-load-more" 
-                                th:data-current-page="${currentPage}" 
-                                th:data-total-products="${totalProducts}"
-                                th:data-displayed-products="${displayedProducts}">
-                            Tải thêm sản phẩm
-                        </button>
-                        <div id="loading-spinner" style="display: none;" class="mt-3">
-                            <i class="fas fa-spinner fa-spin"></i> Đang tải...
-                        </div>
-                    </div>
-                    <div class="text-center pt--20" th:unless="${hasMoreProducts}">
-                        <p class="text-muted">Đã hiển thị tất cả sản phẩm</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -112,122 +97,6 @@
 <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
 
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
-
-<!-- Load More Products Script -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Load More Script initialized');
-    const loadMoreBtn = document.getElementById('load-more-btn');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const productsContainer = document.querySelector('.row.row--15');
-    const filterResults = document.querySelector('.filter-results');
-    
-    console.log('Load More Button found:', !!loadMoreBtn);
-    
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', function() {
-            console.log('Load More button clicked');
-            const currentPage = parseInt(this.getAttribute('data-current-page'));
-            const nextPage = currentPage + 1;
-            console.log('Loading page:', nextPage);
-            
-            // Show loading state
-            loadMoreBtn.style.display = 'none';
-            loadingSpinner.style.display = 'block';
-            
-            // Make AJAX request
-            fetch(`/user/load-more-products?page=${nextPage}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Received data from server:', data);
-                    if (data.products && data.products.length > 0) {
-                        console.log('Number of products received:', data.products.length);
-                        // Create product HTML for each product
-                        data.products.forEach(product => {
-                            const productHTML = createProductHTML(product);
-                            productsContainer.insertAdjacentHTML('beforeend', productHTML);
-                        });
-                        
-                        // Update button data
-                        loadMoreBtn.setAttribute('data-current-page', data.currentPage);
-                        loadMoreBtn.setAttribute('data-displayed-products', data.displayedProducts);
-                        
-                        // Update filter results
-                        filterResults.textContent = `Hiển thị ${data.displayedProducts} / ${data.totalProducts} sản phẩm`;
-                        
-                        // Show/hide load more button
-                        if (data.hasMoreProducts) {
-                            loadMoreBtn.style.display = 'inline-block';
-                        } else {
-                            loadMoreBtn.parentElement.innerHTML = '<p class="text-muted">Đã hiển thị tất cả sản phẩm</p>';
-                        }
-                    } else {
-                        loadMoreBtn.parentElement.innerHTML = '<p class="text-muted">Đã hiển thị tất cả sản phẩm</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading more products:', error);
-                    alert('Có lỗi xảy ra khi tải sản phẩm. Vui lòng thử lại.');
-                    loadMoreBtn.style.display = 'inline-block';
-                })
-                .finally(() => {
-                    loadingSpinner.style.display = 'none';
-                });
-        });
-    }
-    
-    function createProductHTML(product) {
-        const isHot = product.price > 1000000;
-        const productURL = `/user/single-product?id=${product.productID}`;
-        const categoryName = product.categories ? product.categories.name : '';
-        const formattedPrice = new Intl.NumberFormat('vi-VN').format(product.price) + ' VNĐ';
-        
-        return `
-            <div class="col-xl-4 col-sm-6">
-                <div class="axil-product product-style-one mb--30">
-                    <div class="thumbnail">
-                        <a href="${productURL}">
-                            <img src="/assets/images/product/laptop/${product.imageURL}" alt="${product.name}" alt="Product Images">
-                        </a>
-                        ${isHot ? `
-                        <div class="label-block label-right">
-                            <div class="product-badget">HOT</div>
-                        </div>
-                        ` : ''}
-                        <div class="product-hover-action">
-                            <ul class="cart-action">
-                                <li class="quickview">
-                                    <a href="${productURL}" title="View Details">
-                                        <i class="far fa-eye"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="product-content">
-                        <div class="inner">
-                            <h5 class="title">
-                                <a href="${productURL}">${product.name}</a>
-                            </h5>
-                            <div class="product-price-variant">
-                                <span class="price current-price">${formattedPrice}</span>
-                            </div>
-                            ${categoryName ? `
-                            <div class="product-category">
-                                <span class="category-name">${categoryName}</span>
-                            </div>
-                            ` : ''}
-                            <div class="product-brand">
-                                <span class="brand-name">${product.brand}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-});
-</script>
 
 </body>
 </html>
