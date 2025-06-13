@@ -25,3 +25,4 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         response.sendRedirect("/auth/login?error=" + java.net.URLEncoder.encode(error, StandardCharsets.UTF_8));
     }
 }
+

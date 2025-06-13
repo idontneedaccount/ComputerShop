@@ -22,6 +22,8 @@
   align-items: center;
   justify-content: space-between; // space out brand from logo
   padding: $navbar-padding-y $navbar-padding-x;
+  background: #232946 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 
   // Because flex properties aren't inherited, we need to redeclare these first
   // few properties so that content nested within behave properly.
@@ -47,6 +49,10 @@
   @include font-size($navbar-brand-font-size);
   line-height: inherit;
   white-space: nowrap;
+  font-weight: bold;
+  font-size: 1.3rem;
+  color: #eebbc3 !important;
+  letter-spacing: 1px;
 
   @include hover-focus {
     text-decoration: none;
@@ -68,6 +74,7 @@
   .nav-link {
     padding-right: 0;
     padding-left: 0;
+    color: #b8c1ec !important;
   }
 
   .dropdown-menu {
@@ -291,4 +298,28 @@
       }
     }
   }
+}
+
+.navbar .form-control {
+  border-radius: 20px;
+  border: none;
+  background: #393e46;
+  color: #fff;
+}
+
+.navbar .btn-primary {
+  background: #eebbc3;
+  border: none;
+  color: #232946;
+  border-radius: 20px;
+}
+
+.navbar .btn-primary:hover {
+  background: #b8c1ec;
+  color: #232946;
+}
+
+.navbar .nav-link:hover, .navbar .dropdown-item:hover {
+  color: #eebbc3 !important;
+  background: none;
 }

@@ -3,49 +3,108 @@
     <div class="d-lg-none">
         <button class="sidebar-close filter-close-btn"><i class="fas fa-times"></i></button>
     </div>
-    <div class="toggle-list product-categories active">
-        <h6 class="title">CATEGORIES</h6>
+    <div class="toggle-list product-categories">
+        <h6 class="title">Nhu Cầu</h6>
         <div class="shop-submenu">
             <ul>
-                <li class="current-cat"><a href="#">Sun Care</a></li>
-                <li><a href="#">Night Care</a></li>
-                <li><a href="#">Treatments</a></li>
-                <li><a href="#">Moisturizers</a></li>
-                <li><a href="#">Eye Care</a></li>
-                <li><a href="#">Masks</a></li>
-                <li><a href="#">Featured</a></li>
-                <li><a href="#">On Sale</a></li>
+                <li class="chosen"><a href="#">Tất Cả</a></li>
+                <li th:each="category : ${categories}">
+                    <a href="#" th:text="${category.name}"></a>
+                </li>
             </ul>
         </div>
     </div>
-    <div class="toggle-list product-categories product-gender active">
-        <h6 class="title">GENDER</h6>
+    <div class="toggle-list product-categories product-gender ">
+        <h6 class="title">Thương Hiệu</h6>
         <div class="shop-submenu">
             <ul>
-                <li class="chosen"><a href="#">Men (40)</a></li>
-                <li><a href="#">Women (56)</a></li>
-                <li><a href="#">Unisex (18)</a></li>
+                <li class="chosen"><a href="#">Tất Cả</a></li>
+                <li th:each="brand : ${brands}">
+                    <a href="#" th:text="${brand}"></a>
+                </li>
             </ul>
         </div>
     </div>
-    <div class="toggle-list product-color active">
-        <h6 class="title">COLORS</h6>
+    
+    <!-- Product Specifications Section -->
+    <div class="toggle-list product-specifications ">
+        <h6 class="title">CPU</h6>
         <div class="shop-submenu">
             <ul>
-                <li class="chosen"><a href="#" class="color-extra-01"></a></li>
-                <li><a href="#" class="color-extra-02"></a></li>
-                <li><a href="#" class="color-extra-03"></a></li>
-                <li><a href="#" class="color-extra-04"></a></li>
-                <li><a href="#" class="color-extra-05"></a></li>
-                <li><a href="#" class="color-extra-06"></a></li>
-                <li><a href="#" class="color-extra-07"></a></li>
-                <li><a href="#" class="color-extra-08"></a></li>
-                <li><a href="#" class="color-extra-09"></a></li>
-                <li><a href="#" class="color-extra-10"></a></li>
-                <li><a href="#" class="color-extra-11"></a></li>
+                <li class="chosen"><a href="#" data-filter-type="cpu" data-filter-value="all">Tất Cả</a></li>
+                <li th:each="cpu : ${cpus}">
+                    <a href="#" th:text="${cpu}"
+                       th:attr="data-filter-type='cpu',data-filter-value=${cpu}"></a>
+                </li>
             </ul>
         </div>
     </div>
-
-</body>
-</html>
+    
+    <div class="toggle-list product-specifications ">
+        <h6 class="title">RAM</h6>
+        <div class="shop-submenu">
+            <ul>
+                <li class="chosen"><a href="#" data-filter-type="ram" data-filter-value="all">Tất Cả</a></li>
+                <li th:each="ram : ${rams}">
+                    <a href="#" th:text="${ram}"
+                       th:attr="data-filter-type='ram',data-filter-value=${ram}"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="toggle-list product-specifications ">
+        <h6 class="title">SSD</h6>
+        <div class="shop-submenu">
+            <ul>
+                <li class="chosen"><a href="#" data-filter-type="ssd" data-filter-value="all">Tất Cả</a></li>
+                <li th:each="ssd : ${ssds}">
+                    <a href="#" th:text="${ssd}"
+                       th:attr="data-filter-type='ssd',data-filter-value=${ssd}"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="toggle-list product-specifications ">
+        <h6 class="title">VGA</h6>
+        <div class="shop-submenu">
+            <ul>
+                <li class="chosen"><a href="#" data-filter-type="vga" data-filter-value="all">Tất Cả</a></li>
+                <li th:each="vga : ${vgas}">
+                    <a href="#" th:text="${vga}"
+                       th:attr="data-filter-type='vga',data-filter-value=${vga}"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="toggle-list product-specifications ">
+     <h6 class="title">Màn hình</h6>
+        <div class="shop-submenu">
+            <ul>
+                <li class="chosen"><a href="#" data-filter-type="screen" data-filter-value="all">Tất Cả</a></li>
+                <li th:each="screen : ${screens}">
+                    <a href="#" th:text="${screen}"
+                       th:attr="data-filter-type='screen',data-filter-value=${screen}"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="toggle-list product-price-range ">
+        <h6 class="title">GIÁ</h6>
+        <div class="shop-submenu">
+            <ul>
+                <li class="chosen"><a href="#">30</a></li>
+                <li><a href="#">5000</a></li>
+            </ul>
+            <form action="#" class="mt--25">
+                <div id="slider-range"></div>
+                <div class="flex-center mt--20">
+                    <span class="input-range">Price: </span>
+                    <input type="text" id="amount" class="amount-range" readonly>
+                </div>
+            </form>
+        </div>
+    </div>
+    <button class="axil-btn btn-bg-primary">All Reset</button>
+</div>
+</div>

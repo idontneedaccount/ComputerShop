@@ -3,19 +3,13 @@
 <head th:replace="~{admin/fragments/header :: header}">
     <title></title> 
 </head>
-
 <body id="page-top">
-
 <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
-
 <div id="wrapper">
-
     <!-- Sidebar -->
     <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
-
     <div id="content-wrapper">
         <div class="container-fluid">
-
             <!-- Breadcrumbs-->
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
@@ -23,11 +17,8 @@
                 </li>
                 <li class="breadcrumb-item active">Overview</li>
             </ol>
-
             <!-- Icon Cards-->
             <div th:replace="~{admin/fragments/icon-cards :: icon-cards}"></div>
-
-
             <!-- Main body information -->
             <!-- Categories Table -->
             <div class="card mb-3">
@@ -40,7 +31,6 @@
                         <table class="table table-bordered" id="dataTable">
                             <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Tên danh mục</th>
                                 <th>Tên hãng</th>
@@ -51,31 +41,36 @@
                                 <th>Ngày tạo</th>
                                 <th>Hình ảnh</th>
                                 <th>Hành động</th>
+                                <th>Cấu hình</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="products : ${product}">
-                                <td th:text="${products.productID}"></td>
                                 <td th:text="${products.name}"></td>
                                 <td th:text="${products.categories.name}"></td>
                                 <td th:text="${products.brand}"></td>
                                 <td th:text="${products.description}"></td>
                                 <td th:text="${products.price}"></td>
                                 <td th:text="${products.quantity}"></td>
-                                <td th:if="${products.isActive}"><span class="btn btn-success">Hoạt động</span></td>
-                                <td th:if="${!products.isActive}"><span class="btn btn-danger">Ẩn</span></td>
+                                <td th:if="${products.isActive}"><span class="badge bg-success">Hoạt động</span></td>
+                                <td th:if="${!products.isActive}"><span class="badge bg-danger">Ẩn</span></td>
                                 <td th:text="${#temporals.format(products.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
                                     <img th:src="@{'/uploads/'+${products.imageURL}}" alt="Product Image" class="img-fluid"
                                          style="max-width: 100px; max-height: 100px;">
                                 </td>
                                 <td>
-                                    <a th:href="@{/admin/edit-product/{id}(id=${products.productID})}" class="btn btn-primary">
+                                    <a th:href="@{/admin/edit-product/{id}(id=${products.productID})}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a th:href="@{/admin/delete-product/{id}(id=${products.productID})}" class="btn btn-danger"
+                                    <a th:href="@{/admin/delete-product/{id}(id=${products.productID})}" class="btn btn-sm btn-danger"
                                        onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
                                         <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/product/{id}/specification(id=${products.productID})}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-cogs"></i> Cấu hình
                                     </a>
                                 </td>
                             </tr>
@@ -88,12 +83,9 @@
         <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
     </div>
 </div>
-
-
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
-
 </body>
 </html>

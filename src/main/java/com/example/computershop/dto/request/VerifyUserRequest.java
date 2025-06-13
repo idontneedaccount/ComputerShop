@@ -13,7 +13,5 @@ public class VerifyUserRequest {
     @NotBlank(message = "Email không được để trống.")
     @Email(message = "Email không hợp lệ.")
     String email;
-
-    @NotBlank(message = "Mã xác thực không được để trống.")
     String verificationCode;
 }

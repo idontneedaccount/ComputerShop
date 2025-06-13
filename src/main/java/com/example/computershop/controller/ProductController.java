@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigInteger;
 import java.util.List;
 
 
@@ -24,11 +25,37 @@ public class ProductController {
     private StorageService storageService;
     private static final String PRODUCT = "product";
     private static final String CATEGORIES = "categories";
+    private static final String ERROR = "error";
 
-    private static final String  PRODUCT_VIEW = "admin/product/product";
+    private static final String PRODUCT_VIEW = "admin/product/product";
     private static final String PRODUCT_VIEW2 = "redirect:/admin/product";
     private static final String PRODUCT_ADD = "admin/product/add";
     private static final String PRODUCT_EDIT =  "admin/product/edit";
+
+    private String handleInvalidProduct(Products product, MultipartFile file, Model model, 
+                                      String errorMessage, Products existingProduct, boolean isEdit) {
+        model.addAttribute(ERROR, errorMessage);
+        List<Categories> categories = this.categoriesService.getAll();
+        model.addAttribute(CATEGORIES, categories);
+        model.addAttribute(PRODUCT, product);
+
+        if (isEdit) {
+            if (file.isEmpty()) {
+                product.setImageURL(existingProduct.getImageURL());
+            } else {
+                String fileName = file.getOriginalFilename();
+                product.setImageURL(fileName);
+            }
+            return PRODUCT_EDIT;
+        } else {
+            if (!file.isEmpty()) {
+                String fileName = file.getOriginalFilename();
+                product.setImageURL(fileName);
+            }
+            return PRODUCT_ADD;
+        }
+    }
+
     @RequestMapping("/product")
     public String index(Model model) {
         List<Products> list = this.productService.getAll();
@@ -56,13 +83,13 @@ public class ProductController {
     public String addProduct(@ModelAttribute("product") Products product, 
                            @RequestParam("productImage") MultipartFile file,
                            Model model) {
-        if (productService.existsByName(product.getName())) {
-            model.addAttribute("error", "Sản phẩm đã tồn tại.");
-            List<Categories> categories = this.categoriesService.getAll();
-            model.addAttribute(CATEGORIES, categories);
-            return PRODUCT_ADD;
+        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0 ||
+                !product.getName().matches("^[\\p{L}\\p{N}\\s]+$")) {
+            return handleInvalidProduct(product, file, model, "Thông tin sản phẩm không hợp lệ.", null, false);
         }
-
+        if (productService.existsByName(product.getName())) {
+            return handleInvalidProduct(product, file, model, "Sản phẩm đã tồn tại.", null, false);
+        }
         this.storageService.store(file);
         String fileName = file.getOriginalFilename();
         product.setImageURL(fileName);
@@ -86,14 +113,13 @@ public class ProductController {
                               @RequestParam("productImage") MultipartFile file,
                               Model model) {
         Products existingProduct = this.productService.findById(product.getProductID());
-        
+        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0 ||
+               !product.getName().matches("^[\\p{L}\\p{N}\\s]+$")) {
+            return handleInvalidProduct(product, file, model, "Thông tin sản phẩm không hợp lệ.", existingProduct, true);
+        }
         if (!existingProduct.getName().equals(product.getName()) && 
             productService.existsByName(product.getName())) {
-            model.addAttribute("error", "Sản phẩm đã tồn tại.");
-            List<Categories> categories = this.categoriesService.getAll();
-            model.addAttribute(CATEGORIES, categories);
-            model.addAttribute(PRODUCT, product);
-            return PRODUCT_EDIT;
+            return handleInvalidProduct(product, file, model, "Sản phẩm đã tồn tại.", existingProduct, true);
         }
 
         String fileName;
@@ -106,7 +132,7 @@ public class ProductController {
             product.setImageURL(fileName);
         }
 
-        if (Boolean.TRUE.equals(this.productService.update(product))) {
+        if (Boolean.TRUE.equals(this.productService.create(product))) {
             return PRODUCT_VIEW2;
         } else {
             return PRODUCT_EDIT;
