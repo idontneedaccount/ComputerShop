@@ -40,7 +40,14 @@ public class CartController {
     }
 
     @ModelAttribute("cart")
-    public List<Cart> cart() {
+    public List<Cart> cart(Principal principal) {
+        if (principal != null) {
+            String username = principal.getName();
+            User user = userRepository.findByUsername(username).orElse(null);
+            if (user != null) {
+                return cartRepository.findByUser(user);
+            }
+        }
         return new ArrayList<>();
     }
 
@@ -136,11 +143,18 @@ public class CartController {
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable String id, @RequestParam int sl,
-                         @ModelAttribute("cart") List<Cart> cart) {
+                         @ModelAttribute("cart") List<Cart> cart,
+                         Principal principal) {
         try {
+            if (principal == null) return REDIRECT_ERROR;
+            String username = principal.getName();
+            User user = userRepository.findByUsername(username).orElse(null);
+            if (user == null) return REDIRECT_ERROR;
+            
             cart.forEach(c->{
-                if(c.getProduct().getProductID().equals(id)){
+                if(c.getProduct().getProductID().equals(id) && c.getUser().getUserId().equals(user.getUserId())){
                     c.setQuantity(sl);
+                    cartRepository.save(c); // Cập nhật database
                 }
             });
             return REDIRECT_CART_VIEW;
@@ -150,9 +164,27 @@ public class CartController {
     }
 
     @GetMapping("/remove/{id}")
-    public String remove(@PathVariable String id, @ModelAttribute("cart") List<Cart> cart) {
+    public String remove(@PathVariable String id, @ModelAttribute("cart") List<Cart> cart,
+                        Principal principal) {
         try {
-            cart.removeIf(c->c.getProduct().getProductID().equals(id));
+            if (principal == null) return REDIRECT_ERROR;
+            String username = principal.getName();
+            User user = userRepository.findByUsername(username).orElse(null);
+            if (user == null) return REDIRECT_ERROR;
+            
+            Cart itemToRemove = null;
+            for (Cart c : cart) {
+                if (c.getProduct().getProductID().equals(id) && c.getUser().getUserId().equals(user.getUserId())) {
+                    itemToRemove = c;
+                    break;
+                }
+            }
+            
+            if (itemToRemove != null) {
+                cart.remove(itemToRemove);
+                cartRepository.delete(itemToRemove); // Xóa khỏi database
+            }
+            
             return REDIRECT_CART_VIEW;
         } catch (Exception e) {
             return REDIRECT_ERROR;
@@ -160,8 +192,18 @@ public class CartController {
     }
 
     @GetMapping("/clear")
-    public String clear(@ModelAttribute("cart") List<Cart> cart) {
+    public String clear(@ModelAttribute("cart") List<Cart> cart,
+                       Principal principal) {
         try {
+            if (principal != null) {
+                String username = principal.getName();
+                User user = userRepository.findByUsername(username).orElse(null);
+                if (user != null) {
+                    // Xóa tất cả cart items của user từ database
+                    List<Cart> userCartItems = cartRepository.findByUser(user);
+                    cartRepository.deleteAll(userCartItems);
+                }
+            }
             cart.clear();
             return REDIRECT_CART_VIEW;
         } catch (Exception e) {
@@ -212,7 +254,8 @@ public class CartController {
                                   @RequestParam("paymentMethod") String paymentMethod,
                                   @ModelAttribute("cart") List<Cart> cart,
                                   Model model,
-                                  SessionStatus sessionStatus) {
+                                  SessionStatus sessionStatus,
+                                  Principal principal) {
         try {
             if (cart == null || cart.isEmpty()) {
                 return REDIRECT_CART_VIEW;
@@ -259,7 +302,15 @@ public class CartController {
             // Manually set order details to avoid lazy loading issues
             savedOrder.setOrderDetails(orderDetails);
             
-            // Clear cart after successful order
+            // Clear cart after successful order - xóa khỏi database
+            if (principal != null) {
+                String username = principal.getName();
+                User user = userRepository.findByUsername(username).orElse(null);
+                if (user != null) {
+                    List<Cart> userCartItems = cartRepository.findByUser(user);
+                    cartRepository.deleteAll(userCartItems);
+                }
+            }
             cart.clear();
             sessionStatus.setComplete();
             
@@ -285,5 +336,42 @@ public class CartController {
         } catch (Exception e) {
             return REDIRECT_ERROR;
         }
+    }
+    
+    // Debug endpoint để kiểm tra cart được load từ database
+    @GetMapping("/debug")
+    @ResponseBody
+    public String debugCart(Principal principal, @ModelAttribute("cart") List<Cart> sessionCart) {
+        if (principal == null) {
+            return "No user logged in";
+        }
+        
+        String username = principal.getName();
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) {
+            return "User not found: " + username;
+        }
+        
+        // Load từ database
+        List<Cart> dbCart = cartRepository.findByUser(user);
+        
+        StringBuilder result = new StringBuilder();
+        result.append("User: ").append(username).append("\n");
+        result.append("Session Cart size: ").append(sessionCart.size()).append("\n");
+        result.append("Database Cart size: ").append(dbCart.size()).append("\n\n");
+        
+        result.append("Session Cart items:\n");
+        for (Cart item : sessionCart) {
+            result.append("- Product ID: ").append(item.getProduct() != null ? item.getProduct().getProductID() : "NULL")
+                  .append(", Quantity: ").append(item.getQuantity()).append("\n");
+        }
+        
+        result.append("\nDatabase Cart items:\n");
+        for (Cart item : dbCart) {
+            result.append("- Product ID: ").append(item.getProduct() != null ? item.getProduct().getProductID() : "NULL")
+                  .append(", Quantity: ").append(item.getQuantity()).append("\n");
+        }
+        
+        return result.toString();
     }
 }
