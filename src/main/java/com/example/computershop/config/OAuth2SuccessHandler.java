@@ -74,7 +74,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     userRepository.save(newUser);
                 }
             }
-            String targetUrl = "/home";
+            String targetUrl = "/user/shopping-page";
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } catch (Exception e) {
             getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=oauth2_error");
