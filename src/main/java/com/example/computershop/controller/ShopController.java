@@ -13,7 +13,6 @@ import com.example.computershop.entity.Categories;
 import com.example.computershop.entity.Products;
 import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.ProductService;
-import com.example.computershop.service.ProductSpecificationService;
 
 @Controller
 @RequestMapping("/user")
@@ -21,17 +20,14 @@ public class ShopController {
     
     private final CategoriesService categoriesService;
     private final ProductService productService;
-    private final ProductSpecificationService specificationService;
     private static final String TOTAL_PRODUCTS = "totalProducts";
     private static final String PRODUCTS = "products";
     private static final String CATEGORIES = "categories";
 
-    public ShopController(CategoriesService categoriesService, 
-                         ProductService productService, 
-                         ProductSpecificationService specificationService) {
+    public ShopController(CategoriesService categoriesService,
+                         ProductService productService) {
         this.categoriesService = categoriesService;
         this.productService = productService;
-        this.specificationService = specificationService;
     }
     
     @GetMapping("/shopping-page")
@@ -57,9 +53,7 @@ public class ShopController {
         
         model.addAttribute(PRODUCTS, filteredProducts);
         model.addAttribute(TOTAL_PRODUCTS, filteredProducts.size());
-        
-        // Specifications are now hardcoded in the template, no need to fetch from database
-        
+
         model.addAttribute("selectedCategory", category);
         model.addAttribute("selectedBrand", brand);
         model.addAttribute("selectedCpu", cpu);
