@@ -3,7 +3,6 @@ package com.example.computershop.controller;
 import java.util.Arrays;
 import java.util.List;
 
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +43,8 @@ public class ShopController {
             @RequestParam(required = false) String ssd,
             @RequestParam(required = false) String vga,
             @RequestParam(required = false) String screen,
+            @RequestParam(required = false) Long priceMin,
+            @RequestParam(required = false) Long priceMax,
             Model model) {
         
         List<Categories> categories = categoriesService.getAll();
@@ -52,16 +53,12 @@ public class ShopController {
         List<String> brands = productService.getDistinctBrands();
         model.addAttribute("brands", brands);
 
-        List<Products> filteredProducts = filterProducts(category, brand);
+        List<Products> filteredProducts = filterProducts(category, brand, cpu, ram, ssd, vga, screen, priceMin, priceMax);
         
         model.addAttribute(PRODUCTS, filteredProducts);
         model.addAttribute(TOTAL_PRODUCTS, filteredProducts.size());
         
-        model.addAttribute("cpus", specificationService.getDistinctCpus());
-        model.addAttribute("rams", specificationService.getDistinctRams());
-        model.addAttribute("ssds", specificationService.getDistinctSsds());
-        model.addAttribute("vgas", specificationService.getDistinctVgas());
-        model.addAttribute("screens", specificationService.getDistinctScreens());
+        // Specifications are now hardcoded in the template, no need to fetch from database
         
         model.addAttribute("selectedCategory", category);
         model.addAttribute("selectedBrand", brand);
@@ -70,11 +67,13 @@ public class ShopController {
         model.addAttribute("selectedSsd", ssd);
         model.addAttribute("selectedVga", vga);
         model.addAttribute("selectedScreen", screen);
+        model.addAttribute("selectedPriceMin", priceMin);
+        model.addAttribute("selectedPriceMax", priceMax);
         
         return "user/shoppingpage";
     }
     
-    private List<Products> filterProducts(String category, String brand) {
+    private List<Products> filterProducts(String category, String brand, String cpu, String ram, String ssd, String vga, String screen, Long priceMin, Long priceMax) {
         List<Products> allProducts = productService.getAll();
         return allProducts.stream()
             .filter(product -> {
@@ -87,6 +86,12 @@ public class ShopController {
             })
             .filter(product -> filterByCategory(product, category))
             .filter(product -> filterByBrand(product, brand))
+            .filter(product -> filterBySpecification(product, cpu, "cpu"))
+            .filter(product -> filterBySpecification(product, ram, "ram"))
+            .filter(product -> filterBySpecification(product, ssd, "ssd"))
+            .filter(product -> filterBySpecification(product, vga, "vga"))
+            .filter(product -> filterBySpecification(product, screen, "screen"))
+            .filter(product -> filterByPrice(product, priceMin, priceMax))
             .toList();
     }
     
@@ -127,6 +132,84 @@ public class ShopController {
             List<String> brandNames = Arrays.asList(brandFilter.split(","));
             return brandNames.stream()
                 .anyMatch(brand -> brand.trim().equalsIgnoreCase(productBrand));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean filterBySpecification(Products product, String specFilter, String specType) {
+        if (specFilter == null || specFilter.trim().isEmpty()) {
+            return true; // No filter applied
+        }
+        
+        try {
+            // Get the specifications for this product
+            Object specs = product.getClass().getMethod("getSpecifications").invoke(product);
+            if (specs == null) {
+                return false;
+            }
+            
+            // Get the specific specification value based on type
+            String specValue;
+            switch (specType) {
+                case "cpu":
+                    specValue = (String) specs.getClass().getMethod("getCpu").invoke(specs);
+                    break;
+                case "ram":
+                    specValue = (String) specs.getClass().getMethod("getRam").invoke(specs);
+                    break;
+                case "ssd":
+                    specValue = (String) specs.getClass().getMethod("getSsd").invoke(specs);
+                    break;
+                case "vga":
+                    specValue = (String) specs.getClass().getMethod("getVga").invoke(specs);
+                    break;
+                case "screen":
+                    specValue = (String) specs.getClass().getMethod("getScreen").invoke(specs);
+                    break;
+                default:
+                    return false;
+            }
+            
+            if (specValue == null) {
+                return false;
+            }
+            
+            // Check if the product specification matches any of the filter values
+            List<String> filterValues = Arrays.asList(specFilter.split(","));
+            final String finalSpecValue = specValue.toLowerCase();
+            return filterValues.stream()
+                .anyMatch(filterValue -> finalSpecValue.contains(filterValue.trim().toLowerCase()));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean filterByPrice(Products product, Long priceMin, Long priceMax) {
+        if (priceMin == null && priceMax == null) {
+            return true; // No price filter applied
+        }
+        
+        try {
+            Object priceObj = product.getClass().getMethod("getPrice").invoke(product);
+            if (priceObj == null) {
+                return false;
+            }
+            
+            // Convert BigInteger to long for comparison
+            long productPrice = ((java.math.BigInteger) priceObj).longValue();
+            
+            // Check min price
+            if (priceMin != null && productPrice < priceMin) {
+                return false;
+            }
+            
+            // Check max price  
+            if (priceMax != null && productPrice > priceMax) {
+                return false;
+            }
+            
+            return true;
         } catch (Exception e) {
             return false;
         }

@@ -201,18 +201,29 @@
         },
 
         priceRangeSlider: function(e) {
+            function formatPrice(price) {
+                return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
             $('#slider-range').slider({
                 range: true,
                 min: 0,
-                max: 5000,
-                values: [0, 3000],
+                max: 150000000,
+                step: 1000000,
+                values: [0, 150000000],
                 slide: function(event, ui) {
-                    $('#amount').val('$' + ui.values[0] + '  $' + ui.values[1]);
+                    $('#amount').val(formatPrice(ui.values[0]) + ' VNĐ - ' + formatPrice(ui.values[1]) + ' VNĐ');
+                    $('#price-min').val(ui.values[0]);
+                    $('#price-max').val(ui.values[1]);
+                },
+                stop: function(event, ui) {
                 }
             });
-            $('#amount').val('$' + $('#slider-range').slider('values', 0) +
-                '  $' + $('#slider-range').slider('values', 1));
+            var initialMin = $('#slider-range').slider('values', 0);
+            var initialMax = $('#slider-range').slider('values', 1);
+            $('#amount').val(formatPrice(initialMin) + ' VNĐ - ' + formatPrice(initialMax) + ' VNĐ');
 
+            $('#price-min').val(initialMin);
+            $('#price-max').val(initialMax);
         },
 
         quantityRanger: function() {
@@ -223,9 +234,7 @@
                 var oldValue = $button.parent().find('input').val();
                 if ($button.hasClass('inc')) {
                     var newVal = parseFloat(oldValue) + 1;
-                } else {
-                    // Don't allow decrementing below zero
-                    if (oldValue > 0) {
+                } else {if (oldValue > 0) {
                         var newVal = parseFloat(oldValue) - 1;
                     } else {
                         newVal = 0;

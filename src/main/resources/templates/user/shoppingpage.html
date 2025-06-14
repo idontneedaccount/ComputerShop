@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shopping Page</title>
+<!-- Custom Pagination CSS -->
+<link th:href="@{/assets2/css/pagination.css}" rel="stylesheet">
 </head>
 <body class="sticky-header">
 
@@ -23,10 +25,8 @@
                         <div class="col-lg-12">
                             <div class="axil-shop-top mb--40">
                                 <div class="category-select align-items-center justify-content-lg-end justify-content-between">
-                                    <span class="filter-results" th:text="'Hiển thị ' + ${totalProducts} + ' sản phẩm'">Showing products</span>
                                     <select class="single-select">
-                                        <option>Sắp xếp theo mới nhất</option>
-                                        <option>Sắp xếp theo cũ nhất</option>
+                                        <option>Sắp xếp</option>
                                         <option>Sắp xếp theo tên</option>
                                         <option>Sắp xếp theo giá</option>
                                     </select>
@@ -42,7 +42,7 @@
                             <div class="axil-product product-style-one mb--30">
                                 <div class="thumbnail">
                                     <a th:href="@{/user/single-product(id=${product.productID})}">
-                                        <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" th:alt="${product.name}" alt="Product Images">
+                                        <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" th:alt="${product.name}" alt="Product Images" style="height: 330px;width: 330px;">
                                     </a>
                                     <!-- Discount badge (if you want to add discount functionality later) -->
                                     <div class="label-block label-right" th:if="${product.price.compareTo(T(java.math.BigInteger).valueOf(1000000)) > 0}">
@@ -97,6 +97,10 @@
 <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
 
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
+<!-- Custom Pagination Script -->
+<script th:src="@{/assets2/js/pagination.js}"></script>
+<!-- Shopping Enhancements Script -->
+<script th:src="@{/assets2/js/shopping-enhancement.js}"></script>
 
 </body>
 </html>
