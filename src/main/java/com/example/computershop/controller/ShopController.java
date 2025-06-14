@@ -195,21 +195,11 @@ public class ShopController {
             if (priceObj == null) {
                 return false;
             }
-            
-            // Convert BigInteger to long for comparison
+
             long productPrice = ((java.math.BigInteger) priceObj).longValue();
-            
-            // Check min price
-            if (priceMin != null && productPrice < priceMin) {
-                return false;
-            }
-            
-            // Check max price  
-            if (priceMax != null && productPrice > priceMax) {
-                return false;
-            }
-            
-            return true;
+
+            return (priceMin == null || productPrice >= priceMin) && 
+                   (priceMax == null || productPrice <= priceMax);
         } catch (Exception e) {
             return false;
         }

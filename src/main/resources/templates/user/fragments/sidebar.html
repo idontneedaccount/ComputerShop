@@ -516,7 +516,6 @@
         </div>
     </form>
 </div>
-
 <script>
 function handleAllCheckbox(allCheckbox, groupName) {
     const checkboxes = document.querySelectorAll(`input.sidebar-checkbox[name="${groupName}"]`);
@@ -541,11 +540,7 @@ function submitFilterForm() {
     if (!form) {
         return;
     }
-    
-    // Before getting form data, ensure price inputs are updated
-    const priceMin = document.getElementById('price-min');
-    const priceMax = document.getElementById('price-max');
-    
+
     const formData = new FormData(form);
     const params = new URLSearchParams();
     
