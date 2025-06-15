@@ -39,7 +39,7 @@ public class AuthenticationService {
             if (userRepository.existsByEmail(request.getEmail())) {
                 throw new AuthenticationException("Email đã được đăng ký!");
             }
-            if (userRepository.existsByPhoneNumberAndPhoneNumberIsNotNull(request.getPhoneNumber())) {
+            if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
                 throw new AuthenticationException("Số điện thoại đã được đăng ký!");
             }
             if (!request.getPassword().equals(request.getPasswordConfirm())) {

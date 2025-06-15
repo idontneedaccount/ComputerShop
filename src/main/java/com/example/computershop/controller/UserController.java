@@ -30,11 +30,6 @@ public class UserController {
     private static final String USER_CREATE_BY_ADMIN = "userCreateByAdmin";
     private static final String USER_UPDATE_BY_ADMIN = "userUpdateByAdmin";
 
-    @GetMapping("/home")
-    public String home() {
-        return "home";
-    }
-
     @RequestMapping("/user")
     public String showUsers(Model model) {
         List<User> users = userService.getAll();

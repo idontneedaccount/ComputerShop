@@ -446,30 +446,3 @@ class AuthenticationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 }
-
-/*
- * INTEGRATION TEST ALTERNATIVE (using @MockBean + @WebMvcTest)
- * Uncomment this class to see the @MockBean approach
- */
-/*
-@ExtendWith(MockitoExtension.class)
-@WebMvcTest(AuthenticationController.class)
-class AuthenticationControllerIntegrationTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean  // Still valid in Spring Boot 3.x but slower
-    private AuthenticationService authenticationService;
-
-    @Test
-    void showRegisterForm_Integration() throws Exception {
-        mockMvc.perform(get("/auth/register"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("auth/register"))
-                .andExpect(model().attributeExists("user"))
-                .andExpect(model().attribute("user", 
-                    org.hamcrest.Matchers.instanceOf(UserCreationRequest.class)));
-    }
-}
-*/

@@ -124,7 +124,7 @@ public class UserService {
                 throw new IllegalArgumentException("Email đã được đăng ký!");
             }
             if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty() && 
-                userRepository.existsByPhoneNumberAndPhoneNumberIsNotNull(request.getPhoneNumber())) {
+                userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
                 throw new IllegalArgumentException("Số điện thoại đã được đăng ký!");
             }
     
@@ -178,7 +178,7 @@ public class UserService {
             }
             if (userUpdateByAdmin.getPhoneNumber() != null && !userUpdateByAdmin.getPhoneNumber().isEmpty() &&
                 !userUpdateByAdmin.getPhoneNumber().equals(user.getPhoneNumber()) &&
-                userRepository.existsByPhoneNumberAndPhoneNumberIsNotNull(userUpdateByAdmin.getPhoneNumber())) {
+                userRepository.existsByPhoneNumber(userUpdateByAdmin.getPhoneNumber())) {
                 throw new IllegalArgumentException("Số điện thoại đã được sử dụng bởi tài khoản khác");
             }
 
