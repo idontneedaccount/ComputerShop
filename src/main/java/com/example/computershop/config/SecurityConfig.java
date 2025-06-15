@@ -44,7 +44,8 @@ public class SecurityConfig {
                                         "/oauth2/**", "/login/oauth2/**")
                                 .permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/user/**").hasRole("USER")
+                                .requestMatchers("/user/**","/cart/**")
+                                .hasAnyAuthority("ROLE_USER", "OIDC_USER","OAUTH2_USER")
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)

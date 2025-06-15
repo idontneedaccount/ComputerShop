@@ -18,28 +18,28 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "Users")
+@Table(name = "users")
 public class User implements UserDetails, OAuth2User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "userId" , columnDefinition = "nvarchar(255)")
+    @Column(name = "user_id" , columnDefinition = "nvarchar(255)")
     String userId;
     @Column(name = "username", unique = true , columnDefinition = "nvarchar(255)")
     String username;
     @Column(name = "password" , columnDefinition = "nvarchar(255)")
     String password;
-    @Column(name = "fullName" , columnDefinition = "nvarchar(255)")
+    @Column(name = "full_name" , columnDefinition = "nvarchar(255)")
     String fullName;
     @Column(name = "email", unique = true , columnDefinition = "nvarchar(255)")
     String email;
-    @Column(name = "phoneNumber", unique = true , columnDefinition = "nvarchar(255)")
+    @Column(name = "phone_number", columnDefinition = "nvarchar(255)")
     String phoneNumber;
     @Enumerated(EnumType.STRING)
     @Column(name = "role" , columnDefinition = "nvarchar(255)")
     Role role;
-    @Column(name = "createdAt" , columnDefinition = "datetime")
+    @Column(name = "created_at" , columnDefinition = "datetime")
     LocalDateTime createdAt;
-    @Column(name = "isActive" , columnDefinition = "bit")
+    @Column(name = "is_active" , columnDefinition = "bit")
     boolean isActive;
     @Column(name = "verification_code" , columnDefinition = "nvarchar(255)")
     String verificationCode;
@@ -49,7 +49,7 @@ public class User implements UserDetails, OAuth2User {
     String provider;
     @Column(name = "address", columnDefinition = "nvarchar(255)")
     String address;
-    @Column(name = "isAccountLocked", columnDefinition = "bit")
+    @Column(name = "is_account_locked", columnDefinition = "bit")
     Boolean isAccountLocked;
     @Transient
     private Map<String, Object> attributes;
