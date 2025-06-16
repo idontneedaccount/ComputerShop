@@ -2,7 +2,7 @@
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shopping Page</title>
+<title>Hồ sơ cá nhân</title>
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <body class="sticky-header">
@@ -17,15 +17,21 @@
     <!-- Start My Account Area  -->
     <div class="axil-dashboard-area axil-section-gap">
         <div class="container">
-            <div class="axil-dashboard-warp">
+            <!-- Error message display -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <div class="axil-dashboard-warp" th:if="${user}">
                 <div class="axil-dashboard-author">
                     <div class="media">
                         <div class="thumbnail">
-                            <img th:src="@{/assets/images/product/author1.png}" alt="Hello Annie">
+                            <img th:src="@{/assets/images/product/author1.png}" alt="User Avatar">
                         </div>
                         <div class="media-body">
-                            <h5 class="title mb-0">Hello VINH GAYYY</h5>
-                            <span class="joining-date">eTrade Member Since Sep 2020</span>
+                            <h5 class="title mb-0">Xin chào <span th:text="${user.fullName}"></span>!</h5>
+                            <span class="joining-date">Thành viên từ <span th:text="${#temporals.format(user.createdAt, 'MMM yyyy')}"></span></span>
                         </div>
                     </div>
                 </div>
@@ -34,164 +40,188 @@
                         <aside class="axil-dashboard-aside">
                             <nav class="axil-dashboard-nav">
                                 <div class="nav nav-tabs" role="tablist">
-                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-orders" role="tab" aria-selected="false"><i class="fas fa-shopping-basket"></i>Orders</a>
-                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-address" role="tab" aria-selected="false"><i class="fas fa-home"></i>Addresses</a>
-                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-account" role="tab" aria-selected="false"><i class="fas fa-user"></i>Account Details</a>
-                                    <a class="nav-item nav-link" href="sign-in.html"><i class="fal fa-sign-out"></i>Logout</a>
+                                    <a class="nav-item nav-link active" data-bs-toggle="tab" href="#nav-dashboard" role="tab" aria-selected="true"><i class="fas fa-th-large"></i>Tổng quan</a>
+                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-orders" role="tab" aria-selected="false"><i class="fas fa-shopping-basket"></i>Đơn hàng</a>
+                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-address" role="tab" aria-selected="false"><i class="fas fa-home"></i>Địa chỉ</a>
+                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-account" role="tab" aria-selected="false"><i class="fas fa-user"></i>Thông tin tài khoản</a>
+                                    <a class="nav-item nav-link" href="/logout"><i class="fal fa-sign-out"></i>Đăng xuất</a>
                                 </div>
                             </nav>
                         </aside>
                     </div>
                     <div class="col-xl-9 col-md-8">
                         <div class="tab-content">
+                            <!-- Dashboard Tab -->
                             <div class="tab-pane fade show active" id="nav-dashboard" role="tabpanel">
                                 <div class="axil-dashboard-overview">
-                                    <div class="welcome-text">Hello VINH GAY(not <span>VINH GAY?</span> <a href="sign-in.html">Log Out</a>)</div>
-                                    <p>CON NÀO CHẢ LÀ CON, CÓ LỖ LÀ ĐƯỢC =))))))))</p>
+                                    <div class="welcome-text">Xin chào <span th:text="${user.fullName}"></span>! (không phải <span th:text="${user.fullName}"></span>? <a href="/logout">Đăng xuất</a>)</div>
+                                    <p>Từ trang tổng quan tài khoản, bạn có thể xem các đơn hàng gần đây, quản lý địa chỉ giao hàng và thanh toán, cũng như chỉnh sửa mật khẩu và thông tin tài khoản của mình.</p>
+                                    
+                                    <!-- User Info Summary -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h6 class="card-title"><i class="fas fa-info-circle"></i> Thông tin cơ bản</h6>
+                                                    <p class="card-text">
+                                                        <!-- GitHub users: chỉ hiển thị username -->
+                                                        <span th:if="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                            <strong>GitHub Username:</strong> 
+                                                            <span th:text="${user.email.replace('@github.com', '')}" 
+                                                                  style="font-family: monospace; color: #007bff; font-size: 1.1em;">
+                                                            </span><br>
+                                                        </span>
+                                                        
+                                                        <!-- Các OAuth2 khác hoặc form login: hiển thị email -->
+                                                        <span th:unless="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                            <strong>Email:</strong> <span th:text="${user.email}"></span><br>
+                                                        </span>
+                                                        
+                                                        <strong>Vai trò:</strong> <span class="badge" th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' : 'bg-success'" th:text="${user.role.name()}"></span><br>
+                                                        <strong>Trạng thái:</strong> <span class="badge" th:classappend="${user.active} ? 'bg-success' : 'bg-warning'" th:text="${user.active} ? 'Đã kích hoạt' : 'Chưa kích hoạt'"></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h6 class="card-title"><i class="fas fa-shield-alt"></i> Bảo mật</h6>
+                                                    <p class="card-text">
+                                                        <strong>Phương thức đăng nhập:</strong> 
+                                                        <span th:if="${isOAuth2}" class="badge bg-info">
+                                                            <i class="fab" th:classappend="${'fa-' + authProvider}"></i> 
+                                                            <span th:text="${authProvider}"></span>
+                                                        </span>
+                                                        <span th:unless="${isOAuth2}" class="badge bg-primary">Mật khẩu</span><br>
+                                                        <strong>Tài khoản bị khóa:</strong> <span th:text="${user.isAccountLocked} ? 'Có' : 'Không'"></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            
+                            <!-- Orders Tab -->
                             <div class="tab-pane fade" id="nav-orders" role="tabpanel">
                                 <div class="axil-dashboard-order">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
                                             <tr>
-                                                <th scope="col">Order</th>
-                                                <th scope="col">Date</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Total</th>
-                                                <th scope="col">Actions</th>
+                                                <th scope="col">Mã đơn</th>
+                                                <th scope="col">Ngày</th>
+                                                <th scope="col">Trạng thái</th>
+                                                <th scope="col">Tổng tiền</th>
+                                                <th scope="col">Thao tác</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <tr>
-                                                <th scope="row">#6523</th>
-                                                <td>September 10, 2020</td>
-                                                <td>Processing</td>
-                                                <td>$326.63 for 3 items</td>
-                                                <td><a href="#" class="axil-btn view-btn">View</a></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">#6523</th>
-                                                <td>September 10, 2020</td>
-                                                <td>On Hold</td>
-                                                <td>$326.63 for 3 items</td>
-                                                <td><a href="#" class="axil-btn view-btn">View</a></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">#6523</th>
-                                                <td>September 10, 2020</td>
-                                                <td>Processing</td>
-                                                <td>$326.63 for 3 items</td>
-                                                <td><a href="#" class="axil-btn view-btn">View</a></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">#6523</th>
-                                                <td>September 10, 2020</td>
-                                                <td>Processing</td>
-                                                <td>$326.63 for 3 items</td>
-                                                <td><a href="#" class="axil-btn view-btn">View</a></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">#6523</th>
-                                                <td>September 10, 2020</td>
-                                                <td>Processing</td>
-                                                <td>$326.63 for 3 items</td>
-                                                <td><a href="#" class="axil-btn view-btn">View</a></td>
+                                                <td colspan="5" class="text-center">Bạn chưa có đơn hàng nào</td>
                                             </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="nav-downloads" role="tabpanel">
-                                <div class="axil-dashboard-order">
-                                    <p>You don't have any download</p>
-                                </div>
-                            </div>
+                            
+                            <!-- Address Tab -->
                             <div class="tab-pane fade" id="nav-address" role="tabpanel">
                                 <div class="axil-dashboard-address">
-                                    <p class="notice-text">The following addresses will be used on the checkout page by default.</p>
+                                    <p class="notice-text">Địa chỉ sau sẽ được sử dụng mặc định khi thanh toán.</p>
                                     <div class="row row--30">
                                         <div class="col-lg-6">
                                             <div class="address-info mb--40">
                                                 <div class="addrss-header d-flex align-items-center justify-content-between">
-                                                    <h4 class="title mb-0">Shipping Address</h4>
+                                                    <h4 class="title mb-0">Địa chỉ giao hàng</h4>
                                                     <a href="#" class="address-edit"><i class="far fa-edit"></i></a>
                                                 </div>
                                                 <ul class="address-details">
-                                                    <li>Name: Annie Mario</li>
-                                                    <li>Email: annie@example.com</li>
-                                                    <li>Phone: 1234 567890</li>
-                                                    <li class="mt--30">7398 Smoke Ranch Road <br>
-                                                        Las Vegas, Nevada 89128</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="address-info">
-                                                <div class="addrss-header d-flex align-items-center justify-content-between">
-                                                    <h4 class="title mb-0">Billing Address</h4>
-                                                    <a href="#" class="address-edit"><i class="far fa-edit"></i></a>
-                                                </div>
-                                                <ul class="address-details">
-                                                    <li>Name: Annie Mario</li>
-                                                    <li>Email: annie@example.com</li>
-                                                    <li>Phone: 1234 567890</li>
-                                                    <li class="mt--30">7398 Smoke Ranch Road <br>
-                                                        Las Vegas, Nevada 89128</li>
+                                                    <li>Tên: <span th:text="${user.fullName}"></span></li>
+                                                    
+                                                    <!-- GitHub users: hiển thị username -->
+                                                    <li th:if="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                        GitHub: <span th:text="${user.email.replace('@github.com', '')}" 
+                                                                      style="font-family: monospace; color: #007bff;">
+                                                        </span>
+                                                    </li>
+                                                    
+                                                    <!-- Các OAuth2 khác hoặc form login: hiển thị email -->
+                                                    <li th:unless="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                        Email: <span th:text="${user.email}"></span>
+                                                    </li>
+                                                    
+                                                    <li>Điện thoại: <span th:text="${hasPhoneNumber} ? ${user.phoneNumber} : 'Chưa cập nhật'"></span></li>
+                                                    <li class="mt--30" th:text="${hasAddress} ? ${user.address} : 'Chưa cập nhật địa chỉ'"></li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Account Details Tab -->
                             <div class="tab-pane fade" id="nav-account" role="tabpanel">
                                 <div class="col-lg-9">
                                     <div class="axil-dashboard-account">
-                                        <form class="account-details-form">
+                                        <form class="account-details-form" th:action="@{/user/update-profile}" method="post">
                                             <div class="row">
-                                                <div class="col-lg-6">
+                                                <div class="col-12">
                                                     <div class="form-group">
-                                                        <label>First Name</label>
-                                                        <input type="text" class="form-control" value="Annie">
+                                                        <label>Họ và tên</label>
+                                                        <input type="text" class="form-control" name="fullName" th:value="${user.fullName}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <!-- GitHub users: hiển thị username thay vì email -->
+                                                    <div class="form-group" th:if="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                        <label>GitHub Username</label>
+                                                        <input type="text" class="form-control" 
+                                                               th:value="${user.email.replace('@github.com', '')}" 
+                                                               readonly
+                                                               style="font-family: monospace; background-color: #f8f9fa; color: #007bff;">
+                                                    </div>
+                                                    
+                                                    <!-- Các OAuth2 khác hoặc form login: hiển thị email -->
+                                                    <div class="form-group" th:unless="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                        <label>Email</label>
+                                                        <input type="email" class="form-control" th:value="${user.email}" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <div class="form-group">
-                                                        <label>Last Name</label>
-                                                        <input type="text" class="form-control" value="Mario">
+                                                        <label>Số điện thoại</label>
+                                                        <input type="text" class="form-control" name="phoneNumber" th:value="${user.phoneNumber}">
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb--40">
-                                                        <label>Country/ Region</label>
-                                                        <select class="select2">
-                                                            <option value="1">United Kindom (UK)</option>
-                                                            <option value="1">United States (USA)</option>
-                                                            <option value="1">United Arab Emirates (UAE)</option>
-                                                            <option value="1">Australia</option>
-                                                        </select>
-                                                        <p class="b3 mt--10">This will be how your name will be displayed in the account section and in reviews</p>
+                                                        <label>Địa chỉ</label>
+                                                        <textarea class="form-control" name="address" rows="3" th:text="${user.address}"></textarea>
                                                     </div>
                                                 </div>
-                                                <div class="col-12">
-                                                    <h5 class="title">Password Change</h5>
+                                                
+                                                <!-- Password change section - only for non-OAuth2 users -->
+                                                <div class="col-12" th:unless="${isOAuth2}">
+                                                    <h5 class="title">Đổi mật khẩu</h5>
                                                     <div class="form-group">
-                                                        <label>Password</label>
-                                                        <input type="password" class="form-control" value="123456789101112131415">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>New Password</label>
-                                                        <input type="password" class="form-control">
+                                                        <label>Mật khẩu hiện tại</label>
+                                                        <input type="password" class="form-control" name="currentPassword">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label>Confirm New Password</label>
-                                                        <input type="password" class="form-control">
+                                                        <label>Mật khẩu mới</label>
+                                                        <input type="password" class="form-control" name="newPassword">
                                                     </div>
-                                                    <div class="form-group mb--0">
-                                                        <input type="submit" class="axil-btn" value="Save Changes">
+                                                    <div class="form-group">
+                                                        <label>Xác nhận mật khẩu mới</label>
+                                                        <input type="password" class="form-control" name="confirmPassword">
                                                     </div>
+                                                </div>
+                                                
+                                                <div class="form-group mb--0">
+                                                    <input type="submit" class="axil-btn" value="Lưu thay đổi">
                                                 </div>
                                             </div>
                                         </form>
@@ -205,26 +235,6 @@
         </div>
     </div>
     <!-- End My Account Area  -->
-
-    <!-- Start Axil Newsletter Area  -->
-    <div class="axil-newsletter-area axil-section-gap pt--0">
-        <div class="container">
-            <div class="etrade-newsletter-wrapper bg_image bg_image--5">
-                <div class="newsletter-content">
-                    <span class="title-highlighter highlighter-primary2"><i class="fas fa-envelope-open"></i>Newsletter</span>
-                    <h2 class="title mb--40 mb_sm--30">Get weekly update</h2>
-                    <div class="input-group newsletter-form">
-                        <div class="position-relative newsletter-inner mb--15">
-                            <input placeholder="example@gmail.com" type="text">
-                        </div>
-                        <button type="submit" class="axil-btn mb--15">Subscribe</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End .container -->
-    </div>
-    <!-- End Axil Newsletter Area  -->
 </main>
 
 <div th:replace="~{user/fragments/footer :: footer}"></div>
