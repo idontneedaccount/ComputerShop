@@ -9,15 +9,15 @@ import lombok.Data;
 public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_detail_id")
+    @Column(name = "order_detail_id", columnDefinition = "varchar(255)")
      String orderDetailID;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", columnDefinition = "varchar(255)")
      Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", columnDefinition = "nvarchar(255)")
      Products product;
 
     @Column(name = "quantity", nullable = false)

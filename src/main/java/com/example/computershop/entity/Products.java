@@ -14,30 +14,40 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Entity
+@Table(name = "products")
 @JsonIgnoreProperties({"specifications"})
 public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-            @Column(unique = true, nullable = false,columnDefinition = "nvarchar(255)")
+    @Column(name = "productid", unique = true, nullable = false, columnDefinition = "nvarchar(255)")
     String productID;
-    @Column(columnDefinition = "nvarchar(255)")
+    
+    @Column(name = "name", columnDefinition = "nvarchar(255)")
     String name;
-    @Column(columnDefinition = "nvarchar(255)")
+    
+    @Column(name = "description", columnDefinition = "nvarchar(255)")
     String description;
-    @Column(columnDefinition = "nvarchar(255)")
+    
+    @Column(name = "brand", columnDefinition = "nvarchar(255)")
     String brand;
-    @Column(columnDefinition = "bigint")
+    
+    @Column(name = "price", columnDefinition = "bigint")
     BigInteger price;
-    @Column(columnDefinition = "int")
+    
+    @Column(name = "quantity", columnDefinition = "int")
     Integer quantity;
-    @Column(columnDefinition = "nvarchar(255)")
+    
+    @Column(name = "imageurl", columnDefinition = "nvarchar(255)")
     String imageURL;
-    @Column(columnDefinition = "bit")
+    
+    @Column(name = "is_active", columnDefinition = "bit")
     Boolean isActive = true;
-    @Column(columnDefinition = "datetime")
+    
+    @Column(name = "created_at", columnDefinition = "datetime")
     LocalDateTime createdAt = LocalDateTime.now();
+    
     @ManyToOne
-    @JoinColumn(name = "categories_id",referencedColumnName = "categoryID")
+    @JoinColumn(name = "categories_id", referencedColumnName = "categoryid", columnDefinition = "varchar(255)")
     private Categories categories;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)

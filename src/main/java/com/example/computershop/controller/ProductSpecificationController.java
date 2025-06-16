@@ -17,6 +17,7 @@ public class ProductSpecificationController {
     private ProductSpecificationService specificationService;
     private ProductService productService;
 
+
     @GetMapping("/product/{productId}/specification")
     public String editSpecification(@PathVariable String productId, Model model) {
         Products product = productService.findById(productId);
