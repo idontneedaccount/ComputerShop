@@ -27,7 +27,7 @@ public class Cart implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", columnDefinition = "nvarchar(255)")
-    private transient Products product;
+    private Products product;
 
     @Column(nullable = false)
     private Integer quantity;

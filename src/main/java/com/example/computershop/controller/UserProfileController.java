@@ -1,6 +1,8 @@
 package com.example.computershop.controller;
 
 import com.example.computershop.dto.UserProfileData;
+import com.example.computershop.entity.Order;
+import com.example.computershop.service.OrderService;
 import com.example.computershop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserProfileController {
     
     private final UserService userService;
+    private final OrderService orderService;
     
     @GetMapping("/user-profile")
     public String showUserProfile(Model model) {
@@ -29,6 +33,11 @@ public class UserProfileController {
             model.addAttribute("authProvider", profileData.getAuthProvider());
             model.addAttribute("hasPhoneNumber", profileData.hasPhoneNumber());
             model.addAttribute("hasAddress", profileData.hasAddress());
+            
+            // Thêm lịch sử đặt hàng
+            List<Order> userOrders = orderService.getOrdersByUserWithDetails(profileData.getUser());
+            model.addAttribute("orders", userOrders);
+            model.addAttribute("hasOrders", !userOrders.isEmpty());
             
             // Thêm OAuth2 debug info nếu cần
             if (profileData.isOAuth2()) {
