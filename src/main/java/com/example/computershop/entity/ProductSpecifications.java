@@ -13,35 +13,35 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "product_specifications")
 public class ProductSpecifications {
     @Id
-    @Column(name = "productid", columnDefinition = "varchar(255)")
+    @Column(name = "productid")
     String productID;
     
-    @Column(name = "cpu", columnDefinition = "nvarchar(255)")
+    @Column(name = "cpu")
     String cpu;
     
-    @Column(name = "ram", columnDefinition = "nvarchar(255)")
+    @Column(name = "ram")
     String ram;
     
-    @Column(name = "ssd", columnDefinition = "nvarchar(255)")
+    @Column(name = "ssd")
     String ssd;
     
-    @Column(name = "vga", columnDefinition = "nvarchar(255)")
+    @Column(name = "vga")
     String vga;
     
-    @Column(name = "screen", columnDefinition = "nvarchar(255)")
+    @Column(name = "screen")
     String screen;
     
-    @Column(name = "weight", columnDefinition = "float")
+    @Column(name = "weight")
     Float weight;
     
-    @Column(name = "connect", columnDefinition = "nvarchar(255)")
+    @Column(name = "connect")
     String connect;
     
-    @Column(name = "battery", columnDefinition = "nvarchar(255)")
+    @Column(name = "battery")
     String battery;
     
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productid", columnDefinition = "varchar(255)")
+    @JoinColumn(name = "productid")
     private Products product;
 }
