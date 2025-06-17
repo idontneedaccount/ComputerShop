@@ -1,31 +1,50 @@
 package com.example.computershop.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "order_details")
+@Table(name = "Order_Details")
 public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_detail_id", columnDefinition = "varchar(255)")
+    @Column(name = "OrderDetailID", columnDefinition = "UNIQUEIDENTIFIER")
      String orderDetailID;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", columnDefinition = "varchar(255)")
+    @JoinColumn(name = "OrderID", referencedColumnName = "OrderID", columnDefinition = "UNIQUEIDENTIFIER")
      Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", columnDefinition = "nvarchar(255)")
+    @JoinColumn(name = "ProductID", referencedColumnName = "productID", columnDefinition = "UNIQUEIDENTIFIER")
      Products product;
 
-    @Column(name = "quantity", nullable = false)
+    @Column(name = "Quantity", nullable = false)
      Integer quantity;
 
-    @Column(name = "unit_price", nullable = false)
+    @Column(name = "UnitPrice", nullable = false)
      Long unitPrice;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "TotalPrice", insertable = false, updatable = false)
      Long totalPrice;
+    
+    @Override
+    public int hashCode() {
+        return orderDetailID != null ? orderDetailID.hashCode() : 0;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderDetail that = (OrderDetail) o;
+        return orderDetailID != null && orderDetailID.equals(that.orderDetailID);
+    }
 } 

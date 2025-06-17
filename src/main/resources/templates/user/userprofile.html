@@ -1,319 +1,272 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Thông tin cá nhân | ComputerShop</title>
-    <meta name="robots" content="noindex, follow" />
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Favicon -->
-    <link rel="shortcut icon" th:href="@{/assets/images/favicon.png}" type="image/x-icon">
-    <!-- CSS -->
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/font-awesome.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/flaticon/flaticon.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/slick.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/slick-theme.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/jquery-ui.min.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/sal.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/magnific-popup.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/base.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/style.min.css}">
-    
-    <!-- Custom CSS for Profile -->
-    <style>
-        .profile-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .profile-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        .profile-info {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        .order-history {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .order-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .order-card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-        .order-status {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .status-confirmed {
-            background: #d4edda;
-            color: #155724;
-        }
-        .status-shipping {
-            background: #cce5ff;
-            color: #004085;
-        }
-        .status-delivered {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .info-row:last-child {
-            border-bottom: none;
-        }
-        .info-label {
-            font-weight: 600;
-            color: #333;
-        }
-        .info-value {
-            color: #666;
-        }
-        .btn-view-details {
-            background: #ff6b35;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        .btn-view-details:hover {
-            background: #e55a2b;
-            color: white;
-            text-decoration: none;
-        }
-        .no-orders {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-        .no-orders i {
-            font-size: 60px;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
+<!doctype html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hồ sơ cá nhân</title>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <body class="sticky-header">
-    <!-- Header -->
-    <header th:replace="~{user/fragments/header :: header}"></header>
-    
-    <main class="main-wrapper">
-        <div class="profile-container">
-            <!-- Profile Header -->
-            <div class="profile-header text-center">
-                <h1>
-                    <i class="fas fa-user-circle me-3"></i>
-                    Thông tin cá nhân
-                </h1>
-                <p class="mb-0">Quản lý thông tin tài khoản và lịch sử mua hàng của bạn</p>
-            </div>
-            
-            <!-- Error Message -->
+
+<a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
+
+<header class="header axil-header header-style-5">
+    <div th:replace="~{user/fragments/header2 :: header}"></div>
+</header>
+
+<main class="main-wrapper">
+    <!-- Start My Account Area  -->
+    <div class="axil-dashboard-area axil-section-gap">
+        <div class="container">
+            <!-- Error message display -->
             <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-triangle me-2"></i>
                 <span th:text="${error}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             
-            <!-- Profile Information -->
-            <div class="profile-info">
-                <h3 class="mb-4">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Thông tin tài khoản
-                </h3>
-                
-                <div th:if="${user != null}">
-                    <div class="info-row">
-                        <span class="info-label">Họ và tên:</span>
-                        <span class="info-value" th:text="${user.fullName ?: 'Chưa cập nhật'}">Chưa cập nhật</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Tên đăng nhập:</span>
-                        <span class="info-value" th:text="${user.username}">Username</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Email:</span>
-                        <span class="info-value" th:text="${user.email}">email@example.com</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Số điện thoại:</span>
-                        <span class="info-value" th:text="${hasPhoneNumber ? user.phoneNumber : 'Chưa cập nhật'}">Chưa cập nhật</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Địa chỉ:</span>
-                        <span class="info-value" th:text="${hasAddress ? user.address : 'Chưa cập nhật'}">Chưa cập nhật</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Vai trò:</span>
-                        <span class="info-value">
-                            <span class="badge bg-primary" th:text="${user.role}">USER</span>
-                        </span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Trạng thái tài khoản:</span>
-                        <span class="info-value">
-                            <span th:if="${user.isActive}" class="badge bg-success">Đã kích hoạt</span>
-                            <span th:unless="${user.isActive}" class="badge bg-warning">Chưa kích hoạt</span>
-                        </span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Ngày tạo tài khoản:</span>
-                        <span class="info-value" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 00:00</span>
-                    </div>
-                    
-                    <div class="info-row" th:if="${isOAuth2}">
-                        <span class="info-label">Phương thức đăng nhập:</span>
-                        <span class="info-value">
-                            <span class="badge bg-info" th:text="${authProvider}">OAuth2</span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Order History -->
-            <div class="order-history">
-                <h3 class="mb-4">
-                    <i class="fas fa-shopping-bag me-2"></i>
-                    Lịch sử đặt hàng
-                    <span th:if="${hasOrders}" class="badge bg-secondary ms-2" th:text="${orders.size()}">0</span>
-                </h3>
-                
-                <!-- No Orders -->
-                <div th:unless="${hasOrders}" class="no-orders">
-                    <i class="fas fa-shopping-cart"></i>
-                    <h4>Chưa có đơn hàng nào</h4>
-                    <p>Bạn chưa thực hiện đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
-                    <a th:href="@{/user/shopping-page}" class="btn btn-primary mt-3">
-                        <i class="fas fa-shopping-cart me-2"></i>
-                        Bắt đầu mua sắm
-                    </a>
-                </div>
-                
-                <!-- Orders List -->
-                <div th:if="${hasOrders}">
-                    <div th:each="order : ${orders}" class="order-card">
-                        <div class="row align-items-center">
-                            <div class="col-md-3">
-                                <div class="order-info">
-                                    <h6 class="mb-1">
-                                        <i class="fas fa-receipt me-2"></i>
-                                        Đơn hàng #<span th:text="${order.id}">ORDER_ID</span>
-                                    </h6>
-                                    <small class="text-muted" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 00:00</small>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="order-status-section">
-                                    <span class="order-status"
-                                          th:classappend="${order.status == 'PENDING' ? 'status-pending' : 
-                                                          (order.status == 'CONFIRMED' ? 'status-confirmed' :
-                                                          (order.status == 'SHIPPING' ? 'status-shipping' :
-                                                          (order.status == 'DELIVERED' ? 'status-delivered' : 'status-cancelled')))}"
-                                          th:text="${order.status == 'PENDING' ? 'Đang xử lý' : 
-                                                   (order.status == 'CONFIRMED' ? 'Đã xác nhận' :
-                                                   (order.status == 'SHIPPING' ? 'Đang giao hàng' :
-                                                   (order.status == 'DELIVERED' ? 'Đã giao hàng' : 'Đã hủy')))}">
-                                        Đang xử lý
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="order-total">
-                                    <strong>
-                                        <i class="fas fa-dollar-sign me-1"></i>
-                                        <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
-                                    </strong>
-                                    <br>
-                                    <small class="text-muted" th:if="${order.orderDetails != null}">
-                                        <span th:text="${order.orderDetails.size()}">0</span> sản phẩm
-                                    </small>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3 text-end">
-                                <a th:href="@{/cart/order/{orderId}(orderId=${order.id})}" class="btn-view-details">
-                                    <i class="fas fa-eye me-2"></i>
-                                    Xem chi tiết
-                                </a>
-                            </div>
+            <div class="axil-dashboard-warp" th:if="${user}">
+                <div class="axil-dashboard-author">
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img th:src="@{/assets/images/product/author1.png}" alt="User Avatar">
                         </div>
-                        
-                        <!-- Order Summary (collapsed by default) -->
-                        <div th:if="${order.orderDetails != null && !order.orderDetails.isEmpty()}" class="mt-3 pt-3 border-top">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="mb-2">Sản phẩm đầu tiên:</h6>
-                                    <div th:if="${order.orderDetails.size() > 0}">
-                                        <span th:text="${order.orderDetails[0].product.name}">Product Name</span>
-                                        <small class="text-muted">
-                                            x <span th:text="${order.orderDetails[0].quantity}">1</span>
-                                        </small>
-                                    </div>
-                                    <div th:if="${order.orderDetails.size() > 1}">
-                                        <small class="text-muted">
-                                            và <span th:text="${order.orderDetails.size() - 1}">0</span> sản phẩm khác...
-                                        </small>
+                        <div class="media-body">
+                            <h5 class="title mb-0">Xin chào <span th:text="${user.fullName}"></span>!</h5>
+                            <span class="joining-date">Thành viên từ <span th:text="${#temporals.format(user.createdAt, 'MMM yyyy')}"></span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-3 col-md-4">
+                        <aside class="axil-dashboard-aside">
+                            <nav class="axil-dashboard-nav">
+                                <div class="nav nav-tabs" role="tablist">
+                                    <a class="nav-item nav-link active" data-bs-toggle="tab" href="#nav-dashboard" role="tab" aria-selected="true"><i class="fas fa-th-large"></i>Tổng quan</a>
+                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-orders" role="tab" aria-selected="false"><i class="fas fa-shopping-basket"></i>Đơn hàng</a>
+                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-address" role="tab" aria-selected="false"><i class="fas fa-home"></i>Địa chỉ</a>
+                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-account" role="tab" aria-selected="false"><i class="fas fa-user"></i>Thông tin tài khoản</a>
+                                    <a class="nav-item nav-link" href="/logout"><i class="fal fa-sign-out"></i>Đăng xuất</a>
+                                </div>
+                            </nav>
+                        </aside>
+                    </div>
+                    <div class="col-xl-9 col-md-8">
+                        <div class="tab-content">
+                            <!-- Dashboard Tab -->
+                            <div class="tab-pane fade show active" id="nav-dashboard" role="tabpanel">
+                                <div class="axil-dashboard-overview">
+                                    <div class="welcome-text">Xin chào <span th:text="${user.fullName}"></span>! (không phải <span th:text="${user.fullName}"></span>? <a href="/logout">Đăng xuất</a>)</div>
+                                    <p>Từ trang tổng quan tài khoản, bạn có thể xem các đơn hàng gần đây, quản lý địa chỉ giao hàng và thanh toán, cũng như chỉnh sửa mật khẩu và thông tin tài khoản của mình.</p>
+                                    
+                                    <!-- User Info Summary -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h6 class="card-title"><i class="fas fa-info-circle"></i> Thông tin cơ bản</h6>
+                                                    <p class="card-text">
+                                                        <!-- GitHub users: chỉ hiển thị username -->
+                                                        <span th:if="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                            <strong>GitHub Username:</strong> 
+                                                            <span th:text="${user.email.replace('@github.com', '')}" 
+                                                                  style="font-family: monospace; color: #007bff; font-size: 1.1em;">
+                                                            </span><br>
+                                                        </span>
+                                                        
+                                                        <!-- Các OAuth2 khác hoặc form login: hiển thị email -->
+                                                        <span th:unless="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                            <strong>Email:</strong> <span th:text="${user.email}"></span><br>
+                                                        </span>
+                                                        
+                                                        <strong>Vai trò:</strong> <span class="badge" th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' : 'bg-success'" th:text="${user.role.name()}"></span><br>
+                                                        <strong>Trạng thái:</strong> <span class="badge" th:classappend="${user.active} ? 'bg-success' : 'bg-warning'" th:text="${user.active} ? 'Đã kích hoạt' : 'Chưa kích hoạt'"></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h6 class="card-title"><i class="fas fa-shield-alt"></i> Bảo mật</h6>
+                                                    <p class="card-text">
+                                                        <strong>Phương thức đăng nhập:</strong> 
+                                                        <span th:if="${isOAuth2}" class="badge bg-info">
+                                                            <i class="fab" th:classappend="${'fa-' + authProvider}"></i> 
+                                                            <span th:text="${authProvider}"></span>
+                                                        </span>
+                                                        <span th:unless="${isOAuth2}" class="badge bg-primary">Mật khẩu</span><br>
+                                                        <strong>Tài khoản bị khóa:</strong> <span th:text="${user.isAccountLocked} ? 'Có' : 'Không'"></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <h6 class="mb-2">Thông tin giao hàng:</h6>
-                                    <small class="text-muted">
-                                        <i class="fas fa-user me-1"></i>
-                                        <span th:text="${order.fullName}">Customer Name</span>
-                                    </small><br>
-                                    <small class="text-muted">
-                                        <i class="fas fa-phone me-1"></i>
-                                        <span th:text="${order.phone}">Phone</span>
-                                    </small><br>
-                                    <small class="text-muted">
-                                        <i class="fas fa-map-marker-alt me-1"></i>
-                                        <span th:text="${order.shippingAddress}">Address</span>
-                                    </small>
+                            </div>
+                            
+                            <!-- Orders Tab -->
+                            <div class="tab-pane fade" id="nav-orders" role="tabpanel">
+                                <div class="axil-dashboard-order">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">Mã đơn</th>
+                                                <th scope="col">Ngày</th>
+                                                <th scope="col">Trạng thái</th>
+                                                <th scope="col">Tổng tiền</th>
+                                                <th scope="col">Thao tác</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <!-- Show when user has no orders -->
+                                            <tr th:if="${!hasOrders}">
+                                                <td colspan="5" class="text-center py-4">
+                                                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                                    <h5>Bạn chưa có đơn hàng nào</h5>
+                                                    <p class="text-muted">Hãy bắt đầu mua sắm để xem lịch sử đơn hàng tại đây!</p>
+                                                    <a th:href="@{/user/shopping-page}" class="btn btn-primary">
+                                                        <i class="fas fa-shopping-cart me-2"></i>Bắt đầu mua sắm
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            
+                                            <!-- Show orders when user has orders -->
+                                            <tr th:if="${hasOrders}" th:each="order : ${orders}">
+                                                <td>
+                                                    <strong>#<span th:text="${order.id}"></span></strong>
+                                                </td>
+                                                <td>
+                                                    <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></span><br>
+                                                    <small class="text-muted" th:text="${#temporals.format(order.orderDate, 'HH:mm')}"></small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge" 
+                                                          th:classappend="${order.status == 'PENDING' ? 'bg-warning' : 
+                                                                          (order.status == 'CONFIRMED' ? 'bg-info' :
+                                                                          (order.status == 'SHIPPING' ? 'bg-primary' :
+                                                                          (order.status == 'DELIVERED' ? 'bg-success' : 'bg-danger')))}"
+                                                          th:text="${order.status == 'PENDING' ? 'Đang xử lý' : 
+                                                                   (order.status == 'CONFIRMED' ? 'Đã xác nhận' :
+                                                                   (order.status == 'SHIPPING' ? 'Đang giao hàng' :
+                                                                   (order.status == 'DELIVERED' ? 'Đã giao hàng' : 'Đã hủy')))}">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <strong class="text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></strong><br>
+                                                    <small class="text-muted" th:if="${order.orderDetails != null}" th:text="${order.orderDetails.size()} + ' sản phẩm'"></small>
+                                                </td>
+                                                <td>
+                                                    <a th:href="@{/cart/order/{orderId}(orderId=${order.id})}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> Xem chi tiết
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Address Tab -->
+                            <div class="tab-pane fade" id="nav-address" role="tabpanel">
+                                <div class="axil-dashboard-address">
+                                    <p class="notice-text">Địa chỉ sau sẽ được sử dụng mặc định khi thanh toán.</p>
+                                    <div class="row row--30">
+                                        <div class="col-lg-6">
+                                            <div class="address-info mb--40">
+                                                <div class="addrss-header d-flex align-items-center justify-content-between">
+                                                    <h4 class="title mb-0">Địa chỉ giao hàng</h4>
+                                                    <a href="#" class="address-edit"><i class="far fa-edit"></i></a>
+                                                </div>
+                                                <ul class="address-details">
+                                                    <li>Tên: <span th:text="${user.fullName}"></span></li>
+                                                    
+                                                    <!-- GitHub users: hiển thị username -->
+                                                    <li th:if="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                        GitHub: <span th:text="${user.email.replace('@github.com', '')}" 
+                                                                      style="font-family: monospace; color: #007bff;">
+                                                        </span>
+                                                    </li>
+                                                    
+                                                    <!-- Các OAuth2 khác hoặc form login: hiển thị email -->
+                                                    <li th:unless="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                        Email: <span th:text="${user.email}"></span>
+                                                    </li>
+                                                    
+                                                    <li>Điện thoại: <span th:text="${hasPhoneNumber} ? ${user.phoneNumber} : 'Chưa cập nhật'"></span></li>
+                                                    <li class="mt--30" th:text="${hasAddress} ? ${user.address} : 'Chưa cập nhật địa chỉ'"></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Details Tab -->
+                            <div class="tab-pane fade" id="nav-account" role="tabpanel">
+                                <div class="col-lg-9">
+                                    <div class="axil-dashboard-account">
+                                        <form class="account-details-form" th:action="@{/user/update-profile}" method="post">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label>Họ và tên</label>
+                                                        <input type="text" class="form-control" name="fullName" th:value="${user.fullName}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <!-- GitHub users: hiển thị username thay vì email -->
+                                                    <div class="form-group" th:if="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                        <label>GitHub Username</label>
+                                                        <input type="text" class="form-control" 
+                                                               th:value="${user.email.replace('@github.com', '')}" 
+                                                               readonly
+                                                               style="font-family: monospace; background-color: #f8f9fa; color: #007bff;">
+                                                    </div>
+                                                    
+                                                    <!-- Các OAuth2 khác hoặc form login: hiển thị email -->
+                                                    <div class="form-group" th:unless="${authProvider == 'github' and user.email.endsWith('@github.com')}">
+                                                        <label>Email</label>
+                                                        <input type="email" class="form-control" th:value="${user.email}" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Số điện thoại</label>
+                                                        <input type="text" class="form-control" name="phoneNumber" th:value="${user.phoneNumber}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb--40">
+                                                        <label>Địa chỉ</label>
+                                                        <textarea class="form-control" name="address" rows="3" th:text="${user.address}"></textarea>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Password change section - only for non-OAuth2 users -->
+                                                <div class="col-12" th:unless="${isOAuth2}">
+                                                    <h5 class="title">Đổi mật khẩu</h5>
+                                                    <div class="form-group">
+                                                        <label>Mật khẩu hiện tại</label>
+                                                        <input type="password" class="form-control" name="currentPassword">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Mật khẩu mới</label>
+                                                        <input type="password" class="form-control" name="newPassword">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Xác nhận mật khẩu mới</label>
+                                                        <input type="password" class="form-control" name="confirmPassword">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-group mb--0">
+                                                    <input type="submit" class="axil-btn" value="Lưu thay đổi">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -321,25 +274,18 @@
                 </div>
             </div>
         </div>
-    </main>
-    
-    <!-- Footer -->
-    <footer th:replace="~{user/fragments/footer :: footer}"></footer>
-    
-    <!-- JS -->
-    <script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.js}"></script>
-    <script th:src="@{/assets/js/vendor/popper.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/slick.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/js.cookie.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery-ui.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.ui.touch-punch.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.countdown.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/sal.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.magnific-popup.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/imagesloaded.pkgd.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/isotope.pkgd.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/counterup.js}"></script>
-    <script th:src="@{/assets/js/vendor/waypoints.min.js}"></script>
- 
+    </div>
+    <!-- End My Account Area  -->
+</main>
+
+<div th:replace="~{user/fragments/footer :: footer}"></div>
+
+<div th:replace="~{user/fragments/quickreview :: quickreview}"></div>
+
+<div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
+
+<div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
+
+
+</body>
+</html>

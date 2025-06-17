@@ -1,0 +1,159 @@
+/* Cart Page Custom Styles */
+
+/* Prevent table flickering */
+.axil-product-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.axil-product-table td {
+    vertical-align: middle;
+}
+
+/* Fixed column widths to prevent jumping */
+.product-remove { width: 50px; }
+.product-thumbnail { width: 100px; }
+.product-title { width: auto; }
+.product-price { width: 120px; }
+.product-quantity { width: 180px; }
+.product-subtotal { width: 120px; }
+
+.empty-cart-message {
+    padding: 40px;
+    text-align: center;
+}
+
+.product-brand {
+    color: #777;
+    font-size: 12px;
+}
+
+.quantity-form {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    max-width: 200px;
+}
+
+.quantity-input {
+    width: 80px !important;
+    height: 40px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.quantity-input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.axil-btn.btn-outline.btn-sm {
+    height: 40px;
+    padding: 8px 16px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Clean up any theme conflicts */
+.product-quantity .quantity-form {
+    margin: 0;
+}
+
+/* Smooth transitions */
+.axil-product-table img {
+    transition: opacity 0.3s ease;
+}
+
+.axil-product-table tr {
+    transition: background-color 0.2s ease;
+}
+
+.axil-product-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Product thumbnail styles */
+.product-thumbnail img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Cart action button styles */
+.cart-clear {
+    color: #dc3545;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.cart-clear:hover {
+    color: #c82333;
+    text-decoration: underline;
+}
+
+/* Order summary styles */
+.axil-order-summery {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.summery-table {
+    background: white;
+}
+
+.summery-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-total {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.order-total-amount {
+    color: #ff6b35;
+}
+
+/* Shipping options */
+.input-group {
+    margin-bottom: 10px;
+}
+
+.input-group input[type="radio"] {
+    margin-right: 8px;
+}
+
+.input-group label {
+    cursor: pointer;
+    font-weight: normal;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .axil-product-table {
+        font-size: 14px;
+    }
+    
+    .product-thumbnail img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .quantity-form {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .quantity-input {
+        width: 60px !important;
+    }
+} 

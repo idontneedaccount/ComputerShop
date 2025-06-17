@@ -10,38 +10,38 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Entity
-@Table(name = "product_specifications")
+@Table(name = "Product_Specifications")
 public class ProductSpecifications {
     @Id
-    @Column(name = "productid")
+    @Column(name = "productID", columnDefinition = "UNIQUEIDENTIFIER")
     String productID;
     
-    @Column(name = "cpu")
+    @Column(name = "cpu", columnDefinition = "NVARCHAR(255)")
     String cpu;
     
-    @Column(name = "ram")
+    @Column(name = "ram", columnDefinition = "NVARCHAR(255)")
     String ram;
     
-    @Column(name = "ssd")
+    @Column(name = "ssd", columnDefinition = "NVARCHAR(255)")
     String ssd;
     
-    @Column(name = "vga")
+    @Column(name = "vga", columnDefinition = "NVARCHAR(255)")
     String vga;
     
-    @Column(name = "screen")
+    @Column(name = "screen", columnDefinition = "NVARCHAR(255)")
     String screen;
     
     @Column(name = "weight")
     Float weight;
     
-    @Column(name = "connect")
+    @Column(name = "connect", columnDefinition = "NVARCHAR(255)")
     String connect;
     
-    @Column(name = "battery")
+    @Column(name = "battery", columnDefinition = "NVARCHAR(255)")
     String battery;
     
     @OneToOne
     @MapsId
-    @JoinColumn(name = "productid")
+    @JoinColumn(name = "productID", referencedColumnName = "productID", columnDefinition = "UNIQUEIDENTIFIER")
     private Products product;
 }

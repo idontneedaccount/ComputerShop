@@ -19,6 +19,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/cart")
@@ -361,7 +363,7 @@ public class CartController {
                 return REDIRECT_CART_VIEW;
             }
             
-            // Create order object
+            // Create order object - using new Order entity structure
             Order order = new Order();
             order.setFullName(fullName);
             order.setEmail(email);
@@ -384,10 +386,10 @@ public class CartController {
                     
                     Long price = product.getPrice().longValue();
                     detail.setUnitPrice(price);
-                    detail.setTotalPrice(price * cartItem.getQuantity());
+                    // TotalPrice is computed column, will be calculated by database
                     
                     orderDetails.add(detail);
-                    total += detail.getTotalPrice();
+                    total += price * cartItem.getQuantity();
                 }
             }
             
@@ -409,11 +411,18 @@ public class CartController {
                 return "Cart/checkout";
             }
             
-            // Set user for order before saving
-            order.setUser(user);
+            // Set user ID and product ID for order before saving
+            order.setUserId(user.getUserId());
+            // For multiple products, we'll set productId to null or first product
+            if (!orderDetails.isEmpty()) {
+                order.setProductId(orderDetails.get(0).getProduct().getProductID());
+            }
             
             // Save order
             Order savedOrder = orderService.createOrder(order, orderDetails);
+            
+            // Clear cart after successful order
+            cartRepository.deleteAll(userCart);
             
             // Manually set order details to avoid lazy loading issues
             savedOrder.setOrderDetails(orderDetails);
@@ -444,8 +453,8 @@ public class CartController {
             if (principal != null) {
                 String username = principal.getName();
                 User user = userRepository.findByUsername(username).orElse(null);
-                if (user != null && order.getUser() != null) {
-                    if (!order.getUser().getUserId().equals(user.getUserId()) && 
+                if (user != null && order.getUserId() != null) {
+                    if (!order.getUserId().equals(user.getUserId()) && 
                         !user.getRole().name().equals("ADMIN")) {
                         model.addAttribute(ERROR, "Bạn không có quyền xem đơn hàng này!");
                         return REDIRECT_CART_VIEW;
@@ -489,5 +498,15 @@ public class CartController {
         }
         
         return result.toString();
+    }
+    
+    // Endpoint để lấy số lượng sản phẩm trong giỏ hàng (cho AJAX)
+    @GetMapping("/count")
+    @ResponseBody
+    public Map<String, Object> getCartCount(Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        int count = cartCount(principal);
+        response.put("count", count);
+        return response;
     }
 }

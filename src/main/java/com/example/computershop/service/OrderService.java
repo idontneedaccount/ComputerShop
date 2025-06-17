@@ -10,8 +10,8 @@ public interface OrderService {
     Order getOrderById(String id);
     Order getOrderByIdWithDetails(String id);
     List<Order> getAllOrders();
-    List<Order> getOrdersByUser(User user);
-    List<Order> getOrdersByUserWithDetails(User user);
+    List<Order> getOrdersByUser(String userId);
+    List<Order> getOrdersByUserWithDetails(String userId);
     
     // Admin methods
     List<Order> getOrdersByStatus(String status);

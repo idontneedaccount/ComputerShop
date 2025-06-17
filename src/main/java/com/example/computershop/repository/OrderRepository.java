@@ -14,13 +14,13 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Override
     Optional<Order> findById(String orderId);
     
-    List<Order> findByUserOrderByOrderDateDesc(User user);
+    List<Order> findByUserIdOrderByOrderDateDesc(String userId);
     
     @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails WHERE o.id = :orderId")
     Optional<Order> findByIdWithDetails(@Param("orderId") String orderId);
     
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails WHERE o.user = :user ORDER BY o.orderDate DESC")
-    List<Order> findByUserWithDetails(@Param("user") User user);
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails WHERE o.userId = :userId ORDER BY o.orderDate DESC")
+    List<Order> findByUserWithDetails(@Param("userId") String userId);
     
     List<Order> findByStatus(String status);
     

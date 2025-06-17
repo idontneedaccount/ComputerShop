@@ -33,12 +33,12 @@ public class OrderServiceImpl implements OrderService {
             // Save order details
             for (OrderDetail detail : orderDetails) {
                 detail.setOrder(savedOrder);
-                detail.setTotalPrice(detail.getUnitPrice() * detail.getQuantity());
+                // TotalPrice is a computed column, don't set it
                 orderDetailRepository.save(detail);
             }
             
-            // Set the details back for returning
-            savedOrder.setOrderDetails(orderDetails);
+            // Don't set orderDetails back to avoid circular reference issues
+            // The controller should handle this if needed
             
             return savedOrder;
         } catch (Exception e) {
@@ -66,14 +66,14 @@ public class OrderServiceImpl implements OrderService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<Order> getOrdersByUser(User user) {
-        return orderRepository.findByUserOrderByOrderDateDesc(user);
+    public List<Order> getOrdersByUser(String userId) {
+        return orderRepository.findByUserIdOrderByOrderDateDesc(userId);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<Order> getOrdersByUserWithDetails(User user) {
-        return orderRepository.findByUserWithDetails(user);
+    public List<Order> getOrdersByUserWithDetails(String userId) {
+        return orderRepository.findByUserWithDetails(userId);
     }
     
     @Override

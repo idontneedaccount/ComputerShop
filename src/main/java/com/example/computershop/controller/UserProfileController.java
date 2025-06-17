@@ -35,7 +35,7 @@ public class UserProfileController {
             model.addAttribute("hasAddress", profileData.hasAddress());
             
             // Thêm lịch sử đặt hàng
-            List<Order> userOrders = orderService.getOrdersByUserWithDetails(profileData.getUser());
+            List<Order> userOrders = orderService.getOrdersByUserWithDetails(profileData.getUser().getUserId());
             model.addAttribute("orders", userOrders);
             model.addAttribute("hasOrders", !userOrders.isEmpty());
             

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "carts")
+@Table(name = "Carts")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +18,7 @@ import jakarta.persistence.*;
 public class Cart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "cart_id", columnDefinition = "varchar(255)")
+    @Column(name = "CartID", columnDefinition = "UNIQUEIDENTIFIER")
     private String cartId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,13 +26,13 @@ public class Cart implements Serializable {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", columnDefinition = "nvarchar(255)")
+    @JoinColumn(name = "product_id", referencedColumnName = "productid", columnDefinition = "nvarchar(255)")
     private Products product;
 
-    @Column(nullable = false)
+    @Column(name = "Quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "created_at")
+    @Column(name = "CreatedAt")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Cart(Products product, Integer quantity) {
