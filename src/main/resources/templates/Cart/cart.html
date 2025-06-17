@@ -20,15 +20,35 @@
     <link rel="stylesheet" th:href="@{/assets/css/vendor/magnific-popup.css}">
     <link rel="stylesheet" th:href="@{/assets/css/vendor/base.css}">
     <link rel="stylesheet" th:href="@{/assets/css/style.min.css}">
+    <!-- Cart Page Custom CSS -->
+    <link rel="stylesheet" th:href="@{/assets/css/cart-custom.css}">
 </head>
 <body class="sticky-header">
+    <!-- Back to top start -->
+    <a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
+    <!-- Back to top end -->
     <!-- Header -->
-    <header th:replace="~{user/fragments/header :: header}"></header>
+    <header class="header axil-header header-style-5">
+        <div th:replace="~{user/fragments/header2 :: header}"></div>
+    </header>
     
     <main class="main-wrapper">
         <!-- Start Cart Area  -->
         <div class="axil-product-cart-area axil-section-gap">
             <div class="container">
+                <!-- Success/Error Messages -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
                 <div class="axil-product-cart-wrap">
                     <div class="product-table-heading">
                         <h4 class="title">Your Cart</h4>
@@ -66,18 +86,19 @@
                                         </a>
                                     </td>
                                     <td class="product-thumbnail">
-                                        <a th:href="@{'/product/' + ${item.product.productID}}">
+                                        <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}">
                                             <img th:if="${item.product.imageURL != null}" 
-                                                 th:src="@{'/assets/images/product/' + ${item.product.imageURL}}" 
+                                                 th:src="@{'/assets/images/product/laptop/' + ${item.product.imageURL}}" 
                                                  alt="Product Image"
-                                                 onerror="this.src='/assets/images/product/placeholder.jpg'">
+                                                 style="width: 80px; height: 80px; object-fit: cover;">
                                             <img th:unless="${item.product.imageURL != null}" 
-                                                 th:src="@{/assets/images/product/placeholder.jpg}" 
-                                                 alt="Product Image">
+                                                 th:src="@{/assets/images/product/laptop/default.jpg}" 
+                                                 alt="Product Image"
+                                                 style="width: 80px; height: 80px; object-fit: cover;">
                                         </a>
                                     </td>
                                     <td class="product-title">
-                                        <a th:href="@{'/product/' + ${item.product.productID}}" 
+                                        <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}" 
                                            th:text="${item.product.name}">Product Name</a>
                                         <div class="product-brand" th:if="${item.product.brand != null}">
                                             <small th:text="${item.product.brand}">Brand</small>
@@ -160,7 +181,12 @@
     </main>
     
     <!-- Footer -->
-    <footer th:replace="~{user/fragments/footer :: footer}"></footer>
+    <div th:replace="~{user/fragments/footer :: footer}"></div>
+    
+    <!-- Additional fragments -->
+    <div th:replace="~{user/fragments/quickreview :: quickreview}"></div>
+    <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
+    <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
     
     <!-- JS -->
     <script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
@@ -179,46 +205,5 @@
     <script th:src="@{/assets/js/vendor/counterup.js}"></script>
     <script th:src="@{/assets/js/vendor/waypoints.min.js}"></script>
     <script th:src="@{/assets/js/main.js}"></script>
-
-    <style>
-        .empty-cart-message {
-            padding: 40px;
-            text-align: center;
-        }
-        .product-brand {
-            color: #777;
-            font-size: 12px;
-        }
-        .quantity-form {
-            display: flex !important;
-            align-items: center;
-            gap: 10px;
-            max-width: 200px;
-        }
-        .quantity-input {
-            width: 80px !important;
-            height: 40px;
-            padding: 8px;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .quantity-input:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-        .axil-btn.btn-outline.btn-sm {
-            height: 40px;
-            padding: 8px 16px;
-            font-size: 12px;
-            white-space: nowrap;
-        }
-        /* Clean up any theme conflicts */
-        .product-quantity .quantity-form {
-            margin: 0;
-        }
-    </style>
 </body>
 </html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Admin Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-dark sidebar vh-100">
+                <div class="sidebar-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/admin/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white active" href="/admin/orders">
+                                <i class="fas fa-shopping-cart me-2"></i>Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/admin/orders/statistics">
+                                <i class="fas fa-chart-bar me-2"></i>Statistics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/admin/products">
+                                <i class="fas fa-box me-2"></i>Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/admin/users">
+                                <i class="fas fa-users me-2"></i>Users
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-10 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Order Management</h1>
+                </div>
+
+                <!-- Alert Messages -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Filter Form -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" action="/admin/orders">
+                            <div class="row align-items-end">
+                                <div class="col-md-4">
+                                    <label for="status" class="form-label">Filter by Status:</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="">All Orders</option>
+                                        <option th:each="status : ${statusOptions}" 
+                                                th:value="${status}" 
+                                                th:text="${status}"
+                                                th:selected="${status == selectedStatus}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-filter me-1"></i>Filter
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <span class="badge bg-info fs-6">
+                                        Total Orders: <span th:text="${#lists.size(orders)}"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Orders List</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(orders)}" class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No orders found.</p>
+                        </div>
+
+                        <div th:if="${!#lists.isEmpty(orders)}" class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Order Date</th>
+                                        <th>Status</th>
+                                        <th>Total Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="order : ${orders}">
+                                        <td>
+                                            <strong th:text="${order.id}"></strong>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <div th:text="${order.user.username}"></div>
+                                                <small class="text-muted" th:text="${order.user.email}"></small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" 
+                                                  th:classappend="${order.status == 'PENDING'} ? 'bg-warning text-dark' : 
+                                                                 (${order.status == 'CONFIRMED'} ? 'bg-info' : 
+                                                                 (${order.status == 'PROCESSING'} ? 'bg-primary' : 
+                                                                 (${order.status == 'SHIPPED'} ? 'bg-secondary' : 
+                                                                 (${order.status == 'DELIVERED'} ? 'bg-success' : 'bg-danger'))))"
+                                                  th:text="${order.status}"></span>
+                                        </td>
+                                        <td>
+                                            <strong>$<span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')}"></span></strong>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{'/admin/orders/' + ${order.id}}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

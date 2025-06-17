@@ -12,16 +12,18 @@ import com.example.computershop.repository.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.SessionStatus;
+
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/cart")
-@SessionAttributes("cart")
 public class CartController {
     private static final String REDIRECT_ERROR = "redirect:/error";
     private static final String REDIRECT_CART_VIEW = "redirect:/cart/view";
@@ -39,8 +41,21 @@ public class CartController {
         this.userRepository = userRepository;
     }
 
-    @ModelAttribute("cart")
-    public List<Cart> cart(Principal principal) {
+    @ModelAttribute("cartCount")
+    public int cartCount(Principal principal) {
+        if (principal != null) {
+            String username = principal.getName();
+            User user = userRepository.findByUsername(username).orElse(null);
+            if (user != null) {
+                List<Cart> userCart = cartRepository.findByUser(user);
+                return userCart.stream().mapToInt(Cart::getQuantity).sum();
+            }
+        }
+        return 0;
+    }
+    
+    // Helper method to get current user's cart from database
+    private List<Cart> getCurrentUserCart(Principal principal) {
         if (principal != null) {
             String username = principal.getName();
             User user = userRepository.findByUsername(username).orElse(null);
@@ -49,12 +64,6 @@ public class CartController {
             }
         }
         return new ArrayList<>();
-    }
-
-    @ModelAttribute("cartCount")
-    public int cartCount(@ModelAttribute("cart") List<Cart> cart) {
-        if (cart == null) return 0;
-        return cart.stream().mapToInt(Cart::getQuantity).sum();
     }
 
     // Helper method to load product for CartItem
@@ -78,50 +87,98 @@ public class CartController {
 
     @RequestMapping(value = "/add/{id}", method = {RequestMethod.GET, RequestMethod.POST})
     public String add(@PathVariable String id, @RequestParam(defaultValue = "1") int sl,
-                      @ModelAttribute("cart") List<Cart> cart,
-                      Principal principal) {
+                      Principal principal,
+                      RedirectAttributes redirectAttributes) {
         try {
+            // Validate input
+            if (sl <= 0) {
+                redirectAttributes.addFlashAttribute("error", "Số lượng phải lớn hơn 0!");
+                return REDIRECT_CART_VIEW;
+            }
+            
             Products sp = repo.findById(id).orElse(null);
             if(sp == null){
-                return REDIRECT_ERROR;
+                redirectAttributes.addFlashAttribute("error", "Sản phẩm không tồn tại!");
+                return REDIRECT_CART_VIEW;
             }
+            
+            // Kiểm tra sản phẩm còn hoạt động
+            if (sp.getIsActive() == null || !sp.getIsActive()) {
+                redirectAttributes.addFlashAttribute("error", "Sản phẩm này hiện không còn bán!");
+                return REDIRECT_CART_VIEW;
+            }
+            
             // Lấy user hiện tại
-            if (principal == null) return REDIRECT_ERROR;
+            if (principal == null) {
+                redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để thêm vào giỏ hàng!");
+                return "redirect:/auth/login";
+            }
             String username = principal.getName();
             
-            // Lấy user hiện tại từ username
             User user = userRepository.findByUsername(username).orElse(null);
-            if (user == null) return REDIRECT_ERROR;
-            // Kiểm tra sản phẩm đã có trong giỏ của user chưa
-            for(Cart c : cart){
-                if(c.getProduct().getProductID().equals(id) && c.getUser().getUserId().equals(user.getUserId())){
-                    c.setQuantity(c.getQuantity()+sl);
-                    cartRepository.save(c);
-                    return REDIRECT_CART_VIEW;
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy thông tin người dùng!");
+                return "redirect:/auth/login";
+            }
+            
+            // Get current user's cart from database
+            List<Cart> userCart = cartRepository.findByUser(user);
+            
+            // Kiểm tra tồn kho
+            int currentCartQuantity = 0;
+            Cart existingCartItem = null;
+            for(Cart c : userCart){
+                if(c.getProduct().getProductID().equals(id)){
+                    currentCartQuantity = c.getQuantity();
+                    existingCartItem = c;
+                    break;
                 }
             }
-            // Thêm mới vào giỏ hàng
-            Cart newItem = new Cart();
-            newItem.setProduct(sp);
-            newItem.setQuantity(sl);
-            newItem.setUser(user);
-            cart.add(newItem);
-            cartRepository.save(newItem);
+            
+            int totalRequestedQuantity = currentCartQuantity + sl;
+            if (totalRequestedQuantity > sp.getQuantity()) {
+                redirectAttributes.addFlashAttribute("error", 
+                    String.format("Không đủ hàng trong kho! Hiện tại chỉ còn %d sản phẩm, bạn đã có %d trong giỏ hàng.", 
+                    sp.getQuantity(), currentCartQuantity));
+                return REDIRECT_CART_VIEW;
+            }
+            
+            // Cập nhật hoặc thêm mới vào giỏ hàng
+            if (existingCartItem != null) {
+                existingCartItem.setQuantity(totalRequestedQuantity);
+                cartRepository.save(existingCartItem);
+                redirectAttributes.addFlashAttribute("success", 
+                    String.format("Đã cập nhật số lượng sản phẩm '%s' trong giỏ hàng!", sp.getName()));
+            } else {
+                Cart newItem = new Cart();
+                newItem.setProduct(sp);
+                newItem.setQuantity(sl);
+                newItem.setUser(user);
+                newItem.setCreatedAt(LocalDateTime.now());
+                cartRepository.save(newItem);
+                redirectAttributes.addFlashAttribute("success", 
+                    String.format("Đã thêm sản phẩm '%s' vào giỏ hàng!", sp.getName()));
+            }
+            
             return REDIRECT_CART_VIEW;
             
         } catch (Exception e) {
-            return REDIRECT_ERROR;
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi thêm vào giỏ hàng: " + e.getMessage());
+            return REDIRECT_CART_VIEW;
         }
     }
 
     @GetMapping("/view")
-    public String view(Model model, @ModelAttribute("cart") List<Cart> cart) {
+    public String view(Model model, Principal principal) {
         try {
+            // Get current user's cart from database
+            List<Cart> userCart = getCurrentUserCart(principal);
+            
             // Create list of cart items with loaded products for display
             List<CartItemDisplay> displayItems = new ArrayList<>();
             java.math.BigDecimal total = java.math.BigDecimal.ZERO;
             
-            for (Cart item : cart) {
+            for (Cart item : userCart) {
                 Products product = loadProduct(item);
                 if (product != null) {
                     displayItems.add(new CartItemDisplay(product, item.getQuantity()));
@@ -143,45 +200,88 @@ public class CartController {
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable String id, @RequestParam int sl,
-                         @ModelAttribute("cart") List<Cart> cart,
-                         Principal principal) {
+                         Principal principal,
+                         RedirectAttributes redirectAttributes) {
         try {
-            if (principal == null) return REDIRECT_ERROR;
+            // Validate input
+            if (sl <= 0) {
+                redirectAttributes.addFlashAttribute("error", "Số lượng phải lớn hơn 0!");
+                return REDIRECT_CART_VIEW;
+            }
+            
+            if (principal == null) {
+                redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập!");
+                return "redirect:/auth/login";
+            }
+            
             String username = principal.getName();
             User user = userRepository.findByUsername(username).orElse(null);
-            if (user == null) return REDIRECT_ERROR;
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy thông tin người dùng!");
+                return "redirect:/auth/login";
+            }
             
-            cart.forEach(c->{
-                if(c.getProduct().getProductID().equals(id) && c.getUser().getUserId().equals(user.getUserId())){
+            // Tìm sản phẩm để kiểm tra tồn kho
+            Products product = repo.findById(id).orElse(null);
+            if (product == null) {
+                redirectAttributes.addFlashAttribute("error", "Sản phẩm không tồn tại!");
+                return REDIRECT_CART_VIEW;
+            }
+            
+            // Kiểm tra tồn kho
+            if (sl > product.getQuantity()) {
+                redirectAttributes.addFlashAttribute("error", 
+                    String.format("Không đủ hàng trong kho! Chỉ còn %d sản phẩm.", product.getQuantity()));
+                return REDIRECT_CART_VIEW;
+            }
+            
+            // Get current user's cart from database
+            List<Cart> userCart = cartRepository.findByUser(user);
+            
+            boolean updated = false;
+            for(Cart c : userCart){
+                if(c.getProduct().getProductID().equals(id)){
                     c.setQuantity(sl);
                     cartRepository.save(c); // Cập nhật database
+                    updated = true;
+                    break;
                 }
-            });
+            }
+            
+            if (updated) {
+                redirectAttributes.addFlashAttribute("success", 
+                    String.format("Đã cập nhật số lượng sản phẩm '%s' thành %d!", product.getName(), sl));
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm trong giỏ hàng!");
+            }
+            
             return REDIRECT_CART_VIEW;
         } catch (Exception e) {
-            return REDIRECT_ERROR;
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi cập nhật giỏ hàng: " + e.getMessage());
+            return REDIRECT_CART_VIEW;
         }
     }
 
     @GetMapping("/remove/{id}")
-    public String remove(@PathVariable String id, @ModelAttribute("cart") List<Cart> cart,
-                        Principal principal) {
+    public String remove(@PathVariable String id, Principal principal) {
         try {
             if (principal == null) return REDIRECT_ERROR;
             String username = principal.getName();
             User user = userRepository.findByUsername(username).orElse(null);
             if (user == null) return REDIRECT_ERROR;
             
+            // Get current user's cart from database
+            List<Cart> userCart = cartRepository.findByUser(user);
+            
             Cart itemToRemove = null;
-            for (Cart c : cart) {
-                if (c.getProduct().getProductID().equals(id) && c.getUser().getUserId().equals(user.getUserId())) {
+            for (Cart c : userCart) {
+                if (c.getProduct().getProductID().equals(id)) {
                     itemToRemove = c;
                     break;
                 }
             }
             
             if (itemToRemove != null) {
-                cart.remove(itemToRemove);
                 cartRepository.delete(itemToRemove); // Xóa khỏi database
             }
             
@@ -192,8 +292,7 @@ public class CartController {
     }
 
     @GetMapping("/clear")
-    public String clear(@ModelAttribute("cart") List<Cart> cart,
-                       Principal principal) {
+    public String clear(Principal principal) {
         try {
             if (principal != null) {
                 String username = principal.getName();
@@ -204,7 +303,6 @@ public class CartController {
                     cartRepository.deleteAll(userCartItems);
                 }
             }
-            cart.clear();
             return REDIRECT_CART_VIEW;
         } catch (Exception e) {
             return REDIRECT_ERROR;
@@ -212,9 +310,12 @@ public class CartController {
     }
 
     @GetMapping("/checkout")
-    public String checkout(Model model, @ModelAttribute("cart") List<Cart> cart) {
+    public String checkout(Model model, Principal principal) {
         try {
-            if (cart == null || cart.isEmpty()) {
+            // Get current user's cart from database
+            List<Cart> userCart = getCurrentUserCart(principal);
+            
+            if (userCart == null || userCart.isEmpty()) {
                 return REDIRECT_CART_VIEW;
             }
             
@@ -222,7 +323,7 @@ public class CartController {
             List<CartItemDisplay> displayItems = new ArrayList<>();
             java.math.BigDecimal total = java.math.BigDecimal.ZERO;
             
-            for (Cart item : cart) {
+            for (Cart item : userCart) {
                 Products product = loadProduct(item);
                 if (product != null) {
                     displayItems.add(new CartItemDisplay(product, item.getQuantity()));
@@ -252,16 +353,17 @@ public class CartController {
                                   @RequestParam("region") String region,
                                   @RequestParam(value = "note", required = false) String note,
                                   @RequestParam("paymentMethod") String paymentMethod,
-                                  @ModelAttribute("cart") List<Cart> cart,
                                   Model model,
-                                  SessionStatus sessionStatus,
                                   Principal principal) {
         try {
-            if (cart == null || cart.isEmpty()) {
+            // Get current user's cart from database
+            List<Cart> userCart = getCurrentUserCart(principal);
+            
+            if (userCart == null || userCart.isEmpty()) {
                 return REDIRECT_CART_VIEW;
             }
             
-            // Create order object
+            // Create order object - using new Order entity structure
             Order order = new Order();
             order.setFullName(fullName);
             order.setEmail(email);
@@ -275,7 +377,7 @@ public class CartController {
             List<OrderDetail> orderDetails = new ArrayList<>();
             long total = 0;
             
-            for (Cart cartItem : cart) {
+            for (Cart cartItem : userCart) {
                 Products product = loadProduct(cartItem);
                 if (product != null) {
                     OrderDetail detail = new OrderDetail();
@@ -284,10 +386,10 @@ public class CartController {
                     
                     Long price = product.getPrice().longValue();
                     detail.setUnitPrice(price);
-                    detail.setTotalPrice(price * cartItem.getQuantity());
+                    // TotalPrice is computed column, will be calculated by database
                     
                     orderDetails.add(detail);
-                    total += detail.getTotalPrice();
+                    total += price * cartItem.getQuantity();
                 }
             }
             
@@ -296,23 +398,37 @@ public class CartController {
             order.setOrderDate(LocalDateTime.now());
             order.setStatus("PENDING");
             
+            // Get user for order
+            if (principal == null) {
+                model.addAttribute(ERROR, "Vui lòng đăng nhập để đặt hàng!");
+                return "Cart/checkout";
+            }
+            
+            String username = principal.getName();
+            User user = userRepository.findByUsername(username).orElse(null);
+            if (user == null) {
+                model.addAttribute(ERROR, "Không tìm thấy thông tin người dùng!");
+                return "Cart/checkout";
+            }
+            
+            // Set user ID and product ID for order before saving
+            order.setUserId(user.getUserId());
+            // For multiple products, we'll set productId to null or first product
+            if (!orderDetails.isEmpty()) {
+                order.setProductId(orderDetails.get(0).getProduct().getProductID());
+            }
+            
             // Save order
             Order savedOrder = orderService.createOrder(order, orderDetails);
+            
+            // Clear cart after successful order
+            cartRepository.deleteAll(userCart);
             
             // Manually set order details to avoid lazy loading issues
             savedOrder.setOrderDetails(orderDetails);
             
             // Clear cart after successful order - xóa khỏi database
-            if (principal != null) {
-                String username = principal.getName();
-                User user = userRepository.findByUsername(username).orElse(null);
-                if (user != null) {
-                    List<Cart> userCartItems = cartRepository.findByUser(user);
-                    cartRepository.deleteAll(userCartItems);
-                }
-            }
-            cart.clear();
-            sessionStatus.setComplete();
+            cartRepository.deleteAll(userCart);
             
             // Redirect to success page with order info
             model.addAttribute(ORDER, savedOrder);
@@ -325,23 +441,39 @@ public class CartController {
     }
 
     @GetMapping("/order/{orderId}")
-    public String viewOrder(@PathVariable String orderId, Model model) {
+    public String viewOrder(@PathVariable String orderId, Model model, Principal principal) {
         try {
-            Order order = orderService.getOrderById(orderId);
+            Order order = orderService.getOrderByIdWithDetails(orderId);
             if (order == null) {
+                model.addAttribute(ERROR, "Không tìm thấy đơn hàng!");
                 return REDIRECT_CART_VIEW;
             }
+            
+            // Kiểm tra quyền truy cập - chỉ cho phép xem đơn hàng của chính mình (hoặc admin)
+            if (principal != null) {
+                String username = principal.getName();
+                User user = userRepository.findByUsername(username).orElse(null);
+                if (user != null && order.getUserId() != null) {
+                    if (!order.getUserId().equals(user.getUserId()) && 
+                        !user.getRole().name().equals("ADMIN")) {
+                        model.addAttribute(ERROR, "Bạn không có quyền xem đơn hàng này!");
+                        return REDIRECT_CART_VIEW;
+                    }
+                }
+            }
+            
             model.addAttribute(ORDER, order);
             return "Cart/orderDetails";
         } catch (Exception e) {
-            return REDIRECT_ERROR;
+            model.addAttribute(ERROR, "Có lỗi xảy ra khi tải thông tin đơn hàng: " + e.getMessage());
+            return REDIRECT_CART_VIEW;
         }
     }
     
     // Debug endpoint để kiểm tra cart được load từ database
     @GetMapping("/debug")
     @ResponseBody
-    public String debugCart(Principal principal, @ModelAttribute("cart") List<Cart> sessionCart) {
+    public String debugCart(Principal principal) {
         if (principal == null) {
             return "No user logged in";
         }
@@ -357,21 +489,24 @@ public class CartController {
         
         StringBuilder result = new StringBuilder();
         result.append("User: ").append(username).append("\n");
-        result.append("Session Cart size: ").append(sessionCart.size()).append("\n");
         result.append("Database Cart size: ").append(dbCart.size()).append("\n\n");
         
-        result.append("Session Cart items:\n");
-        for (Cart item : sessionCart) {
-            result.append("- Product ID: ").append(item.getProduct() != null ? item.getProduct().getProductID() : "NULL")
-                  .append(", Quantity: ").append(item.getQuantity()).append("\n");
-        }
-        
-        result.append("\nDatabase Cart items:\n");
+        result.append("Database Cart items:\n");
         for (Cart item : dbCart) {
             result.append("- Product ID: ").append(item.getProduct() != null ? item.getProduct().getProductID() : "NULL")
                   .append(", Quantity: ").append(item.getQuantity()).append("\n");
         }
         
         return result.toString();
+    }
+    
+    // Endpoint để lấy số lượng sản phẩm trong giỏ hàng (cho AJAX)
+    @GetMapping("/count")
+    @ResponseBody
+    public Map<String, Object> getCartCount(Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        int count = cartCount(principal);
+        response.put("count", count);
+        return response;
     }
 }

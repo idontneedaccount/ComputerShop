@@ -118,8 +118,49 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr>
-                                                <td colspan="5" class="text-center">Bạn chưa có đơn hàng nào</td>
+                                            <!-- Show when user has no orders -->
+                                            <tr th:if="${!hasOrders}">
+                                                <td colspan="5" class="text-center py-4">
+                                                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                                    <h5>Bạn chưa có đơn hàng nào</h5>
+                                                    <p class="text-muted">Hãy bắt đầu mua sắm để xem lịch sử đơn hàng tại đây!</p>
+                                                    <a th:href="@{/user/shopping-page}" class="btn btn-primary">
+                                                        <i class="fas fa-shopping-cart me-2"></i>Bắt đầu mua sắm
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            
+                                            <!-- Show orders when user has orders -->
+                                            <tr th:if="${hasOrders}" th:each="order : ${orders}">
+                                                <td>
+                                                    <strong>#<span th:text="${order.id}"></span></strong>
+                                                </td>
+                                                <td>
+                                                    <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></span><br>
+                                                    <small class="text-muted" th:text="${#temporals.format(order.orderDate, 'HH:mm')}"></small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge" 
+                                                          th:classappend="${order.status == 'PENDING' ? 'bg-warning' : 
+                                                                          (order.status == 'CONFIRMED' ? 'bg-info' :
+                                                                          (order.status == 'SHIPPING' ? 'bg-primary' :
+                                                                          (order.status == 'DELIVERED' ? 'bg-success' : 'bg-danger')))}"
+                                                          th:text="${order.status == 'PENDING' ? 'Đang xử lý' : 
+                                                                   (order.status == 'CONFIRMED' ? 'Đã xác nhận' :
+                                                                   (order.status == 'SHIPPING' ? 'Đang giao hàng' :
+                                                                   (order.status == 'DELIVERED' ? 'Đã giao hàng' : 'Đã hủy')))}">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <strong class="text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></strong><br>
+                                                    <small class="text-muted" th:if="${order.orderDetails != null}" th:text="${order.orderDetails.size()} + ' sản phẩm'"></small>
+                                                </td>
+                                                <td>
+                                                    <a th:href="@{/cart/order/{orderId}(orderId=${order.id})}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> Xem chi tiết
+                                                    </a>
+                                                </td>
                                             </tr>
                                             </tbody>
                                         </table>

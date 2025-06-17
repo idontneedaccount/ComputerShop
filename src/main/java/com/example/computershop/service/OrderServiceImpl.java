@@ -2,6 +2,7 @@ package com.example.computershop.service;
 
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
+import com.example.computershop.entity.User;
 import com.example.computershop.repository.OrderRepository;
 import com.example.computershop.repository.OrderDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +22,27 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order createOrder(Order order, List<OrderDetail> orderDetails) {
         try {
+            // Set order properties
             order.setOrderDate(LocalDateTime.now());
             order.setStatus("PENDING");
-            order.setOrderDetails(null);
+            order.setOrderDetails(null); // Clear any existing details
             
+            // Save order first
             Order savedOrder = orderRepository.save(order);
             
+            // Save order details
             for (OrderDetail detail : orderDetails) {
                 detail.setOrder(savedOrder);
-                detail.setTotalPrice(detail.getUnitPrice() * detail.getQuantity());
+                // TotalPrice is a computed column, don't set it
                 orderDetailRepository.save(detail);
             }
             
+            // Don't set orderDetails back to avoid circular reference issues
+            // The controller should handle this if needed
+            
             return savedOrder;
         } catch (Exception e) {
-            throw e; // Re-throw to trigger rollback
+            throw new RuntimeException("Failed to create order: " + e.getMessage(), e);
         }
     }
 
@@ -44,9 +51,40 @@ public class OrderServiceImpl implements OrderService {
     public Order getOrderById(String id) {
         return orderRepository.findById(id).orElse(null);
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Order getOrderByIdWithDetails(String id) {
+        return orderRepository.findByIdWithDetails(id).orElse(null);
+    }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<Order> getOrdersByUser(String userId) {
+        return orderRepository.findByUserIdOrderByOrderDateDesc(userId);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<Order> getOrdersByUserWithDetails(String userId) {
+        return orderRepository.findByUserWithDetails(userId);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<Order> getOrdersByStatus(String status) {
+        return orderRepository.findByStatus(status);
+    }
+    
+    @Override
+    @Transactional
+    public Order updateOrder(Order order) {
+        return orderRepository.save(order);
     }
 } 
