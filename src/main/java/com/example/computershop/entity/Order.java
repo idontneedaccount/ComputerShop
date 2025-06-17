@@ -11,7 +11,7 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_id")
+    @Column(name = "order_id", columnDefinition = "varchar(255)")
      String id;
 
     @Column(name = "full_name", nullable = false)
