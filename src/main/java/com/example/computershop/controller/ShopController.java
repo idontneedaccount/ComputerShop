@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.computershop.entity.Categories;
+import com.example.computershop.entity.ProductSpecifications;
 import com.example.computershop.entity.Products;
 import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.ProductService;
+import com.example.computershop.service.ProductSpecificationService;
 
 @Controller
 @RequestMapping("/user")
@@ -20,14 +22,17 @@ public class ShopController {
     
     private final CategoriesService categoriesService;
     private final ProductService productService;
+    private final ProductSpecificationService productSpecificationService;
     private static final String TOTAL_PRODUCTS = "totalProducts";
     private static final String PRODUCTS = "products";
     private static final String CATEGORIES = "categories";
 
     public ShopController(CategoriesService categoriesService,
-                         ProductService productService) {
+                         ProductService productService,
+                         ProductSpecificationService productSpecificationService) {
         this.categoriesService = categoriesService;
         this.productService = productService;
+        this.productSpecificationService = productSpecificationService;
     }
     
     @GetMapping("/shopping-page")
@@ -197,6 +202,21 @@ public class ShopController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @GetMapping("/single-product")
+    public String showSingleProduct(@RequestParam("id") String productId, Model model) {
+        Products product = productService.findById(productId);
+        if (product == null) {
+            return "redirect:/user/shopping-page";
+        }
+        
+        ProductSpecifications specifications = productSpecificationService.findByProductId(productId);
+        
+        model.addAttribute("product", product);
+        model.addAttribute("specifications", specifications);
+        
+        return "user/singleproduct";
     }
 
 } 
