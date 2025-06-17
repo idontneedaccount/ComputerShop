@@ -59,6 +59,7 @@ public class AuthenticationService {
                     .isActive(false)
                     .createdAt(LocalDateTime.now())
                     .address(request.getAddress())
+                    .provider("local")
                     .isAccountLocked(false)
                     .build();
             user.setVerificationCode(generateVerificationCode());

@@ -37,17 +37,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("user") UserCreationRequest request, BindingResult result, Model model) {
+    public String registerUser(@Valid @ModelAttribute("user") UserCreationRequest request, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute(errorAttr, "Vui lòng kiểm tra lại thông tin đăng ký.");
             return register;
         }
         try {
             authenticationService.createUser(request);
-            model.addAttribute(messageAttr, "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
+            redirectAttributes.addFlashAttribute(messageAttr, "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
             return redirectlogin;
         } catch (AuthenticationException e) {
-            model.addAttribute(errorAttr, e.getMessage());
+            redirectAttributes.addFlashAttribute(errorAttr, e.getMessage());
             return register;
         }
     }
@@ -61,14 +61,14 @@ public class AuthenticationController {
     }
 
     @GetMapping("/verify")
-    public String verifyUserByLink(@RequestParam("email") String email, @RequestParam("code") String code, Model model) {
+    public String verifyUserByLink(@RequestParam("email") String email, @RequestParam("code") String code, Model model, RedirectAttributes redirectAttributes) {
         VerifyUserRequest verifyRequest = new VerifyUserRequest();
         verifyRequest.setEmail(email);
         verifyRequest.setVerificationCode(code);
         
         try {
             if (authenticationService.isUserActive(email)) {
-                model.addAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
+                redirectAttributes.addFlashAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
                 return redirectlogin;
             }
 
@@ -120,8 +120,8 @@ public class AuthenticationController {
 
     @PostMapping("/manual-verify")
     public String verifyUserManually(@Valid @ModelAttribute("verifyRequest") VerifyUserRequest request,
-                                   BindingResult result,
-                                   Model model) {
+                                     BindingResult result,
+                                     Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute(errorAttr, "Vui lòng kiểm tra lại thông tin xác thực.");
             return manualVerify;
@@ -129,12 +129,12 @@ public class AuthenticationController {
 
         try {
             if (authenticationService.isUserActive(request.getEmail())) {
-                model.addAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
+                redirectAttributes.addFlashAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
                 return redirectlogin;
             }
 
             authenticationService.verifyUser(request);
-            model.addAttribute(messageAttr, "Tài khoản đã xác thực thành công. Bạn có thể đăng nhập.");
+            redirectAttributes.addFlashAttribute(messageAttr, "Tài khoản đã xác thực thành công. Bạn có thể đăng nhập.");
             return "redirect:/auth/login?verified=true";
         } catch (AuthenticationException e) {
             model.addAttribute(errorAttr, e.getMessage());
@@ -160,17 +160,17 @@ public class AuthenticationController {
     }
 
     @GetMapping("/reset-password")
-    public String showResetPasswordForm(@RequestParam String email, @RequestParam String token, Model model) {
+    public String showResetPasswordForm(@RequestParam String email, @RequestParam String token, Model model, RedirectAttributes redirectAttributes) {
         try {
             if (!authenticationService.validatePasswordResetToken(email, token)) {
-                model.addAttribute(errorAttr, "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
+                redirectAttributes.addFlashAttribute(errorAttr, "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
                 return redirectlogin;
             }
             model.addAttribute("email", email);
             model.addAttribute("token", token);
             return resetPassword;
         } catch (AuthenticationException e) {
-            model.addAttribute(errorAttr, e.getMessage());
+            redirectAttributes.addFlashAttribute(errorAttr, e.getMessage());
             return redirectlogin;
         }
     }
@@ -196,27 +196,31 @@ public class AuthenticationController {
 
     @PostMapping("/reset-password")
     public String processResetPassword(@RequestParam String email,
-                                     @RequestParam String token,
-                                     @RequestParam String password,
-                                     @RequestParam String passwordConfirm,
-                                     Model model) {
+                                       @RequestParam String token,
+                                       @RequestParam String password,
+                                       @RequestParam String passwordConfirm,
+                                       Model model, RedirectAttributes redirectAttributes) {
         try {   
             if (!password.equals(passwordConfirm)) {
                 model.addAttribute(errorAttr, "Mật khẩu xác nhận không khớp!");
+                model.addAttribute("email", email);
+                model.addAttribute("token", token);
                 return resetPassword;
             }
 
             String passwordError = validatePassword(password);
             if (passwordError != null) {
                 model.addAttribute(errorAttr, passwordError);
+                model.addAttribute("email", email);
+                model.addAttribute("token", token);
                 return resetPassword;
             }
 
             authenticationService.resetPassword(email, token, password);
-            model.addAttribute(messageAttr, "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập với mật khẩu mới.");
+            redirectAttributes.addFlashAttribute(messageAttr, "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập với mật khẩu mới.");
             return redirectlogin;
         } catch (AuthenticationException e) {
-            model.addAttribute(errorAttr, e.getMessage());
+            redirectAttributes.addFlashAttribute(errorAttr, e.getMessage());
             return resetPassword;
         }
     }
