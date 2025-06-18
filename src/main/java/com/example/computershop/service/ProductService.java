@@ -1,12 +1,10 @@
 package com.example.computershop.service;
-
 import com.example.computershop.dto.ProductSalesDTO;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 import com.example.computershop.entity.Products;
 import com.example.computershop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
