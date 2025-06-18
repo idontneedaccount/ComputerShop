@@ -35,6 +35,7 @@ public class UserCreationRequest {
     @NotBlank(message = "Họ tên không được để trống.")
     String fullName;
 
+    String role = "USER"; // Mặc định là USER, có thể thay đổi nếu cần
     @NotBlank(message = "Email không được để trống.")
     @Email(message = "Email không hợp lệ.")
     String email;
@@ -42,4 +43,7 @@ public class UserCreationRequest {
     @NotBlank(message = "Số điện thoại không được để trống.")
     @Pattern(regexp = "^(0)(\\d{9})$", message = "Số điện thoại phải bắt đầu bằng số 0 và có 10 chữ số.")
     String phoneNumber;
+
+    @NotBlank(message = "Địa chỉ không được để trống.")
+    String address;
 }

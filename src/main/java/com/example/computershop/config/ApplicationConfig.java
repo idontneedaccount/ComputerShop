@@ -1,7 +1,6 @@
 package com.example.computershop.config;
 
 import com.example.computershop.repository.UserRepository;
-import jakarta.validation.constraints.Email;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
+
 public class ApplicationConfig {
     private final UserRepository userRepository;
 

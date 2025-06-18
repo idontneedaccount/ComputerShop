@@ -1,52 +1,88 @@
 package com.example.computershop.entity;
 
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import jakarta.persistence.*;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Entity
 @Table(name = "Orders")
 public class Order {
-
     @Id
-    @Column(name = "OrderID", length = 255)
-    private String orderId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "OrderID", columnDefinition = "UNIQUEIDENTIFIER")
+     String id;
 
-    @Column(name = "userid", nullable = false, length = 255)
-    private String userId;
+    @Column(name = "UserID", columnDefinition = "UNIQUEIDENTIFIER")
+     String userId;
 
-    @Column(name = "OrderDate")
-    private LocalDateTime orderDate = LocalDateTime.now();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "UserID", referencedColumnName = "user_id", insertable = false, updatable = false)
+    private User user;
 
-    @Column(name = "Status", length = 50)
-    private String status;
+    @Column(name = "productID", columnDefinition = "UNIQUEIDENTIFIER")
+     String productId;
 
-    @Column(name = "TotalAmount")
-    private Long totalAmount;
+    @Column(name = "OrderDate", nullable = false)
+     LocalDateTime orderDate;
 
-    @Column(name = "ShippingAddress", length = 255)
-    private String shippingAddress;
+    @Column(name = "Status", columnDefinition = "NVARCHAR(50)")
+     String status;
 
-    // Quan hệ 1-n với OrderDetails
+    @Column(name = "TotalAmount", nullable = false)
+     Long totalAmount;
+
+    @Column(name = "ShippingAddress", columnDefinition = "NVARCHAR(255)")
+     String shippingAddress;
+
+    @Column(name = "voucherID", columnDefinition = "UNIQUEIDENTIFIER")
+     String voucherId;
+
+    // Additional fields for checkout form - these need to be persisted
+    @Column(name = "FullName", columnDefinition = "NVARCHAR(255)")
+    private String fullName;
+    
+    @Column(name = "Email", columnDefinition = "NVARCHAR(255)")
+    private String email;
+    
+    @Column(name = "Phone", columnDefinition = "NVARCHAR(50)")
+    private String phone;
+    
+    @Column(name = "Address", columnDefinition = "NVARCHAR(500)")
+    private String address;
+    
+    @Column(name = "PaymentMethod", columnDefinition = "NVARCHAR(50)")
+    private String paymentMethod;
+    
+    @Column(name = "Note", columnDefinition = "NVARCHAR(500)")
+    private String note;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
-    @ManyToOne
-    @JoinColumn(name = "userid", referencedColumnName = "userid", insertable = false, updatable = false)
-    private User user;
-
-
-}
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "productID", referencedColumnName = "productID", columnDefinition = "UNIQUEIDENTIFIER", insertable = false, updatable = false)
+    private Products product;
+    
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return id != null && id.equals(order.id);
+    }
+} 

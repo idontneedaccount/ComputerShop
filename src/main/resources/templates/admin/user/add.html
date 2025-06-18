@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/header :: header}">
+	<title></title>
+</head>
+
+<body id="page-top" class="newsletter-popup-modal">
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+	<!-- Sidebar -->
+	<ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+	<div id="content-wrapper" class="flex-grow-1">
+		<div class="container-fluid">
+			<!-- Breadcrumbs-->
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item">
+					<a th:href="@{/admin/dashboard}">Dashboard</a>
+				</li>
+				<li class="breadcrumb-item">
+					<a th:href="@{/admin/user}">Quản lý người dùng</a>
+				</li>
+				<li class="breadcrumb-item active">Thêm người dùng</li>
+			</ol>
+
+			<!-- Icon Cards-->
+			<div th:replace="~{admin/fragments/icon-cards :: icon-cards}"></div>
+
+			<!-- Main body information -->
+			<div class="row justify-content-center">
+				<div class="col-md-8 col-lg-6">
+					<div class="card shadow mb-4">
+						<div class="card-header bg-primary text-white">
+							<h4 class="mb-0">Thêm người dùng mới</h4>
+						</div>
+						<div class="card-body">
+							<!-- Hiển thị thông báo lỗi tổng quát -->
+							<div th:if="${error}" class="alert alert-danger alert-dismissible fade show"
+							     role="alert">
+								<i class="fas fa-exclamation-circle me-2"></i>
+								<span th:text="${error}"></span>
+								<button type="button" class="btn-close" data-bs-dismiss="alert"
+								        aria-label="Close"></button>
+							</div>
+
+							<form th:action="@{/admin/add-user}" th:object="${userCreateByAdmin}" method="post"
+							      enctype="multipart/form-data" class="needs-validation" novalidate>
+								<!-- Hiển thị lỗi validate từng trường -->
+								<div th:if="${#fields.hasErrors()}" class="alert alert-danger">
+									<ul>
+										<li th:each="err : ${#fields.errors()}" th:text="${err}"></li>
+									</ul>
+								</div>
+								<div class="form-group mb-3">
+									<label for="fullName">Họ và tên<span class="text-danger">*</span></label>
+									<input type="text" id="fullName" class="form-control" th:field="*{fullName}"
+									       required>
+									<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('fullName')}"
+									     th:errors="*{fullName}"></div>
+								</div>
+								<div class="form-group mb-3">
+									<label for="email">Email<span class="text-danger">*</span></label>
+									<input type="email" id="email" class="form-control" th:field="*{email}"
+									       required>
+									<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}"
+									     th:errors="*{email}"></div>
+								</div>
+								<div class="form-group mb-3">
+									<label for="username">Tên đăng nhập<span class="text-danger">*</span></label>
+									<input type="text" id="username" class="form-control" th:field="*{username}"
+									       required>
+									<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('username')}"
+									     th:errors="*{username}"></div>
+								</div>
+								<div class="form-group mb-3">
+									<label for="password">Mật khẩu<span class="text-danger">*</span></label>
+									<input type="password" id="password" class="form-control" th:field="*{password}"
+									       required>
+									<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('password')}"
+									     th:errors="*{password}"></div>
+								</div>
+								<div class="form-group mb-3">
+									<label for="phoneNumber">Số điện thoại<span class="text-danger">*</span></label>
+									<input type="tel" id="phoneNumber" class="form-control"
+									       th:field="*{phoneNumber}" required>
+									<div class="invalid-feedback d-block"
+									     th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">
+									</div>
+								</div>
+								<div class="form-group mb-3">
+									<label for="address">Địa chỉ<span class="text-danger">*</span></label>
+									<input type="text" id="address" class="form-control" th:field="*{address}"
+									       required>
+									<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('address')}"
+									     th:errors="*{address}"></div>
+								</div>
+								<div class="form-group mb-4">
+									<label>Vai trò<span class="text-danger">*</span></label>
+									<div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" th:field="*{role}"
+											       value="ADMIN" id="roleAdmin">
+											<label class="form-check-label" for="roleAdmin">Quản trị viên</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" th:field="*{role}"
+											       value="USER" id="roleUser">
+											<label class="form-check-label" for="roleUser">Người dùng</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" th:field="*{role}"
+											       value="MARKETER" id="roleMarketer">
+											<label class="form-check-label" for="roleMarketer">Marketing</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" th:field="*{role}"
+											       value="SALES" id="roleSales">
+											<label class="form-check-label" for="roleSales">Nhân viên bán
+												hàng</label>
+										</div>
+									</div>
+									<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('role')}"
+									     th:errors="*{role}"></div>
+								</div>
+								<div class="form-group mb-4">
+									<label>Trạng thái<span class="text-danger">*</span></label>
+									<div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" th:field="*{active}"
+											       value="true" id="activeTrue" checked>
+											<label class="form-check-label" for="activeTrue">Kích hoạt</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" th:field="*{active}"
+											       value="false" id="activeFalse">
+											<label class="form-check-label" for="activeFalse">Chưa Kích Hoạt</label>
+										</div>
+									</div>
+									<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('active')}"
+									     th:errors="*{active}"></div>
+								</div>
+
+								<div>
+									<button type="submit" class="btn btn-success w-100">
+										<i class="fas fa-save"></i> Thêm tài khoản
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
+	</div>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+	<i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+
+</html>

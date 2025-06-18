@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>eTrade || Order Details</title>
+    <meta name="robots" content="noindex, follow" />
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.png}" type="image/x-icon">
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/font-awesome.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/flaticon/flaticon.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/slick.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/slick-theme.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/jquery-ui.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/sal.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/magnific-popup.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/base.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.min.css}">
+    <!-- Order Details Page Custom CSS -->
+    <link rel="stylesheet" th:href="@{/assets/css/order-details-custom.css}">
+</head>
+<body class="sticky-header">
+    <!-- Back to top start -->
+    <a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
+    <!-- Back to top end -->
+    
+    <!-- Header -->
+    <header class="header axil-header header-style-5">
+        <div th:replace="~{user/fragments/header2 :: header}"></div>
+    </header>
+    
+    <main class="main-wrapper">
+        <!-- Start Order Details Area -->
+        <div class="axil-order-area axil-section-gap">
+            <div class="container">
+                <!-- Success Message -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="order-success-message text-center">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h2 class="success-title">Order Placed Successfully!</h2>
+                            <p class="success-subtitle">Thank you for your purchase. Your order has been received and is being processed.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Details -->
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2">
+                        <div class="axil-order-details">
+                            <!-- Order Summary Header -->
+                            <div class="order-details-header">
+                                <h3 class="title">Order Details</h3>
+                                <div class="order-info-grid">
+                                    <div class="order-info-item">
+                                        <span class="label">Order Number:</span>
+                                        <span class="value" th:text="${order.id}">#12345</span>
+                                    </div>
+                                    <div class="order-info-item">
+                                        <span class="label">Order Date:</span>
+                                        <span class="value" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">03/06/2025 10:30</span>
+                                    </div>
+                                    <div class="order-info-item">
+                                        <span class="label">Status:</span>
+                                        <span class="value status" 
+                                              th:classappend="${order.status == 'PENDING' ? 'pending' : 
+                                                              (order.status == 'CONFIRMED' ? 'confirmed' :
+                                                              (order.status == 'SHIPPING' ? 'shipping' :
+                                                              (order.status == 'DELIVERED' ? 'delivered' : 'cancelled')))}"
+                                              th:text="${order.status == 'PENDING' ? 'Đang xử lý' : 
+                                                       (order.status == 'CONFIRMED' ? 'Đã xác nhận' :
+                                                       (order.status == 'SHIPPING' ? 'Đang giao hàng' :
+                                                       (order.status == 'DELIVERED' ? 'Đã giao hàng' : 'Đã hủy')))}">
+                                            Đang xử lý
+                                        </span>
+                                    </div>
+                                    <div class="order-info-item">
+                                        <span class="label">Payment Method:</span>
+                                        <span class="value" th:text="${order.paymentMethod}">Cash on Delivery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Customer Information -->
+                            <div class="customer-info-section">
+                                <h4 class="section-title">Customer Information</h4>
+                                <div class="customer-info-grid">
+                                    <div class="info-block">
+                                        <h5>Billing Address</h5>
+                                        <p class="customer-name" th:text="${order.fullName}">John Doe</p>
+                                        <p class="customer-address" th:text="${order.address}">123 Main Street</p>
+                                        <p class="customer-contact">
+                                            <span th:text="${order.phone}">+84 123 456 789</span><br>
+                                            <span th:text="${order.email}">john@example.com</span>
+                                        </p>
+                                    </div>
+                                    <div class="info-block">
+                                        <h5>Shipping Address</h5>
+                                        <p class="customer-name" th:text="${order.fullName}">John Doe</p>
+                                        <p class="customer-address" th:text="${order.shippingAddress}">123 Main Street, City, Region</p>
+                                        <div class="shipping-note" th:if="${order.note}">
+                                            <strong>Note:</strong> <span th:text="${order.note}">Special delivery instructions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Items -->
+                            <div class="order-items-section">
+                                <h4 class="section-title">Order Items</h4>
+                                <div class="order-items-table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                                        <!-- Order Items from Database -->
+                            <tr th:each="orderDetail : ${order.orderDetails}" th:if="${orderDetail.product != null}">
+                                <td>
+                                    <div class="product-item">
+                                        <img th:if="${orderDetail.product.imageURL != null}"
+                                             th:src="@{'/assets/images/product/laptop/' + ${orderDetail.product.imageURL}}" 
+                                             alt="Product" class="product-thumb">
+                                        <img th:unless="${orderDetail.product.imageURL != null}"
+                                             th:src="@{/assets/images/product/laptop/default.jpg}" 
+                                             alt="Product" class="product-thumb">
+                                        <div class="product-info">
+                                            <h6 th:text="${orderDetail.product.name}">Product Name</h6>
+                                            <p th:text="${orderDetail.product.brand ?: 'No Brand'}">Brand</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="price" th:text="${#numbers.formatDecimal(orderDetail.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                                <td class="quantity" th:text="${orderDetail.quantity}">1</td>
+                                <td class="total" th:text="${#numbers.formatDecimal(orderDetail.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                            </tr>
+                            
+                            <!-- No items message -->
+                            <tr th:if="${order.orderDetails == null || order.orderDetails.isEmpty()}">
+                                <td colspan="4" class="text-center">
+                                    <p class="text-muted">Không có sản phẩm nào trong đơn hàng này.</p>
+                                </td>
+                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Order Total -->
+                                <div class="order-total-section">
+                                    <div class="total-calculations">
+                                        <div class="total-row">
+                                            <span class="label">Subtotal:</span>
+                                            <span class="value" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</span>
+                                        </div>
+                                        <div class="total-row">
+                                            <span class="label">Shipping:</span>
+                                            <span class="value">Free</span>
+                                        </div>
+                                        <div class="total-row">
+                                            <span class="label">Tax:</span>
+                                            <span class="value">0 ₫</span>
+                                        </div>
+                                        <div class="total-row final-total">
+                                            <span class="label">Total:</span>
+                                            <span class="value" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="order-actions">
+                                <a th:href="@{/user/shopping-page}" class="axil-btn btn-outline">
+                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    Tiếp tục mua sắm
+                                </a>
+                                <a th:href="@{/user/user-profile}" class="axil-btn btn-bg-primary">
+                                    <i class="fas fa-history me-2"></i>
+                                    Xem lịch sử đặt hàng
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Order Details Area -->
+    </main>
+    
+    <!-- Footer -->
+    <div th:replace="~{user/fragments/footer :: footer}"></div>
+    
+    <!-- Additional fragments -->
+    <div th:replace="~{user/fragments/quickreview :: quickreview}"></div>
+    <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
+    <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
+    
+    <!-- JS -->
+    <script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery.js}"></script>
+    <script th:src="@{/assets/js/vendor/popper.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/slick.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/js.cookie.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-ui.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery.ui.touch-punch.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery.countdown.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/sal.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery.magnific-popup.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/imagesloaded.pkgd.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/isotope.pkgd.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/counterup.js}"></script>
+    <script th:src="@{/assets/js/vendor/waypoints.min.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
+
+    <!-- Success Notification -->
+    <script>
+        // Show success notification when page loads
+        $(document).ready(function() {
+            // You can use a toast notification library here
+            // For now, we'll use a simple alert
+            setTimeout(function() {
+                if (typeof toastr !== 'undefined') {
+                    toastr.success('Your order has been placed successfully!', 'Order Confirmed');
+                } else {
+                    // Fallback notification
+                    $('.order-success-message').addClass('animate-bounce');
+                }
+            }, 500);
+        });
+    </script>
+
+</body>
+</html> 

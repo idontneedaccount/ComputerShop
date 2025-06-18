@@ -1,12 +1,11 @@
 package com.example.computershop.entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Set;
 
@@ -18,10 +17,12 @@ import java.util.Set;
 @Entity
 public class Categories {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     String categoryID;
     String name;
     String description;
     @OneToMany(mappedBy = "categories")
+    @JsonIgnore
     Set<Products> products;
 
 }

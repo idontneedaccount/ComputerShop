@@ -1,18 +1,73 @@
 package com.example.computershop.service;
 
 import com.example.computershop.dto.ProductSalesDTO;
-import com.example.computershop.entity.Products;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import com.example.computershop.entity.Products;
+import com.example.computershop.repository.ProductRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface ProductService {
-    List<Products> getAll();
-    Boolean create(Products product);
-    Products findById(String productID);
-    Boolean update(Products product);
-    Boolean delete(String productID);
-    List<Products> findTop5ProductsByStock();
-    List<ProductSalesDTO> findTop5BestSellingProducts();
-    long countProducts();
+@Service
+@AllArgsConstructor
+public class ProductService {
+    private final ProductRepository repo;
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+    private static final String ERROR = "Error creating category: {}";
+    public List<Products> getAll() {
+        return this.repo.findAll();
+    }
+
+    public Boolean create(Products product) {
+        try {
+            this.repo.save(product);
+            return true;
+        } catch (Exception e) {
+            logger.error(ERROR, e.getMessage(), e);
+        }
+        return false;
+    }
+
+    public Products findById(String productID) {
+        return this.repo.findById(productID).orElse(null);
+    }
+
+    public Boolean delete(String productID) {
+        try {
+            this.repo.deleteById(productID);
+            return true;
+        } catch (Exception e) {
+            logger.error(ERROR, e.getMessage(), e);
+        }
+        return false;
+    }
+
+    public boolean existsByName(String name) {
+        return repo.existsByName(name);
+    }
+
+    public List<String> getDistinctBrands() {
+        return repo.findDistinctBrands();
+    }
+    public List<Products> findTop5ProductsByStock() {
+        return repo.findTop5ProductsByStock(PageRequest.of(0,5));
+    }
+    public List<ProductSalesDTO> findTop5BestSellingProducts() {
+        return repo.findTop5BestSellingProducts(PageRequest.of(0,5));
+    }
+    public long countProducts() {
+        return repo.countProducts();
+    }
+    public Boolean update(Products product) {
+        try {
+            this.repo.save(product);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false; 
+    }
 }

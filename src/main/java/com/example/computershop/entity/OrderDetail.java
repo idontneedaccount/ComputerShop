@@ -1,49 +1,51 @@
 package com.example.computershop.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Entity
-@Table(name = "OrderDetails")
+@Table(name = "Order_Details")
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class OrderDetail {
-
     @Id
-    @Column(name = "OrderDetailID", length = 255)
-    private String orderDetailId;
-
-    @ManyToOne
-    @JoinColumn(name = "OrderID", nullable = false)
-    private Order order;
-
-    @Column(name = "ProductID", nullable = false, length = 255)
-    private String productId;
-
-    @Column(name = "Quantity", nullable = false)
-    private int quantity;
-
-    @Column(name = "UnitPrice", nullable = false)
-    private long unitPrice;
-
-    @Column(name = "TotalPrice")
-    private long totalPrice;
-
-    @PrePersist
-    @PreUpdate
-    public void calculateTotalPrice() {
-        this.totalPrice = this.quantity * this.unitPrice;
-    }
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "OrderDetailID", columnDefinition = "UNIQUEIDENTIFIER")
+     String orderDetailID;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductID", referencedColumnName = "ProductID", insertable = false, updatable = false)
-    private Products product;
+    @JoinColumn(name = "OrderID", referencedColumnName = "OrderID", columnDefinition = "UNIQUEIDENTIFIER")
+     Order order;
 
-}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ProductID", referencedColumnName = "productID", columnDefinition = "UNIQUEIDENTIFIER")
+     Products product;
+
+    @Column(name = "Quantity", nullable = false)
+     Integer quantity;
+
+    @Column(name = "UnitPrice", nullable = false)
+     Long unitPrice;
+
+    @Column(name = "TotalPrice", insertable = false, updatable = false)
+     Long totalPrice;
+    
+    @Override
+    public int hashCode() {
+        return orderDetailID != null ? orderDetailID.hashCode() : 0;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderDetail that = (OrderDetail) o;
+        return orderDetailID != null && orderDetailID.equals(that.orderDetailID);
+    }
+} 

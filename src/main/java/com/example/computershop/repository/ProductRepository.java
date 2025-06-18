@@ -2,14 +2,19 @@ package com.example.computershop.repository;
 import com.example.computershop.dto.ProductSalesDTO;
 import org.springframework.data.domain.Pageable;
 
-import com.example.computershop.entity.Products;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
+import com.example.computershop.entity.Products;
 
 public interface ProductRepository extends JpaRepository<Products, String> {
-    @Query("SELECT p FROM Products p ORDER BY p.quantity DESC")
+    boolean existsByName(String name);
+    
+    @Query("SELECT DISTINCT p.brand FROM Products p WHERE p.brand IS NOT NULL ORDER BY p.brand")
+    List<String> findDistinctBrands();
+     @Query("SELECT p FROM Products p ORDER BY p.quantity DESC")
     List<Products> findTop5ProductsByStock(Pageable pageable);
 
     @Query("SELECT new com.example.computershop.dto.ProductSalesDTO(od.product, SUM(od.quantity)) " +

@@ -36,13 +36,19 @@
               <h4 class="mb-0">Chỉnh sửa danh mục </h4>
             </div>
             <div class="card-body">
+              <!-- Error message display -->
+              <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
               <form th:action="@{/admin/edit-categories}" th:object="${categories}" method="post">
                 <div class="form-group mb-3">
-                  <label for="categoryId">Mã sản phẩm</label>
+                  <label for="categoryId">Mã danh mục</label>
                   <textarea  id="categoryId" class="form-control" th:field="*{categoryID}" readonly></textarea>
                 </div>
                 <div class="form-group mb-3">
-                  <label for="name">Tên hãng</label>
+                  <label for="name">Tên danh mục</label>
                   <textarea id="name" class="form-control" th:field="*{name}"></textarea>
                 </div>
                 <div class="form-group mb-4">

@@ -1,0 +1,238 @@
+<!doctype html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${product != null ? product.name + ' - Chi tiết sản phẩm' : 'Chi tiết sản phẩm'}">Chi tiết sản phẩm</title>
+    <!-- Custom Pagination CSS -->
+    <link th:href="@{/assets/css/pagination.css}" rel="stylesheet">
+</head>
+<body class="sticky-header">
+
+<a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
+
+<header class="header axil-header header-style-5">
+    <div th:replace="~{user/fragments/header2 :: header}"></div>
+</header>
+
+<main class="main-wrapper">
+    <div class="axil-single-product-area axil-section-gap pb--0 bg-color-white">
+        <div class="single-product-thumb mb--40">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7 mb--40">
+                        <div class="row">
+                            <div class="col-lg-10 order-lg-2">
+                                <div class="single-product-thumbnail-wrap zoom-gallery">
+                                    <div class="single-product-thumbnail product-large-thumbnail-3 axil-product">
+                                        <div class="thumbnail">
+                                            <a th:href="@{'/assets/images/product/laptop/' + ${product.imageURL}}" class="popup-zoom">
+                                                <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" th:alt="${product.name}" alt="Product Images" style="height: 500px; width: 100%; object-fit: contain;">
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="label-block" th:if="${product.price.compareTo(T(java.math.BigInteger).valueOf(1000000)) > 0}">
+                                        <div class="product-badget">HOT</div>
+                                    </div>
+                                    <div class="product-quick-view position-view">
+                                        <a th:href="@{'/assets/images/product/laptop/' + ${product.imageURL}}" class="popup-zoom">
+                                            <i class="far fa-search-plus"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 order-lg-1">
+                                <div class="product-small-thumb-3 small-thumb-wrapper">
+                                    <div class="small-thumb-img">
+                                        <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" th:alt="${product.name}" alt="thumb image">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 mb--40">
+                        <div class="single-product-content">
+                            <div class="inner">
+                                <h2 class="product-title" th:text="${product.name}">Tên sản phẩm</h2>
+                                <span class="price-amount" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                                <div class="product-rating">
+                                    <div class="star-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                    <div class="review-link">
+                                        <a href="#">(<span>2</span> customer reviews)</a>
+                                    </div>
+                                </div>
+                                <ul class="product-meta">
+                                    <li><i class="fal fa-check"></i>Còn hàng: <span th:text="${product.quantity}">0</span> sản phẩm</li>
+                                    <li><i class="fal fa-check"></i>Miễn phí giao hàng</li>
+                                    <li><i class="fal fa-check"></i>Thương hiệu: <span th:text="${product.brand}">Brand</span></li>
+                                    <li th:if="${product.categories}"><i class="fal fa-check"></i>Danh mục: <span th:text="${product.categories.name}">Category</span></li>
+                                </ul>
+                                <p class="description" th:text="${product.description != null ? product.description : 'Chưa có mô tả chi tiết cho sản phẩm này.'}">
+                                    Mô tả sản phẩm
+                                </p>
+
+                                <!-- Start Product Action Wrapper  -->
+                                <div class="product-action-wrapper d-flex-center">
+                                    <!-- Start Quantity Action  -->
+                                    <div class="pro-qty"><input type="text" value="1"></div>
+                                    <!-- End Quantity Action  -->
+
+                                    <!-- Start Product Action  -->
+                                    <ul class="product-action d-flex-center mb--0">
+                                        <li class="add-to-cart"><a href="cart.html" class="axil-btn btn-bg-primary">Thêm vào giỏ</a></li>
+                                        <li class="wishlist"><a href="wishlist.html" class="axil-btn wishlist-btn"><i class="far fa-heart"></i></a></li>
+                                    </ul>
+                                    <!-- End Product Action  -->
+
+                                </div>
+                                <!-- End Product Action Wrapper  -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End .single-product-thumb -->
+
+        <div class="woocommerce-tabs wc-tabs-wrapper bg-vista-white">
+            <div class="container">
+                <ul class="nav tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="active" id="description-tab" data-bs-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">Mô tả</a>
+                    </li>
+                    <li class="nav-item " role="presentation">
+                        <a id="additional-info-tab" data-bs-toggle="tab" href="#additional-info" role="tab" aria-controls="additional-info" aria-selected="false">Thông tin kỹ thuật</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Đánh giá</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                        <div class="product-desc-wrapper">
+                            <div class="row">
+                                <div class="col-lg-12 mb--30">
+                                    <div class="single-desc">
+                                        <h5 class="title">Mô tả sản phẩm:</h5>
+                                        <p th:text="${product.description != null ? product.description : 'Chưa có mô tả chi tiết cho sản phẩm này. Vui lòng liên hệ với chúng tôi để biết thêm thông tin.'}">
+                                            Mô tả sản phẩm
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End .row -->
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <ul class="pro-des-features">
+                                        <li class="single-features">
+                                            <div class="icon">
+                                                <img th:src="@{/assets/images/product/product-thumb/icon-3.png}" alt="icon">
+                                            </div>
+                                            Đổi trả dễ dàng
+                                        </li>
+                                        <li class="single-features">
+                                            <div class="icon">
+                                                <img th:src="@{/assets/images/product/product-thumb/icon-2.png}" alt="icon">
+                                            </div>
+                                            Dịch vụ chất lượng
+                                        </li>
+                                        <li class="single-features">
+                                            <div class="icon">
+                                                <img th:src="@{/assets/images/product/product-thumb/icon-1.png}" alt="icon">
+                                            </div>
+                                            Sản phẩm chính hãng
+                                        </li>
+                                    </ul>
+                                    <!-- End .pro-des-features -->
+                                </div>
+                            </div>
+                            <!-- End .row -->
+                        </div>
+                        <!-- End .product-desc-wrapper -->
+                    </div>
+                    <div class="tab-pane fade" id="additional-info" role="tabpanel" aria-labelledby="additional-info-tab">
+                        <div class="product-additional-info">
+                            <div class="table-responsive">
+                                <table>
+                                    <tbody>
+                                    <tr th:if="${specifications != null and specifications.cpu != null}">
+                                        <th>CPU</th>
+                                        <td th:text="${specifications.cpu}">CPU Info</td>
+                                    </tr>
+                                    <tr th:if="${specifications != null and specifications.ram != null}">
+                                        <th>RAM</th>
+                                        <td th:text="${specifications.ram}">RAM Info</td>
+                                    </tr>
+                                    <tr th:if="${specifications != null and specifications.ssd != null}">
+                                        <th>SSD/Ổ cứng</th>
+                                        <td th:text="${specifications.ssd}">SSD Info</td>
+                                    </tr>
+                                    <tr th:if="${specifications != null and specifications.vga != null}">
+                                        <th>VGA/Card đồ họa</th>
+                                        <td th:text="${specifications.vga}">VGA Info</td>
+                                    </tr>
+                                    <tr th:if="${specifications != null and specifications.screen != null}">
+                                        <th>Màn hình</th>
+                                        <td th:text="${specifications.screen}">Screen Info</td>
+                                    </tr>
+                                    <tr th:if="${specifications != null and specifications.weight != null}">
+                                        <th>Trọng lượng</th>
+                                        <td th:text="${specifications.weight} + ' kg'">Weight</td>
+                                    </tr>
+                                    <tr th:if="${specifications != null and specifications.connect != null}">
+                                        <th>Kết nối</th>
+                                        <td th:text="${specifications.connect}">Connect Info</td>
+                                    </tr>
+                                    <tr th:if="${specifications != null and specifications.battery != null}">
+                                        <th>Pin</th>
+                                        <td th:text="${specifications.battery}">Battery Info</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Thương hiệu</th>
+                                        <td th:text="${product.brand}">Brand</td>
+                                    </tr>
+                                    <tr th:if="${product.categories}">
+                                        <th>Danh mục</th>
+                                        <td th:text="${product.categories.name}">Category</td>
+                                    </tr>
+                                    <tr th:if="${specifications == null}">
+                                        <td colspan="2" class="text-center">Chưa có thông tin kỹ thuật chi tiết cho sản phẩm này.</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                        <div class="reviews-wrapper">
+                            <div class="row">
+                                <div class="col-lg-12 mb--40">
+                                    <div class="text-center py-5">
+                                        <h4>Tính năng đánh giá đang được phát triển</h4>
+                                        <p>Chúng tôi đang hoàn thiện tính năng đánh giá sản phẩm. Vui lòng quay lại sau!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- woocommerce-tabs -->
+
+    </div>
+</main>
+
+<div th:replace="~{user/fragments/footer :: footer}"></div>
+
+<div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
+
+<div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
+</body>
+</html>

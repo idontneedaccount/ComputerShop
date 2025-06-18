@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/fragments/header :: header}">
@@ -9,10 +8,8 @@
 <div id="wrapper">
     <!-- Sidebar -->
     <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
-
     <div id="content-wrapper" class="flex-grow-1">
         <div class="container-fluid">
-
             <!-- Breadcrumbs-->
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
@@ -20,11 +17,8 @@
                 </li>
                 <li class="breadcrumb-item active">Overview</li>
             </ol>
-
             <!-- Icon Cards-->
             <div th:replace="~{admin/fragments/icon-cards :: icon-cards}"></div>
-
-
             <!-- Main body information -->
             <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-6">
@@ -33,6 +27,12 @@
                             <h4 class="mb-0">Chỉnh sửa sản phẩm</h4>
                         </div>
                         <div class="card-body">
+                            <!-- Error message display -->
+                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span th:text="${error}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             <form th:action="@{/admin/edit-product}" th:object="${product}" method="post" enctype="multipart/form-data">
                                 <input type="hidden" th:field="*{imageURL}" />
                                 <div class="form-group mb-3">
@@ -55,12 +55,11 @@
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="price">Giá</label>
-                                    <textarea id="price" class="form-control" th:field="*{price}" ></textarea>
+                                    <input type="number" id="price" class="form-control" th:field="*{price}" >
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="quantity">Số lượng</label>
-                                    <textarea id="quantity" class="form-control" th:field="*{quantity}"
-                                    ></textarea>
+                                    <input type="number" id="quantity" class="form-control" th:field="*{quantity}">
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="category">Danh mục</label>
@@ -109,11 +108,10 @@
     </div>
 </div>
 </body>
-
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
+</a>
 <!-- Logout Modal-->
 <div  th:replace="~{admin/fragments/logout :: logout}"></div>
-
 </html>
