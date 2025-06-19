@@ -12,6 +12,8 @@ import com.example.computershop.repository.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
@@ -21,7 +23,6 @@ import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.HashMap;
-
 @Controller
 @RequestMapping("/cart")
 public class CartController {
@@ -41,18 +42,7 @@ public class CartController {
         this.userRepository = userRepository;
     }
 
-    @ModelAttribute("cartCount")
-    public int cartCount(Principal principal) {
-        if (principal != null) {
-            String username = principal.getName();
-            User user = userRepository.findByUsername(username).orElse(null);
-            if (user != null) {
-                List<Cart> userCart = cartRepository.findByUser(user);
-                return userCart.stream().mapToInt(Cart::getQuantity).sum();
-            }
-        }
-        return 0;
-    }
+
     
     // Helper method to get current user's cart from database
     private List<Cart> getCurrentUserCart(Principal principal) {
@@ -86,30 +76,58 @@ public class CartController {
     }
 
     @RequestMapping(value = "/add/{id}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String add(@PathVariable String id, @RequestParam(defaultValue = "1") int sl,
+    public Object add(@PathVariable String id, @RequestParam(defaultValue = "1") int sl,
                       Principal principal,
-                      RedirectAttributes redirectAttributes) {
+                      RedirectAttributes redirectAttributes,
+                      @RequestHeader(value = "X-Requested-With", required = false) String requestedWith) {
+        
+        boolean isAjax = "XMLHttpRequest".equals(requestedWith);
+        
         try {
             // Validate input
             if (sl <= 0) {
+                if (isAjax) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("success", false);
+                    response.put("message", "Số lượng phải lớn hơn 0!");
+                    return ResponseEntity.badRequest().body(response);
+                }
                 redirectAttributes.addFlashAttribute("error", "Số lượng phải lớn hơn 0!");
                 return REDIRECT_CART_VIEW;
             }
             
             Products sp = repo.findById(id).orElse(null);
             if(sp == null){
+                if (isAjax) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("success", false);
+                    response.put("message", "Sản phẩm không tồn tại!");
+                    return ResponseEntity.badRequest().body(response);
+                }
                 redirectAttributes.addFlashAttribute("error", "Sản phẩm không tồn tại!");
                 return REDIRECT_CART_VIEW;
             }
             
             // Kiểm tra sản phẩm còn hoạt động
             if (sp.getIsActive() == null || !sp.getIsActive()) {
+                if (isAjax) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("success", false);
+                    response.put("message", "Sản phẩm này hiện không còn bán!");
+                    return ResponseEntity.badRequest().body(response);
+                }
                 redirectAttributes.addFlashAttribute("error", "Sản phẩm này hiện không còn bán!");
                 return REDIRECT_CART_VIEW;
             }
             
             // Lấy user hiện tại
             if (principal == null) {
+                if (isAjax) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("success", false);
+                    response.put("message", "Vui lòng đăng nhập để thêm vào giỏ hàng!");
+                    return ResponseEntity.status(401).body(response);
+                }
                 redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để thêm vào giỏ hàng!");
                 return "redirect:/auth/login";
             }
@@ -117,6 +135,12 @@ public class CartController {
             
             User user = userRepository.findByUsername(username).orElse(null);
             if (user == null) {
+                if (isAjax) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("success", false);
+                    response.put("message", "Không tìm thấy thông tin người dùng!");
+                    return ResponseEntity.status(401).body(response);
+                }
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy thông tin người dùng!");
                 return "redirect:/auth/login";
             }
@@ -137,9 +161,15 @@ public class CartController {
             
             int totalRequestedQuantity = currentCartQuantity + sl;
             if (totalRequestedQuantity > sp.getQuantity()) {
-                redirectAttributes.addFlashAttribute("error", 
-                    String.format("Không đủ hàng trong kho! Hiện tại chỉ còn %d sản phẩm, bạn đã có %d trong giỏ hàng.", 
-                    sp.getQuantity(), currentCartQuantity));
+                String errorMsg = String.format("Không đủ hàng trong kho! Hiện tại chỉ còn %d sản phẩm, bạn đã có %d trong giỏ hàng.", 
+                    sp.getQuantity(), currentCartQuantity);
+                if (isAjax) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("success", false);
+                    response.put("message", errorMsg);
+                    return ResponseEntity.badRequest().body(response);
+                }
+                redirectAttributes.addFlashAttribute("error", errorMsg);
                 return REDIRECT_CART_VIEW;
             }
             
@@ -147,8 +177,6 @@ public class CartController {
             if (existingCartItem != null) {
                 existingCartItem.setQuantity(totalRequestedQuantity);
                 cartRepository.save(existingCartItem);
-                redirectAttributes.addFlashAttribute("success", 
-                    String.format("Đã cập nhật số lượng sản phẩm '%s' trong giỏ hàng!", sp.getName()));
             } else {
                 Cart newItem = new Cart();
                 newItem.setProduct(sp);
@@ -156,13 +184,33 @@ public class CartController {
                 newItem.setUser(user);
                 newItem.setCreatedAt(LocalDateTime.now());
                 cartRepository.save(newItem);
-                redirectAttributes.addFlashAttribute("success", 
-                    String.format("Đã thêm sản phẩm '%s' vào giỏ hàng!", sp.getName()));
             }
             
+            // Nếu là AJAX, trả về JSON với cart count
+            if (isAjax) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", String.format("Đã thêm %s vào giỏ hàng!", sp.getName()));
+                // Tính lại cart count
+                int cartCount = cartRepository.findByUser(user).stream()
+                    .mapToInt(Cart::getQuantity)
+                    .sum();
+                response.put("cartCount", cartCount);
+                return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
+            }
+            
+            // Nếu không phải AJAX, redirect như cũ
             return REDIRECT_CART_VIEW;
             
         } catch (Exception e) {
+            if (isAjax) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+                return ResponseEntity.status(500).body(response);
+            }
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi thêm vào giỏ hàng: " + e.getMessage());
             return REDIRECT_CART_VIEW;
         }
@@ -249,8 +297,9 @@ public class CartController {
             }
             
             if (updated) {
-                redirectAttributes.addFlashAttribute("success", 
-                    String.format("Đã cập nhật số lượng sản phẩm '%s' thành %d!", product.getName(), sl));
+                // Không gửi thông báo success nữa
+                // redirectAttributes.addFlashAttribute("success", 
+                //     String.format("Đã cập nhật số lượng sản phẩm '%s' thành %d!", product.getName(), sl));
             } else {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm trong giỏ hàng!");
             }
@@ -505,8 +554,18 @@ public class CartController {
     @ResponseBody
     public Map<String, Object> getCartCount(Principal principal) {
         Map<String, Object> response = new HashMap<>();
-        int count = cartCount(principal);
+        int count = 0;
+        if (principal != null) {
+            String username = principal.getName();
+            User user = userRepository.findByUsername(username).orElse(null);
+            if (user != null) {
+                List<Cart> userCart = cartRepository.findByUser(user);
+                count = userCart.stream().mapToInt(Cart::getQuantity).sum();
+            }
+        }
         response.put("count", count);
         return response;
     }
+
+
 }
