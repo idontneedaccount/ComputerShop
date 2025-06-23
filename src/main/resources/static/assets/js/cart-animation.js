@@ -68,6 +68,9 @@ function addToCartAjax(productId, button, originalText) {
                 });
             }
             
+            // Update cart review content
+            updateCartReviewContent();
+            
             // Show success message
             showSuccessMessage(data.message || 'Đã thêm vào giỏ hàng!');
             
@@ -344,29 +347,11 @@ function removeFromCartReview(productId, button) {
     })
     .then(response => {
         if (response.ok) {
-            // Remove item from DOM with animation
-            const cartItem = button.closest('.cart-item');
-            if (cartItem) {
-                cartItem.style.transform = 'translateX(100%)';
-                cartItem.style.opacity = '0';
-                
-                setTimeout(() => {
-                    cartItem.remove();
-                    
-                    // Update cart count and total
-                    updateCartReview();
-                    
-                    // Check if cart is empty
-                    const cartItemList = document.querySelector('.cart-item-list');
-                    if (cartItemList && cartItemList.children.length === 0) {
-                        // Reload page to show empty cart message
-                        window.location.reload();
-                    }
-                }, 300);
-            }
-            
             // Update cart count in header
             updateCartCountFromServer();
+            
+            // Update cart review content
+            updateCartReviewContent();
             
             showSuccessMessage('Đã xóa sản phẩm khỏi giỏ hàng!');
         } else {
@@ -429,5 +414,106 @@ function updateCartCountFromServer() {
     })
     .catch(error => {
         console.error('Error updating cart count:', error);
+    });
+}
+
+function updateCartReviewContent() {
+    console.log('Updating cart review content...');
+    
+    const currentCartDropdown = document.getElementById('cart-dropdown');
+    if (currentCartDropdown) {
+        // Add updating class for animation
+        currentCartDropdown.classList.add('updating');
+    }
+    
+    fetch('/cart/review', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Parse the HTML response
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newCartContent = doc.querySelector('#cart-dropdown');
+        
+        if (newCartContent && currentCartDropdown) {
+            // Preserve the 'show' class if it exists
+            const isCurrentlyShown = currentCartDropdown.classList.contains('show');
+            
+            // Replace the content with animation
+            setTimeout(() => {
+                currentCartDropdown.innerHTML = newCartContent.innerHTML;
+                
+                // Restore the 'show' class if needed
+                if (isCurrentlyShown) {
+                    currentCartDropdown.classList.add('show');
+                }
+                
+                // Remove updating class
+                currentCartDropdown.classList.remove('updating');
+                
+                // Add entering animation to new cart items
+                const cartItems = currentCartDropdown.querySelectorAll('.cart-item');
+                cartItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('entering');
+                        setTimeout(() => {
+                            item.classList.remove('entering');
+                        }, 400);
+                    }, index * 100);
+                });
+                
+                // Re-initialize cart review functionality for new elements
+                initializeCartReviewEvents();
+                
+                console.log('Cart review content updated successfully');
+            }, 150);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating cart review content:', error);
+        if (currentCartDropdown) {
+            currentCartDropdown.classList.remove('updating');
+        }
+    });
+}
+
+function initializeCartReviewEvents() {
+    console.log('Re-initializing cart review events...');
+    
+    const cartDropdown = document.getElementById('cart-dropdown');
+    if (!cartDropdown) return;
+    
+    // Handle close button
+    const cartClose = cartDropdown.querySelector('.cart-close');
+    if (cartClose) {
+        cartClose.addEventListener('click', function() {
+            console.log('Cart close button clicked');
+            hideCartReview();
+        });
+    }
+    
+    // Prevent cart content clicks from closing the review
+    const cartContent = cartDropdown.querySelector('.cart-content-wrap');
+    if (cartContent) {
+        cartContent.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+    
+    // Handle remove product buttons
+    const removeButtons = cartDropdown.querySelectorAll('.close-btn');
+    console.log('Re-initializing remove buttons:', removeButtons.length);
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            if (productId) {
+                removeFromCartReview(productId, this);
+            }
+        });
     });
 } 
