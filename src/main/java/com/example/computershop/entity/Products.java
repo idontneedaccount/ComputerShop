@@ -3,8 +3,6 @@ package com.example.computershop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
@@ -15,11 +13,10 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Entity
 @Table(name = "products")
-@JsonIgnoreProperties({"specifications"})
 public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "productid", unique = true, nullable = false, columnDefinition = "nvarchar(255)")
+    @Column(name = "productID", unique = true, nullable = false, columnDefinition = "nvarchar(255)")
     String productID;
     
     @Column(name = "name", columnDefinition = "nvarchar(255)")
@@ -37,7 +34,7 @@ public class Products {
     @Column(name = "quantity", columnDefinition = "int")
     Integer quantity;
     
-    @Column(name = "imageurl", columnDefinition = "nvarchar(255)")
+    @Column(name = "imageURL", columnDefinition = "nvarchar(255)")
     String imageURL;
     
     @Column(name = "is_active", columnDefinition = "bit")

@@ -97,7 +97,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 }
                 return email;
             } else if ("facebook".equals(provider)) {
-                return (String) attributes.get("email");
+                String email = (String) attributes.get("email");
+                if (email == null) {
+                    // Nếu Facebook không có email, tạo email từ Facebook ID
+                    String facebookId = (String) attributes.get("id");
+                    if (facebookId != null) {
+                        email = "facebook_" + facebookId + "@facebook.com";
+                    }
+                }
+                return email;
             }
             return null;
         } catch (Exception e) {
@@ -122,5 +130,26 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private String generateUniqueUsername(String email, String provider) {
+        if (email != null && !email.isEmpty()) {
+            // Thử dùng email trước
+            if (!userRepository.existsByUsername(email)) {
+                return email;
+            }
+        }
+
+        // Nếu email null hoặc đã tồn tại, tạo username với provider
+        String baseUsername = provider + "_user";
+        String username = baseUsername;
+        int counter = 1;
+
+        while (userRepository.existsByUsername(username)) {
+            username = baseUsername + "_" + counter;
+            counter++;
+        }
+
+        return username;
     }
 }
