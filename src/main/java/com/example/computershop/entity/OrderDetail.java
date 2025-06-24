@@ -26,6 +26,10 @@ public class OrderDetail {
     @JoinColumn(name = "ProductID", referencedColumnName = "productID", columnDefinition = "UNIQUEIDENTIFIER")
      Products product;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "variant_id", referencedColumnName = "variant_id", columnDefinition = "UNIQUEIDENTIFIER")
+     ProductVariant variant;
+
     @Column(name = "Quantity", nullable = false)
      Integer quantity;
 
