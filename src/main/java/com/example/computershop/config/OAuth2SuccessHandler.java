@@ -36,7 +36,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 String provider = oauthToken.getAuthorizedClientRegistrationId();
                 OAuth2User oauth2User = oauthToken.getPrincipal();
                 Map<String, Object> attributes = oauth2User.getAttributes();
-                
+
                 String email = getEmailFromAttributes(provider, attributes);
                 if (email == null) {
                     getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=email_not_found");
@@ -59,9 +59,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     }
                 } else {
                     // Create new user with the provider
+                    String username = generateUniqueUsername(email, provider);
                     User newUser = User.builder()
                             .email(email)
-                            .username(email)
+                            .username(username)
                             .password("")
                             .role(Role.USER)
                             .isActive(true)

@@ -18,14 +18,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/cart")
@@ -48,15 +47,12 @@ public class CartController {
     // =========================== HELPER METHODS ===========================
 
     /**
-     * Get current user's cart from database
+     * Get current user's cart items
      */
     private List<Cart> getCurrentUserCart(Principal principal) {
-        if (principal != null) {
-            String username = principal.getName();
-            User user = userRepository.findByUsername(username).orElse(null);
-            if (user != null) {
-                return cartRepository.findByUser(user);
-            }
+        User user = getUserFromPrincipal(principal);
+        if (user != null) {
+            return cartRepository.findByUser(user);
         }
         return new ArrayList<>();
     }
@@ -69,13 +65,61 @@ public class CartController {
     }
 
     /**
-     * Get user from principal
+     * Get user from principal - handles both OAuth2 and form authentication
      */
     private User getUserFromPrincipal(Principal principal) {
         if (principal == null) {
             return null;
         }
-        return userRepository.findByUsername(principal.getName()).orElse(null);
+
+        // Handle OAuth2 authentication
+        if (principal instanceof OAuth2AuthenticationToken oauth2Token) {
+            OAuth2User oauth2User = oauth2Token.getPrincipal();
+            String provider = oauth2Token.getAuthorizedClientRegistrationId();
+            String email = getEmailFromOAuth2Attributes(provider, oauth2User.getAttributes());
+            
+            if (email != null) {
+                // OAuth2 users are stored with username = email
+                return userRepository.findByUsername(email).orElse(null);
+            }
+            return null;
+        }
+
+        // Handle form authentication
+        String identifier = principal.getName();
+        return userRepository.findByUsernameOrEmail(identifier, identifier).orElse(null);
+    }
+
+    /**
+     * Extract email from OAuth2 attributes based on provider
+     */
+    private String getEmailFromOAuth2Attributes(String provider, Map<String, Object> attributes) {
+        try {
+            if ("google".equals(provider)) {
+                return (String) attributes.get("email");
+            } else if ("github".equals(provider)) {
+                String email = (String) attributes.get("email");
+                if (email == null) {
+                    String username = (String) attributes.get("login");
+                    if (username != null) {
+                        email = username + "@github.com";
+                    }
+                }
+                return email;
+            } else if ("facebook".equals(provider)) {
+                String email = (String) attributes.get("email");
+                if (email == null) {
+                    String facebookId = (String) attributes.get("id");
+                    if (facebookId != null) {
+                        email = "facebook_" + facebookId + "@facebook.com";
+                    }
+                }
+                return email;
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
