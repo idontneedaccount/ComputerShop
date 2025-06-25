@@ -19,7 +19,10 @@ public class Categories {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String categoryID;
+
+    @Column(name = "name",nullable = false, columnDefinition = "nvarchar(255)")
     String name;
+    @Column(name = "description", columnDefinition = "nvarchar(255)")
     String description;
     @OneToMany(mappedBy = "categories")
     @JsonIgnore
