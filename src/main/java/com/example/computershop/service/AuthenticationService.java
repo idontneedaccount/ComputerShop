@@ -28,7 +28,7 @@ public class AuthenticationService {
 
     public boolean isUserActive(String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
-        return userOpt.map(User::isActive).orElse(false);
+        return userOpt.map(user -> user.getIsActive() != null && user.getIsActive()).orElse(false);
     }
 
     public void createUser(@NotNull UserCreationRequest request) {
@@ -55,7 +55,7 @@ public class AuthenticationService {
                     .fullName(request.getFullName())
                     .email(request.getEmail())
                     .phoneNumber(request.getPhoneNumber())
-                    .role(Role.USER)
+                    .role(Role.User)
                     .isActive(false)
                     .createdAt(LocalDateTime.now())
                     .address(request.getAddress())
@@ -79,7 +79,7 @@ public class AuthenticationService {
                 if (user.getVerificationExpiration().isBefore(LocalDateTime.now())) {
                     throw new AuthenticationException("Mã xác thực đã hết hạn.");
                 }
-                user.setActive(true);
+                user.setIsActive(true);
                 user.setVerificationCode(null);
                 user.setVerificationExpiration(null);
                 userRepository.save(user);
@@ -96,7 +96,7 @@ public class AuthenticationService {
             Optional<User> optuser = userRepository.findByEmail(email);
             if (optuser.isPresent()) {
                 User user = optuser.get();
-                if (user.isActive()) {
+                if (user.getIsActive() != null && user.getIsActive()) {
                     throw new AuthenticationException("Tài khoản đã được kích hoạt.");
                 }
                 user.setVerificationCode(generateVerificationCode());

@@ -6,6 +6,7 @@
 <title>Shopping Page</title>
 <!-- Custom Pagination CSS -->
 <link th:href="@{/assets/css/pagination.css}" rel="stylesheet">
+<link th:href="@{/assets/css/cart-animation.css}" rel="stylesheet">
 </head>
 <body class="sticky-header">
 
@@ -65,7 +66,17 @@
                                             <a th:href="@{/user/single-product(id=${product.productID})}" th:text="${product.name}">Product Name</a>
                                         </h5>
                                         <div class="product-price-variant">
-                                            <span class="price current-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Price</span>
+                                            <!-- Hiển thị khoảng giá nếu có variants -->
+                                            <span th:if="${product.hasVariants()}" class="price current-price">
+                                                <span th:text="${#numbers.formatDecimal(product.minPrice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                                <span th:if="${product.minPrice.compareTo(product.maxPrice) != 0}">
+                                                    - <span th:text="${#numbers.formatDecimal(product.maxPrice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                                </span>
+                                                VNĐ
+                                            </span>
+                                            <!-- Hiển thị giá đơn nếu không có variants -->
+                                            <span th:unless="${product.hasVariants()}" class="price current-price" 
+                                                  th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Price</span>
                                         </div>
                                         <div class="product-category">
                                             <span class="category-name" th:if="${product.categories}" th:text="${product.categories.name}">Category</span>
@@ -99,6 +110,7 @@
 <script th:src="@{/assets/js/pagination.js}"></script>
 <!-- Shopping Enhancements Script -->
 <script th:src="@{/assets/js/shopping-enhancement.js}"></script>
+<script th:src="@{/assets/js/cart-animation.js}"></script>
 
 </body>
 </html>

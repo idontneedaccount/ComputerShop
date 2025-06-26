@@ -59,12 +59,12 @@
                                 <td th:text="${users.phoneNumber}"></td>
                                 <td th:text="${users.role.displayName}"></td>
                                 <td>
-                                    <span th:if="${users.isActive}" class="badge bg-success">Đã Kích Hoạt</span>
-                                    <span th:if="${!users.isActive}" class="badge bg-secondary">Chưa Kích Hoạt</span>
+                                    <span th:if="${users.isActive}" class="badge btn-success">Đã Kích Hoạt</span>
+                                    <span th:if="${!users.isActive}" class="badge btn-secondary">Chưa Kích Hoạt</span>
                                 </td>
                                 <td>
-                                    <span th:if="${users.isAccountLocked}" class="badge bg-danger">Đã Khóa</span>
-                                    <span th:if="${!users.isAccountLocked}" class="badge bg-success">Hoạt động</span>
+                                    <span th:if="${users.isAccountLocked}" class="badge btn-danger">Đã Khóa</span>
+                                    <span th:if="${!users.isAccountLocked}" class="badge btn-success">Hoạt động</span>
                                 </td>
                                 <td th:text="${#temporals.format(users.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>

@@ -82,17 +82,17 @@
                         </div>
                         <ul class="mainmenu">
                             <li>
-                                <a href="#">Trang chủ</a>
+                                <a th:href="@{/}">Trang chủ</a>
                             </li>
                             <li>
-                                <a href="#">Cửa hàng</a>
+                                <a th:href="@{/user/shopping-page}">Cửa hàng</a>
                             </li>
                             <li class="menu-item-has-children">
                                 <a href="#">Trang</a>
                                 <ul class="axil-submenu">
                                     <li><a href="wishlist.html">Yêu thích</a></li>
-                                    <li><a href="cart.html">Giỏ hàng</a></li>
-                                    <li><a href="checkout.html">Thanh toán</a></li>
+                                    <li><a th:href="@{/cart/view}">Giỏ hàng</a></li>
+                                    <li><a th:href="@{/cart/checkout}">Thanh toán</a></li>
                                     <li sec:authorize="isAuthenticated()"><a th:href="@{/my-account}">Tài khoản</a></li>
                                     <li sec:authorize="!isAuthenticated()"><a th:href="@{/auth/register}">Đăng ký</a></li>
                                     <li sec:authorize="!isAuthenticated()"><a th:href="@{/auth/login}">Đăng nhập</a></li>
@@ -128,8 +128,8 @@
                             </a>
                         </li>
                         <li class="shopping-cart">
-                            <a href="#" class="cart-dropdown-btn">
-                                <span class="cart-count">3</span>
+                            <a href="#" class="cart-dropdown-btn" onclick="console.log('Cart icon clicked directly')">
+                                <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}">0</span>
                                 <i class="flaticon-shopping-cart"></i>
                             </a>
                         </li>

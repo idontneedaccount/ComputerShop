@@ -1,9 +1,11 @@
 package com.example.computershop.controller;
 
+import com.example.computershop.config.RecaptchaConfig;
 import com.example.computershop.dto.request.UserCreationRequest;
 import com.example.computershop.dto.request.VerifyUserRequest;
 import com.example.computershop.exception.AuthenticationException;
 import com.example.computershop.service.AuthenticationService;
+import com.example.computershop.service.RecaptchaService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
+    RecaptchaService recaptchaService;
+    RecaptchaConfig recaptchaConfig;
     static String register = "auth/register";
     static String login = "auth/login";
     static String resendVerification = "auth/resendVerification";
@@ -47,7 +51,7 @@ public class AuthenticationController {
             redirectAttributes.addFlashAttribute(messageAttr, "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
             return redirectlogin;
         } catch (AuthenticationException e) {
-            redirectAttributes.addFlashAttribute(errorAttr, e.getMessage());
+            model.addAttribute(errorAttr, e.getMessage());
             return register;
         }
     }
@@ -86,16 +90,27 @@ public class AuthenticationController {
         if (!model.containsAttribute(verifyAttr)) {
             model.addAttribute(verifyAttr, new VerifyUserRequest());
         }
+        model.addAttribute("siteKey", recaptchaConfig.getSiteKey());
         return resendVerification;
     }
 
     @PostMapping("/resend-verification")
     public String resendVerificationEmail(
             @Valid @ModelAttribute("verifyRequest") VerifyUserRequest request,
+            @RequestParam("g-recaptcha-response") String captchaResponse,
             BindingResult result,
             Model model) {
+        
+        // Verify reCAPTCHA
+        if (!recaptchaService.isValidCaptcha(captchaResponse)) {
+            model.addAttribute(errorAttr, "Vui lòng xác thực reCAPTCHA.");
+            model.addAttribute("siteKey", recaptchaConfig.getSiteKey());
+            return resendVerification;
+        }
+        
         if (result.hasErrors()) {
             model.addAttribute(errorAttr, "Vui lòng kiểm tra lại thông tin.");
+            model.addAttribute("siteKey", recaptchaConfig.getSiteKey());
             return resendVerification;
         }
         try {
@@ -108,6 +123,7 @@ public class AuthenticationController {
             return login;
         } catch (AuthenticationException e) {
             model.addAttribute(errorAttr, e.getMessage());
+            model.addAttribute("siteKey", recaptchaConfig.getSiteKey());
             return resendVerification;
         }
     }
@@ -132,7 +148,6 @@ public class AuthenticationController {
                 redirectAttributes.addFlashAttribute(messageAttr, "Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay.");
                 return redirectlogin;
             }
-
             authenticationService.verifyUser(request);
             redirectAttributes.addFlashAttribute(messageAttr, "Tài khoản đã xác thực thành công. Bạn có thể đăng nhập.");
             return "redirect:/auth/login?verified=true";
@@ -143,19 +158,30 @@ public class AuthenticationController {
     }
 
     @GetMapping("/forgot-password")
-    public String showForgotPasswordForm() {
+    public String showForgotPasswordForm(Model model) {
+        model.addAttribute("siteKey", recaptchaConfig.getSiteKey());
         return forgotPassword;
     }
 
     @PostMapping("/forgot-password")
-    public String processForgotPassword(@RequestParam String username, RedirectAttributes redirectAttributes) {
+    public String processForgotPassword(@RequestParam String username, 
+                                       @RequestParam("g-recaptcha-response") String captchaResponse,
+                                       Model model,
+                                       RedirectAttributes redirectAttributes) {
+        if (!recaptchaService.isValidCaptcha(captchaResponse)) {
+            model.addAttribute(errorAttr, "Vui lòng xác thực reCAPTCHA.");
+            model.addAttribute("siteKey", recaptchaConfig.getSiteKey());
+            return forgotPassword;
+        }
+        
         try {
             authenticationService.sendPasswordResetEmail(username);
             redirectAttributes.addFlashAttribute(messageAttr, "Đã gửi email hướng dẫn đặt lại mật khẩu. Vui lòng kiểm tra email của bạn.");
             return redirectlogin;
         } catch (AuthenticationException e) {
-            redirectAttributes.addFlashAttribute(errorAttr, e.getMessage());
-            return redirectlogin;
+            model.addAttribute(errorAttr, e.getMessage());
+            model.addAttribute("siteKey", recaptchaConfig.getSiteKey());
+            return forgotPassword;
         }
     }
 

@@ -1,32 +1,17 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<!doctype html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>eTrade || Cart</title>
-    <meta name="robots" content="noindex, follow" />
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Favicon -->
-    <link rel="shortcut icon" th:href="@{/assets/images/favicon.png}" type="image/x-icon">
-    <!-- CSS -->
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/font-awesome.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/flaticon/flaticon.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/slick.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/slick-theme.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/jquery-ui.min.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/sal.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/magnific-popup.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/vendor/base.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/style.min.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shopping Cart - Computer Shop</title>
     <!-- Cart Page Custom CSS -->
-    <link rel="stylesheet" th:href="@{/assets/css/cart-custom.css}">
+    <link th:href="@{/assets/css/cart-custom.css}" rel="stylesheet">
 </head>
 <body class="sticky-header">
     <!-- Back to top start -->
     <a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
     <!-- Back to top end -->
+    
     <!-- Header -->
     <header class="header axil-header header-style-5">
         <div th:replace="~{user/fragments/header2 :: header}"></div>
@@ -36,19 +21,6 @@
         <!-- Start Cart Area  -->
         <div class="axil-product-cart-area axil-section-gap">
             <div class="container">
-                <!-- Success/Error Messages -->
-                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <span th:text="${success}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                
-                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <span th:text="${error}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                
                 <div class="axil-product-cart-wrap">
                     <div class="product-table-heading">
                         <h4 class="title">Your Cart</h4>
@@ -59,8 +31,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col" class="product-remove"></th>
-                                    <th scope="col" class="product-thumbnail">Product</th>
-                                    <th scope="col" class="product-title"></th>
+                                    <th scope="col" class="product-info">Product</th>
                                     <th scope="col" class="product-price">Price</th>
                                     <th scope="col" class="product-quantity">Quantity</th>
                                     <th scope="col" class="product-subtotal">Subtotal</th>
@@ -69,54 +40,66 @@
                             <tbody>
                                 <!-- Empty Cart Row -->
                                 <tr th:if="${cartItems == null || cartItems.isEmpty()}">
-                                    <td colspan="6" class="text-center">
+                                    <td colspan="5" class="text-center">
                                         <div class="empty-cart-message">
                                             <h4>Your cart is empty</h4>
                                             <p>Start shopping to add items to your cart!</p>
-                                            <a href="/test-cart.html" class="axil-btn btn-bg-primary">Browse Products</a>
+                                            <a href="/shopping" class="axil-btn btn-bg-primary">Browse Products</a>
                                         </div>
                                     </td>
                                 </tr>
                                 
                                 <!-- Cart Items -->
-                                <tr th:each="item : ${cartItems}" th:if="${item != null && item.product != null}">
+                                <tr th:each="item : ${cartItems}" th:if="${item != null && item.product != null}" class="cart-item-row">
                                     <td class="product-remove">
-                                        <a th:href="@{/cart/remove/{id}(id=${item.product.productID})}" class="remove-wishlist">
+                                        <a th:href="@{/cart/remove/{id}(id=${item.product.productID})}" class="remove-btn">
                                             <i class="fal fa-times"></i>
                                         </a>
                                     </td>
-                                    <td class="product-thumbnail">
-                                        <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}">
-                                            <img th:if="${item.product.imageURL != null}" 
-                                                 th:src="@{'/assets/images/product/laptop/' + ${item.product.imageURL}}" 
-                                                 alt="Product Image"
-                                                 style="width: 80px; height: 80px; object-fit: cover;">
-                                            <img th:unless="${item.product.imageURL != null}" 
-                                                 th:src="@{/assets/images/product/laptop/default.jpg}" 
-                                                 alt="Product Image"
-                                                 style="width: 80px; height: 80px; object-fit: cover;">
-                                        </a>
-                                    </td>
-                                    <td class="product-title">
-                                        <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}" 
-                                           th:text="${item.product.name}">Product Name</a>
-                                        <div class="product-brand" th:if="${item.product.brand != null}">
-                                            <small th:text="${item.product.brand}">Brand</small>
+                                    <td class="product-info">
+                                        <div class="product-info-wrapper">
+                                            <div class="product-thumbnail">
+                                                <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}">
+                                                    <img th:if="${item.product.imageURL != null}" 
+                                                         th:src="@{'/assets/images/product/laptop/' + ${item.product.imageURL}}" 
+                                                         alt="Product Image">
+                                                    <img th:unless="${item.product.imageURL != null}" 
+                                                         th:src="@{/assets/images/product/laptop/default.jpg}" 
+                                                         alt="Product Image">
+                                                </a>
+                                            </div>
+                                            <div class="product-details">
+                                                <h6 class="product-title">
+                                                    <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}" 
+                                                       th:text="${item.product.name}">Product Name</a>
+                                                </h6>
+                                                <div class="product-brand" th:if="${item.product.brand != null}">
+                                                    <small th:text="${item.product.brand}">Brand</small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
-                                    <td class="product-price" data-title="Price">
-                                        <span class="currency-symbol">₫</span>
-                                        <span th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                    <td class="product-price">
+                                        <div class="price-wrapper">
+                                            <span class="price-amount" th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')}">0</span><span class="currency-symbol"> VND</span>
+                                        </div>
                                     </td>
-                                    <td class="product-quantity" data-title="Qty">
-                                        <form th:action="@{/cart/update/{id}(id=${item.product.productID})}" method="post" class="quantity-form d-flex align-items-center">
-                                            <input type="number" name="sl" th:value="${item.quantity}" min="1" class="quantity-input">
-                                            <button type="submit" class="axil-btn btn-outline btn-sm ms-2">Update</button>
-                                        </form>
+                                    <td class="product-quantity">
+                                        <div class="quantity-wrapper">
+                                            <form th:action="@{/cart/update/{id}(id=${item.product.productID})}" method="post" class="quantity-form">
+                                                <div class="quantity-control">
+                                                    <button type="button" class="qty-btn minus">-</button>
+                                                    <input type="number" name="sl" th:value="${item.quantity}" min="1" class="quantity-input">
+                                                    <button type="button" class="qty-btn plus">+</button>
+                                                </div>
+                                                <button type="submit" class="update-btn" style="display: none;">Update</button>
+                                            </form>
+                                        </div>
                                     </td>
-                                    <td class="product-subtotal" data-title="Subtotal">
-                                        <span class="currency-symbol">₫</span>
-                                        <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                    <td class="product-subtotal">
+                                        <div class="subtotal-wrapper">
+                                            <span class="subtotal-amount" th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span><span class="currency-symbol"> VND</span>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -133,7 +116,7 @@
                                         <tbody>
                                             <tr class="order-subtotal">
                                                 <td>Subtotal</td>
-                                                <td th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                                                <td th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
                                             </tr>
                                             <tr class="order-shipping">
                                                 <td>Shipping</td>
@@ -144,32 +127,25 @@
                                                     </div>
                                                     <div class="input-group">
                                                         <input type="radio" id="radio2" name="shipping">
-                                                        <label for="radio2">Local: 35.000 ₫</label>
+                                                        <label for="radio2">Local: 35.000 VND</label>
                                                     </div>
                                                     <div class="input-group">
                                                         <input type="radio" id="radio3" name="shipping">
-                                                        <label for="radio3">Flat rate: 12.000 ₫</label>
+                                                        <label for="radio3">Flat rate: 12.000 VND</label>
                                                     </div>
                                                 </td>
                                             </tr>
                                             <tr class="order-tax">
                                                 <td>State Tax</td>
-                                                <td>0 ₫</td>
+                                                <td>0 VND</td>
                                             </tr>
                                             <tr class="order-total">
                                                 <td>Total</td>
-                                                <td class="order-total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                                                <td class="order-total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <!-- TEST CHECKOUT BUTTON - NO JS INTERFERENCE -->
-                                <div style="margin-bottom: 10px;">
-                                    <a href="/cart/checkout" style="display: block; background: #ff6b35; color: white; padding: 15px; text-align: center; text-decoration: none; border-radius: 4px;">
-                                        🚀 TEST CHECKOUT (Direct Link)
-                                    </a>
-                                </div>
-                                
                                 <a th:href="@{/cart/checkout}" class="axil-btn btn-bg-primary checkout-btn w-100">Proceed to Checkout</a>
                             </div>
                         </div>
@@ -184,26 +160,64 @@
     <div th:replace="~{user/fragments/footer :: footer}"></div>
     
     <!-- Additional fragments -->
-    <div th:replace="~{user/fragments/quickreview :: quickreview}"></div>
     <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
     <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
     
-    <!-- JS -->
-    <script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.js}"></script>
-    <script th:src="@{/assets/js/vendor/popper.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/slick.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/js.cookie.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery-ui.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.ui.touch-punch.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.countdown.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/sal.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.magnific-popup.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/imagesloaded.pkgd.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/isotope.pkgd.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/counterup.js}"></script>
-    <script th:src="@{/assets/js/vendor/waypoints.min.js}"></script>
-    <script th:src="@{/assets/js/main.js}"></script>
+    <!-- Cart Page Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle quantity buttons
+            document.querySelectorAll('.qty-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const form = this.closest('form');
+                    const input = form.querySelector('.quantity-input');
+                    const currentValue = parseInt(input.value) || 1;
+                    
+                    if (this.classList.contains('minus')) {
+                        if (currentValue > 1) {
+                            input.value = currentValue - 1;
+                        }
+                    } else if (this.classList.contains('plus')) {
+                        input.value = currentValue + 1;
+                    }
+                    
+                    // Auto-submit form after changing quantity
+                    setTimeout(() => {
+                        form.submit();
+                    }, 500);
+                });
+            });
+            
+            // Handle quantity input change
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.value < 1) {
+                        this.value = 1;
+                    }
+                    // Auto-submit form after changing quantity
+                    setTimeout(() => {
+                        this.closest('form').submit();
+                    }, 500);
+                });
+            });
+            
+            // Handle shipping option changes
+            document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const subtotal = parseFloat(document.querySelector('.order-subtotal td:last-child').textContent.replace(/[^0-9]/g, ''));
+                    let shippingCost = 0;
+                    
+                    if (this.id === 'radio2') {
+                        shippingCost = 35000;
+                    } else if (this.id === 'radio3') {
+                        shippingCost = 12000;
+                    }
+                    
+                    const total = subtotal + shippingCost;
+                    document.querySelector('.order-total-amount').textContent = new Intl.NumberFormat('vi-VN').format(total) + ' VND';
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -22,35 +22,37 @@ import java.util.Map;
 public class User implements UserDetails, OAuth2User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id" , columnDefinition = "nvarchar(255)")
+    @Column(name = "user_id", columnDefinition = "UNIQUEIDENTIFIER")
     String userId;
-    @Column(name = "username", unique = true , columnDefinition = "nvarchar(255)")
+    @Column(name = "username", unique = true, columnDefinition = "NVARCHAR(255)")
     String username;
-    @Column(name = "password" , columnDefinition = "nvarchar(255)")
+    @Column(name = "password", columnDefinition = "NVARCHAR(255)")
     String password;
-    @Column(name = "full_name" , columnDefinition = "nvarchar(255)")
+    @Column(name = "full_name", columnDefinition = "NVARCHAR(255)")
     String fullName;
-    @Column(name = "email", unique = true , columnDefinition = "nvarchar(255)")
+    @Column(name = "email", unique = true, columnDefinition = "NVARCHAR(255)")
     String email;
-    @Column(name = "phone_number", columnDefinition = "nvarchar(255)")
+    @Column(name = "phone_number", unique = true, columnDefinition = "NVARCHAR(50)")
     String phoneNumber;
     @Enumerated(EnumType.STRING)
-    @Column(name = "role" , columnDefinition = "nvarchar(255)")
+    @Column(name = "role", columnDefinition = "NVARCHAR(50)")
     Role role;
-    @Column(name = "created_at" , columnDefinition = "datetime")
+    @Column(name = "created_at", columnDefinition = "DATETIME2")
     LocalDateTime createdAt;
-    @Column(name = "is_active" , columnDefinition = "bit")
-    boolean isActive;
-    @Column(name = "verification_code" , columnDefinition = "nvarchar(255)")
+    @Column(name = "is_active", columnDefinition = "BIT")
+    Boolean isActive;
+    @Column(name = "verification_code", columnDefinition = "NVARCHAR(255)")
     String verificationCode;
-    @Column(name = "verification_expiration" , columnDefinition = "datetime")
+    @Column(name = "verification_expiration", columnDefinition = "DATETIME2")
     LocalDateTime verificationExpiration;
-    @Column(name = "provider", columnDefinition = "nvarchar(255)")
+    @Column(name = "provider", columnDefinition = "NVARCHAR(255)")
     String provider;
-    @Column(name = "address", columnDefinition = "nvarchar(255)")
-    String address;
-    @Column(name = "is_account_locked", columnDefinition = "bit")
+    @Column(name = "is_account_locked", columnDefinition = "BIT")
     Boolean isAccountLocked;
+    @Column(name = "address", columnDefinition = "NVARCHAR(255)")
+    String address;
+    @Column(name = "image", columnDefinition = "NVARCHAR(255)")
+    String image;
     @Transient
     private Map<String, Object> attributes;
 
@@ -66,7 +68,7 @@ public class User implements UserDetails, OAuth2User {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isAccountLocked == null || !isAccountLocked;
     }
 
     @Override
@@ -76,7 +78,7 @@ public class User implements UserDetails, OAuth2User {
 
     @Override
     public boolean isEnabled() {
-        return isActive;
+        return isActive != null && isActive;
     }
     @OneToMany(mappedBy = "user")
     private List<Order> orders;

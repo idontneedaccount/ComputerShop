@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Phiên bản sản phẩm</title>
+</head>
+<body id="page-top">
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/admin">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/admin/product">Sản phẩm</a>
+                </li>
+                <li class="breadcrumb-item active">Cấu hình sản phẩm</li>
+            </ol>
+
+            <!-- Alert Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Product Info -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-laptop"></i>
+                    Thông tin sản phẩm
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Product Information Column -->
+                        <div class="col-md-8">
+                            <h5 class="text-primary mb-3" th:text="${product.name}">Product Name</h5>
+                            <div class="product-info">
+                                <div class="info-item mb-2">
+                                    <i class="fas fa-barcode text-muted me-2"></i>
+                                    <strong>Mã sản phẩm:</strong> 
+                                    <span class="badge badge-light" th:text="${product.productID}"></span>
+                                </div>
+                                <div class="info-item mb-2">
+                                    <i class="fas fa-industry text-muted me-2"></i>
+                                    <strong>Thương hiệu:</strong> 
+                                    <span class="text-info" th:text="${product.brand}"></span>
+                                </div>
+                                <div class="info-item mb-2">
+                                    <i class="fas fa-money-bill-wave text-muted me-2"></i>
+                                    <strong>Giá gốc:</strong> 
+                                    <span class="text-danger font-weight-bold" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                                </div>
+                                <div class="info-item mb-2">
+                                    <i class="fas fa-boxes text-muted me-2"></i>
+                                    <strong>Tồn kho:</strong> 
+                                    <span class="badge badge-info" th:text="${product.quantity} + ' sản phẩm'"></span>
+                                </div>
+                                <div class="info-item mb-2">
+                                    <i class="fas fa-tag text-muted me-2"></i>
+                                    <strong>Danh mục:</strong> 
+                                    <span class="text-success" th:if="${product.categories}" th:text="${product.categories.name}">Category</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-circle text-muted me-2"></i>
+                                    <strong>Trạng thái:</strong>
+                                    <span th:if="${product.isActive}" class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Đang hoạt động
+                                    </span>
+                                    <span th:unless="${product.isActive}" class="badge badge-danger">
+                                        <i class="fas fa-times-circle"></i> Ngừng hoạt động
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Image Column -->
+                        <div class="col-md-4">
+                            <div class="product-image-container">
+                                <div class="image-wrapper">
+                                    <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
+                                         th:alt="${product.name}"
+                                         class="product-image"
+                                         onerror="this.src='/assets/images/product/default-product.png'">
+                                </div>
+                                <div class="image-info mt-2 text-center">
+                                    <small class="text-muted">Hình ảnh sản phẩm</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Variant Form -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-plus"></i>
+                    Thêm cấu hình mới
+                </div>
+                <div class="card-body">
+                    <form th:action="@{'/admin/product-variants/add/' + ${product.productID}}" method="post" th:object="${newVariant}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cpu">CPU <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="cpu" name="cpu" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ram">RAM <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="ram" name="ram" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="storage">Bộ nhớ (SSD/HDD) <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="storage" name="storage" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="gpu">Card đồ họa (GPU)</label>
+                                    <input type="text" class="form-control" id="gpu" name="gpu">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="screen">Màn hình</label>
+                                    <input type="text" class="form-control" id="screen" name="screen">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="price">Giá <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="price" name="price" required min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="quantity">Số lượng <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" required min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sku">Mã SKU (tùy chọn)</label>
+                            <input type="text" class="form-control" id="sku" name="sku" placeholder="Tạo tự động hoặc nhập mã">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Thêm cấu hình
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Variants List -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-table"></i>
+                    Danh sách cấu hình
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Cấu hình</th>
+                                <th>SKU</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="variant, iterStat : ${variants}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td>
+                                    <strong th:text="${variant.displayName}">Variant Name</strong><br>
+                                    <small>
+                                        CPU: <span th:text="${variant.cpu}"></span><br>
+                                        RAM: <span th:text="${variant.ram}"></span><br>
+                                        Storage: <span th:text="${variant.storage}"></span>
+                                        <span th:if="${variant.gpu}"><br>GPU: <span th:text="${variant.gpu}"></span></span>
+                                        <span th:if="${variant.screen}"><br>Screen: <span th:text="${variant.screen}"></span></span>
+                                    </small>
+                                </td>
+                                <td th:text="${variant.sku}">SKU</td>
+                                <td th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Price</td>
+                                <td>
+                                    <span th:text="${variant.quantity}">0</span>
+                                    <span th:if="${variant.quantity == 0}" class="badge badge-danger ml-1">Hết hàng</span>
+                                </td>
+                                <td>
+                                    <span th:if="${variant.isActive}" class="badge badge-success">Đang bán</span>
+                                    <span th:unless="${variant.isActive}" class="badge badge-secondary">Ngừng bán</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{'/admin/product-variants/edit/' + ${variant.variantId}}"
+                                       class="btn btn-sm btn-primary" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-warning toggle-status-btn"
+                                            th:attr="data-variant-id=${variant.variantId}"
+                                            title="Đổi trạng thái">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
+                                    <a th:href="@{'/admin/product-variants/delete/' + ${variant.variantId}}"
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Bạn có chắc muốn xóa cấu hình này?')"
+                                       title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <a href="/admin/product" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách sản phẩm
+            </a>
+        </div>
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+    <!-- /.content-wrapper -->
+</div>
+<!-- /#wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+</body>
+</html>

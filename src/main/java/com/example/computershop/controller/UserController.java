@@ -74,7 +74,7 @@ public class UserController {
                     .phoneNumber(user.getPhoneNumber())
                     .address(user.getAddress())
                     .role(user.getRole())
-                    .active(user.isActive())
+                    .active(user.getIsActive())
                     .isAccountLocked(user.getIsAccountLocked())
                     .build();
             model.addAttribute(USER_UPDATE_BY_ADMIN, dto);
