@@ -9,6 +9,7 @@ import com.example.computershop.entity.Role;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,6 +38,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<Object[]> getTop5UserByRevenueOrder() {
+        return userRepository.getUserByRevenueOrder(PageRequest.of(0, 5));
+    }
+
+    public long countUsers(){
+        return userRepository.countUsers();
+    };
     /**
      * Lấy thông tin user hiện tại từ Security Context
      * Xử lý cả OAuth2 và Form Authentication
