@@ -9,9 +9,10 @@ import com.example.computershop.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.data.domain.PageRequest;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -106,6 +107,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public BigInteger getTotalRevenue() {
-        return orderRepository.getTotalRevenue()  ;
+        return orderRepository.getTotalRevenue();
     }
 } 

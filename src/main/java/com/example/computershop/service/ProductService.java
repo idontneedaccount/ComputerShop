@@ -32,7 +32,15 @@ public class ProductService {
     public Products findById(String productID) {
         return this.repo.findById(productID).orElse(null);
     }
-
+    public Boolean update(Products product) {
+        try {
+            this.repo.save(product);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public Boolean delete(String productID) {
         try {
             this.repo.deleteById(productID);
@@ -59,13 +67,5 @@ public class ProductService {
     public long countProducts() {
         return repo.countProducts();
     }
-    public Boolean update(Products product) {
-        try {
-            this.repo.save(product);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false; 
-    }
+
 }
