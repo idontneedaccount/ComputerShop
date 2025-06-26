@@ -29,6 +29,10 @@ public class Cart implements Serializable {
     @JoinColumn(name = "product_id", referencedColumnName = "productid", columnDefinition = "nvarchar(255)")
     private Products product;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "variant_id", referencedColumnName = "variant_id", columnDefinition = "nvarchar(255)")
+    private ProductVariant variant;
+
     @Column(name = "Quantity", nullable = false)
     private Integer quantity;
 

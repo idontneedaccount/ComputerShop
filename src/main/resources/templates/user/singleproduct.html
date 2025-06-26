@@ -54,7 +54,21 @@
                         <div class="single-product-content">
                             <div class="inner">
                                 <h2 class="product-title" th:text="${product.name}">Tên sản phẩm</h2>
-                                <span class="price-amount" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                                
+                                <!-- Hiển thị giá theo variants -->
+                                <div th:if="${variants != null and !variants.isEmpty()}">
+                                    <span class="price-range" id="price-display">
+                                        <span th:text="${#numbers.formatDecimal(product.minPrice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                        <span th:if="${product.minPrice.compareTo(product.maxPrice) != 0}">
+                                            - <span th:text="${#numbers.formatDecimal(product.maxPrice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                        </span>
+                                        VNĐ
+                                    </span>
+                                </div>
+                                <div th:unless="${variants != null and !variants.isEmpty()}">
+                                    <span class="price-amount" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                                </div>
+                                
                                 <div class="product-rating">
                                     <div class="star-rating">
                                         <i class="fas fa-star"></i>
@@ -67,8 +81,56 @@
                                         <a href="#">(<span>2</span> customer reviews)</a>
                                     </div>
                                 </div>
+                                
+                                <!-- Variant Selection Section -->
+                                <div th:if="${variants != null and !variants.isEmpty()}" class="product-variants mt-4">
+                                    <h5 class="mb-3">Chọn cấu hình:</h5>
+                                    
+                                    <div class="variant-options">
+                                        <div th:each="variant, iterStat : ${variants}" class="variant-option mb-3 p-3 border rounded" 
+                                             th:attr="data-variant-id=${variant.variantId}, data-price=${variant.price}, data-quantity=${variant.quantity}"
+                                             th:classappend="${variant.quantity == 0} ? 'out-of-stock' : ''">
+                                            <input type="radio" th:id="'variant-' + ${variant.variantId}" 
+                                                   name="selectedVariant" th:value="${variant.variantId}"
+                                                   th:checked="${iterStat.first}"
+                                                   th:disabled="${variant.quantity == 0}">
+                                            <label th:for="'variant-' + ${variant.variantId}" class="variant-label d-block w-100 cursor-pointer">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="variant-info">
+                                                        <div class="variant-specs fw-bold mb-2">
+                                                            <span th:text="${variant.displayName}">Variant Name</span>
+                                                        </div>
+                                                        <div class="variant-details small text-muted">
+                                                            <span th:if="${variant.cpu}" th:text="'CPU: ' + ${variant.cpu}">CPU</span>
+                                                            <span th:if="${variant.ram}" class="ms-3" th:text="'RAM: ' + ${variant.ram}">RAM</span>
+                                                            <span th:if="${variant.storage}" class="ms-3" th:text="'Bộ nhớ: ' + ${variant.storage}">Storage</span>
+                                                            <span th:if="${variant.gpu}" class="d-block" th:text="'GPU: ' + ${variant.gpu}">GPU</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="variant-price-stock text-end">
+                                                        <div class="variant-price text-danger fw-bold">
+                                                            <strong th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Price</strong>
+                                                        </div>
+                                                        <div class="variant-stock small mt-1" th:if="${variant.quantity > 0}">
+                                                            <span class="text-success" th:text="'Còn ' + ${variant.quantity} + ' sản phẩm'">Stock</span>
+                                                        </div>
+                                                        <div class="variant-stock small mt-1 text-danger" th:unless="${variant.quantity > 0}">
+                                                            <span>Hết hàng</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <ul class="product-meta">
-                                    <li><i class="fal fa-check"></i>Còn hàng: <span th:text="${product.quantity}">0</span> sản phẩm</li>
+                                    <li th:if="${variants == null or variants.isEmpty()}">
+                                        <i class="fal fa-check"></i>Còn hàng: <span th:text="${product.quantity}">0</span> sản phẩm
+                                    </li>
+                                    <li th:if="${variants != null and !variants.isEmpty()}" id="stock-info">
+                                        <i class="fal fa-check"></i>Còn hàng: <span id="variant-stock-display">0</span> sản phẩm
+                                    </li>
                                     <li><i class="fal fa-check"></i>Miễn phí giao hàng</li>
                                     <li><i class="fal fa-check"></i>Thương hiệu: <span th:text="${product.brand}">Brand</span></li>
                                     <li th:if="${product.categories}"><i class="fal fa-check"></i>Danh mục: <span th:text="${product.categories.name}">Category</span></li>
@@ -80,12 +142,15 @@
                                 <!-- Start Product Action Wrapper  -->
                                 <div class="product-action-wrapper d-flex-center">
                                     <!-- Start Quantity Action  -->
-                                    <div class="pro-qty"><input type="text" value="1"></div>
+                                    <div class="pro-qty"><input type="text" value="1" id="quantity-input"></div>
                                     <!-- End Quantity Action  -->
 
                                     <!-- Start Product Action  -->
                                     <ul class="product-action d-flex-center mb--0">
-                                        <li class="add-to-cart"><a href="cart.html" class="axil-btn btn-bg-primary">Thêm vào giỏ</a></li>
+                                        <li class="add-to-cart">
+                                            <a href="#" class="axil-btn btn-bg-primary" id="add-to-cart-btn" 
+                                               th:attr="data-product-id=${product.productID}">Thêm vào giỏ</a>
+                                        </li>
                                         <li class="wishlist"><a href="wishlist.html" class="axil-btn wishlist-btn"><i class="far fa-heart"></i></a></li>
                                     </ul>
                                     <!-- End Product Action  -->
@@ -234,5 +299,154 @@
 <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
 
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
+
+<!-- Add JavaScript at the bottom before closing body tag -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+document.addEventListener('DOMContentLoaded', function() {
+    const variantOptions = document.querySelectorAll('input[name="selectedVariant"]');
+    const priceDisplay = document.getElementById('price-display');
+    const stockDisplay = document.getElementById('variant-stock-display');
+    const stockInfo = document.getElementById('stock-info');
+    const addToCartButton = document.getElementById('add-to-cart-btn');
+    const quantityInput = document.getElementById('quantity-input');
+    
+    // Function to format number as currency
+    function formatNumber(num) {
+        return new Intl.NumberFormat('vi-VN').format(num);
+    }
+    
+    // Function to update display based on selected variant
+    function updateVariantDisplay() {
+        const selectedVariant = document.querySelector('input[name="selectedVariant"]:checked');
+        if (selectedVariant) {
+            const variantElement = selectedVariant.closest('.variant-option');
+            const price = variantElement.dataset.price;
+            const quantity = parseInt(variantElement.dataset.quantity);
+            const variantId = variantElement.dataset.variantId;
+            
+            // Update price display
+            if (priceDisplay) {
+                priceDisplay.innerHTML = formatNumber(price) + ' VNĐ';
+            }
+            
+            // Update stock display
+            if (stockDisplay) {
+                stockDisplay.textContent = quantity;
+            }
+            
+            // Update add to cart button
+            if (quantity > 0) {
+                addToCartButton.style.display = 'inline-block';
+                addToCartButton.classList.remove('disabled');
+                addToCartButton.dataset.variantId = variantId;
+            } else {
+                addToCartButton.style.display = 'none';
+                addToCartButton.classList.add('disabled');
+            }
+        }
+    }
+    
+    // Add event listeners to variant options
+    variantOptions.forEach(option => {
+        option.addEventListener('change', updateVariantDisplay);
+    });
+    
+    // Initialize display
+    updateVariantDisplay();
+    
+    // Handle add to cart
+    if (addToCartButton) {
+        addToCartButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const productId = this.dataset.productId;
+            const variantId = this.dataset.variantId;
+            const quantity = parseInt(quantityInput.value) || 1;
+            
+            // If product has variants
+            if (variantId) {
+                fetch('/cart/add-variant', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: `productId=${productId}&variantId=${variantId}&quantity=${quantity}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success notification
+                        alert(data.message);
+                        // Update cart count if available
+                        if (data.cartCount !== undefined) {
+                            const cartCountElement = document.querySelector('.cart-count');
+                            if (cartCountElement) {
+                                cartCountElement.textContent = data.cartCount;
+                            }
+                        }
+                    } else {
+                        alert(data.message || 'Có lỗi xảy ra!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi thêm vào giỏ hàng!');
+                });
+            } else {
+                // No variants, add product directly
+                window.location.href = `/cart/add/${productId}?sl=${quantity}`;
+            }
+        });
+    }
+});
+/*]]>*/
+</script>
+
+<!-- Add custom CSS for variants -->
+<style>
+.variant-option {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.variant-option:hover {
+    border-color: #ff497c !important;
+    background-color: #f8f9ff;
+}
+
+.variant-option input[type="radio"] {
+    display: none;
+}
+
+.variant-option input[type="radio"]:checked + .variant-label {
+    color: #ff497c;
+}
+
+.variant-option input[type="radio"]:checked ~ .variant-label .variant-specs {
+    color: #ff497c;
+}
+
+.variant-option.out-of-stock {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.variant-option.out-of-stock .variant-label {
+    cursor: not-allowed;
+}
+
+.price-range {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ff497c;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+</style>
+
 </body>
 </html>

@@ -4,9 +4,11 @@ import com.example.computershop.dto.CartItemDisplay;
 import com.example.computershop.dto.request.CheckoutRequest;
 import com.example.computershop.entity.Cart;
 import com.example.computershop.entity.Order;
-import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.entity.Products;
+import com.example.computershop.entity.ProductVariant;
+import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.entity.User;
+import com.example.computershop.service.ProductVariantService;
 import com.example.computershop.exception.CartConstants;
 import com.example.computershop.repository.CartRepository;
 import com.example.computershop.repository.ProductRepository;
@@ -35,13 +37,14 @@ public class CartController {
     private final OrderService orderService;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
+    private final ProductVariantService productVariantService;
 
-    public CartController(ProductRepository repo, OrderService orderService, 
-                         CartRepository cartRepository, UserRepository userRepository) {
+    public CartController(ProductRepository repo, OrderService orderService, CartRepository cartRepository, UserRepository userRepository, ProductVariantService productVariantService) {
         this.repo = repo;
         this.orderService = orderService;
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
+        this.productVariantService = productVariantService;
     }
 
     // =========================== HELPER METHODS ===========================
@@ -62,6 +65,28 @@ public class CartController {
      */
     private Products loadProduct(Cart cartItem) {
         return repo.findById(cartItem.getProduct().getProductID()).orElse(null);
+    }
+
+    // Display class for template with ProductVariant support
+    public static class CartItemDisplay {
+        private Products product;
+        private ProductVariant variant;
+        private Integer quantity;
+        
+        public CartItemDisplay(Products product, Integer quantity) {
+            this.product = product;
+            this.quantity = quantity;
+        }
+        
+        public CartItemDisplay(Products product, ProductVariant variant, Integer quantity) {
+            this.product = product;
+            this.variant = variant;
+            this.quantity = quantity;
+        }
+        
+        public Products getProduct() { return product; }
+        public ProductVariant getVariant() { return variant; }
+        public Integer getQuantity() { return quantity; }
     }
 
     /**
@@ -651,5 +676,111 @@ public class CartController {
         }
 
         return result.toString();
+    }
+
+    /**
+     * Add product variant to cart - New feature from PR #23
+     */
+    @PostMapping("/add-variant")
+    @ResponseBody
+    public ResponseEntity<?> addVariant(@RequestParam String productId,
+                                       @RequestParam String variantId,
+                                       @RequestParam(defaultValue = "1") int quantity,
+                                       Principal principal) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Validate input
+            if (quantity <= 0) {
+                response.put("success", false);
+                response.put("message", "Số lượng phải lớn hơn 0!");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Kiểm tra đăng nhập
+            if (principal == null) {
+                response.put("success", false);
+                response.put("message", "Vui lòng đăng nhập để thêm vào giỏ hàng!");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // Lấy thông tin user
+            User user = getUserFromPrincipal(principal);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy thông tin người dùng!");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // Lấy thông tin variant
+            ProductVariant variant = productVariantService.findById(variantId);
+            if (variant == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy cấu hình sản phẩm!");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Kiểm tra variant còn hoạt động
+            if (variant.getIsActive() == null || !variant.getIsActive()) {
+                response.put("success", false);
+                response.put("message", "Cấu hình sản phẩm này hiện không còn bán!");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Kiểm tra tồn kho
+            List<Cart> userCart = cartRepository.findByUser(user);
+            int currentQuantity = 0;
+            Cart existingCartItem = null;
+            
+            for (Cart c : userCart) {
+                if (c.getVariant() != null && c.getVariant().getVariantId().equals(variantId)) {
+                    currentQuantity = c.getQuantity();
+                    existingCartItem = c;
+                    break;
+                }
+            }
+            
+            int totalRequestedQuantity = currentQuantity + quantity;
+            if (totalRequestedQuantity > variant.getQuantity()) {
+                String errorMsg = String.format("Không đủ hàng trong kho! Hiện tại chỉ còn %d sản phẩm, bạn đã có %d trong giỏ hàng.", 
+                    variant.getQuantity(), currentQuantity);
+                response.put("success", false);
+                response.put("message", errorMsg);
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Cập nhật hoặc thêm mới vào giỏ hàng
+            if (existingCartItem != null) {
+                existingCartItem.setQuantity(totalRequestedQuantity);
+                cartRepository.save(existingCartItem);
+            } else {
+                Cart newItem = new Cart();
+                newItem.setProduct(variant.getProduct());
+                newItem.setVariant(variant);
+                newItem.setQuantity(quantity);
+                newItem.setUser(user);
+                newItem.setCreatedAt(LocalDateTime.now());
+                cartRepository.save(newItem);
+            }
+            
+            // Tính lại cart count
+            int cartCount = cartRepository.findByUser(user).stream()
+                .mapToInt(Cart::getQuantity)
+                .sum();
+            
+            response.put("success", true);
+            response.put("message", String.format("Đã thêm %s vào giỏ hàng!", variant.getDisplayName()));
+            response.put("cartCount", cartCount);
+            
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
     }
 }

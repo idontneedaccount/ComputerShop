@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Entity
 @Table(name = "products")
+
 public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,4 +52,34 @@ public class Products {
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private ProductSpecifications specifications;
+    
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductVariant> variants = new ArrayList<>();
+    
+    // Helper methods để lấy giá min/max từ variants
+    public BigInteger getMinPrice() {
+        if (variants != null && !variants.isEmpty()) {
+            return variants.stream()
+                .filter(v -> v.getIsActive() != null && v.getIsActive())
+                .map(ProductVariant::getPrice)
+                .min(BigInteger::compareTo)
+                .orElse(this.price);
+        }
+        return this.price;
+    }
+    
+    public BigInteger getMaxPrice() {
+        if (variants != null && !variants.isEmpty()) {
+            return variants.stream()
+                .filter(v -> v.getIsActive() != null && v.getIsActive())
+                .map(ProductVariant::getPrice)
+                .max(BigInteger::compareTo)
+                .orElse(this.price);
+        }
+        return this.price;
+    }
+    
+    public boolean hasVariants() {
+        return variants != null && !variants.isEmpty();
+    }
 }
