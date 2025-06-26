@@ -64,7 +64,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                             .email(email)
                             .username(username)
                             .password("")
-                            .role(Role.USER)
+                            .role(Role.User)
                             .isActive(true)
                             .fullName(name != null ? name : email)
                             .createdAt(LocalDateTime.now())

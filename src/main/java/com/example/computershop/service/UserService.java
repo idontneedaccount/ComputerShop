@@ -188,7 +188,7 @@ public class UserService {
             user.setPhoneNumber(userUpdateByAdmin.getPhoneNumber());
             user.setAddress(userUpdateByAdmin.getAddress());
             user.setRole(userUpdateByAdmin.getRole());
-            user.setActive(userUpdateByAdmin.getActive());
+            user.setIsActive(userUpdateByAdmin.getActive());
             user.setIsAccountLocked(userUpdateByAdmin.getIsAccountLocked());
 
             if (userUpdateByAdmin.getPassword() != null && !userUpdateByAdmin.getPassword().isBlank()) {

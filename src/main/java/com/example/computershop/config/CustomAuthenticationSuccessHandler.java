@@ -24,12 +24,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 response.sendRedirect("/user/shopping-page");
                 return;
             }
-            if("ROLE_USER".equals(auth.getAuthority())){
-                response.sendRedirect("/user/shopping-page");
+            if("ROLE_MARKETER".equals(auth.getAuthority())){
+                response.sendRedirect("/admin/dashboard");
                 return;
             }
-            if("ROLE_USER".equals(auth.getAuthority())){
-                response.sendRedirect("/user/shopping-page");
+            if("ROLE_SALES".equals(auth.getAuthority())){
+                response.sendRedirect("/admin/dashboard");
                 return;
             }
         }
