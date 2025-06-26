@@ -2,15 +2,16 @@ package com.example.computershop.service;
 
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
+import com.example.computershop.entity.User;
 import com.example.computershop.repository.OrderRepository;
 import com.example.computershop.repository.OrderDetailRepository;
+import com.example.computershop.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 public class OrderServiceImpl implements OrderService {
