@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.computershop.entity.Categories;
 import com.example.computershop.entity.ProductSpecifications;
+import com.example.computershop.entity.ProductVariant;
 import com.example.computershop.entity.Products;
 import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.ProductService;
 import com.example.computershop.service.ProductSpecificationService;
+import com.example.computershop.service.ProductVariantService;
 
 @Controller
 @RequestMapping("/user")
@@ -23,16 +25,19 @@ public class ShopController {
     private final CategoriesService categoriesService;
     private final ProductService productService;
     private final ProductSpecificationService productSpecificationService;
+    private final ProductVariantService productVariantService;
     private static final String TOTAL_PRODUCTS = "totalProducts";
     private static final String PRODUCTS = "products";
     private static final String CATEGORIES = "categories";
 
     public ShopController(CategoriesService categoriesService,
                          ProductService productService,
-                         ProductSpecificationService productSpecificationService) {
+                         ProductSpecificationService productSpecificationService,
+                         ProductVariantService productVariantService) {
         this.categoriesService = categoriesService;
         this.productService = productService;
         this.productSpecificationService = productSpecificationService;
+        this.productVariantService = productVariantService;
     }
     
     @GetMapping("/shopping-page")
@@ -212,9 +217,11 @@ public class ShopController {
         }
         
         ProductSpecifications specifications = productSpecificationService.findByProductId(productId);
+        List<ProductVariant> variants = productVariantService.getActiveVariantsByProductSorted(productId);
         
         model.addAttribute("product", product);
         model.addAttribute("specifications", specifications);
+        model.addAttribute("variants", variants);
         
         return "user/singleproduct";
     }
