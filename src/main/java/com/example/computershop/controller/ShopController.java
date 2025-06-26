@@ -222,6 +222,7 @@ public class ShopController {
         model.addAttribute("product", product);
         model.addAttribute("specifications", specifications);
         model.addAttribute("variants", variants);
+
         
         return "user/singleproduct";
     }

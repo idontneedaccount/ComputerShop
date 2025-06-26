@@ -43,9 +43,9 @@ public class SecurityConfig {
                                         "/js/**", "/images/**", "/assets/**","/error/**","/assets2/**","/uploads/**",
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page")
                                 .permitAll()
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/admin/**").permitAll()
                                 .requestMatchers("/user/**","/cart/**")
-                                .hasAnyAuthority("ROLE_USER", "OIDC_USER","OAUTH2_USER")
+                                .permitAll()
                                 .requestMatchers("/admin/product/**)","admin/categories/**").hasRole("MARKETER")
 
                                 .anyRequest().authenticated())
