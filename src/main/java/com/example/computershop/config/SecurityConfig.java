@@ -41,7 +41,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers("/auth/**", "/home", "/css/**",
                                         "/js/**", "/images/**", "/assets/**","/error/**","/assets2/**","/uploads/**",
-                                        "/oauth2/**", "/login/oauth2/**")
+                                        "/oauth2/**", "/login/oauth2/**","/user/shopping-page")
                                 .permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/user/**","/cart/**")

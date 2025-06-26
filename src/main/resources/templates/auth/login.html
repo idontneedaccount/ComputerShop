@@ -20,8 +20,8 @@
 			<span class="alert-message" th:switch="${param.oauth2error[0]}">
 				<span th:case="'email_not_found'">Không tìm thấy email từ Google.</span>
 				<span th:case="'email_already_exists'">Email này đã tồn tại. Vui lòng đăng nhập bằng tài khoản đã có.</span>
-				<span th:case="'access_denied'">Bạn đã từ chối đăng nhập bằng Google.</span>
-				<span th:case="'oauth2_error'">Có lỗi xảy ra khi đăng nhập bằng Google. Vui lòng thử lại.</span>
+				<span th:case="'access_denied'">Bạn bị từ chối khi đăng nhặp.</span>
+				<span th:case="'oauth2_error'">Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.</span>
 				<span th:case="'provider_conflict'">Email này đã được đăng ký bằng tài khoản thường. Vui lòng đăng nhập bằng mật khẩu hoặc sử dụng chức năng quên mật khẩu.</span>
 				<span th:case="*">Đăng nhập Google thất bại.</span>
 			</span>

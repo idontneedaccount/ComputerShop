@@ -2,7 +2,6 @@ package com.example.computershop.service;
 
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
-import com.example.computershop.entity.User;
 import com.example.computershop.repository.OrderRepository;
 import com.example.computershop.repository.OrderDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;

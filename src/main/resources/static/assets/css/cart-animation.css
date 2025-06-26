@@ -149,4 +149,63 @@
     color: white;
 }
 
+/* Cart Review Update Animation */
+.cart-dropdown {
+    transition: opacity 0.3s ease;
+}
+
+.cart-dropdown.updating {
+    opacity: 0.7;
+}
+
+.cart-item {
+    transition: all 0.3s ease;
+}
+
+.cart-item.entering {
+    animation: slideInRight 0.4s ease-out;
+}
+
+.cart-item.removing {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Empty cart animation */
+.empty-cart-review {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Cart Review Styles moved to cart-custom.css for better organization */ 
