@@ -37,7 +37,7 @@ public class ProductService {
             this.repo.save(product);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(ERROR, e.getMessage(), e);
         }
         return false;
     }
