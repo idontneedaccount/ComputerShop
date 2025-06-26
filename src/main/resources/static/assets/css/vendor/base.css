@@ -11,7 +11,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: var(--color-bg);
+	background: var();
 }
 
 .js .loading::after {
@@ -26,7 +26,7 @@
 	pointer-events: none;
 	border-radius: 50%;
 	opacity: 0.4;
-	background: var(--color-link);
+	background: var();
 	animation: loaderAnim 0.7s linear infinite alternate forwards;
 }
 
@@ -40,7 +40,7 @@
 
 .animation-block a {
 	text-decoration: none;
-	color: var(--color-link);
+	color: var();
 	outline: none;
 }
 
@@ -85,22 +85,22 @@
 	cursor: pointer;
 	font-family: titling-gothic-fb-wide, sans-serif;
 	font-weight: 700;
-	color: var(--color-blocktitle);
+	color: var();
 }
 
 .block__title:hover {
-	color: var(--color-blocktitle-hover);
+	color: var();
 }
 
 .block__link {
 	position: relative;
 	cursor: pointer;
 	padding: 0.5rem 0;
-	color: var(--color-blocklink);
+	color: var();
 }
 
 .block__link:hover {
-	color: var(--color-blocklink-hover);
+	color: var();
 }
 
 .block__title span,
@@ -113,7 +113,7 @@
 .content__text {
 	padding: 0 5vw 25vh;
 	line-height: 2;
-	color: var(--color-text);
+	color: var();
 }
 
 .content__text-link {

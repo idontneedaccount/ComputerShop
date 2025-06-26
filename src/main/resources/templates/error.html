@@ -1,38 +1,46 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<!doctype html>
+<html class="no-js" lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-	<meta charset="UTF-8">
-	<title>Error - Computer Shop</title>
-	<style>
-        .error {
-            color: red;
-            font-size: 0.9em;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-	</style>
+    <title>ComputerShop || Lỗi 404 - Không tìm thấy trang</title>
+    <meta name="description" content="Trang bạn tìm kiếm không tồn tại hoặc đã bị di chuyển.">
+    
+    <!-- Include header fragment (contains all CSS and meta tags) -->
+    <div th:replace="~{user/fragments/header :: header}"></div>
+
 </head>
-<body>
-	<div class="container">
-		<h2>Error</h2>
-		<div class="error" role="alert">
-			<p th:text="${error}">An error occurred</p>
-		</div>
-		
-		<a class="btn" th:href="@{/auth/login}">Return to Login</a>
-	</div>
+
+<body class="sticky-header">
+    <!-- Include header search modal -->
+    <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
+    
+    <!-- Error page content -->
+    <section class="error-page onepage-screen-area">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="content" data-sal="slide-up" data-sal-duration="800" data-sal-delay="400">
+                        <span class="title-highlighter highlighter-secondary">
+                            <i class="fal fa-exclamation-circle"></i> Oops! Có gì đó bị thiếu.
+                        </span>
+                        <h1 class="title">Không tìm thấy trang</h1>
+                        <p>Có vẻ như chúng tôi không thể tìm thấy trang bạn đang tìm kiếm. Trang này có thể đã bị xóa, di chuyển hoặc URL không chính xác.</p>
+                        <a th:href="@{/}" class="axil-btn btn-bg-secondary right-icon">
+                            Quay về Trang chủ <i class="fal fa-long-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="thumbnail" data-sal="zoom-in" data-sal-duration="800" data-sal-delay="400">
+                        <img th:src="@{/assets/images/others/404.png}" alt="404">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Include footer fragment (contains service section and footer) -->
+    <div th:replace="~{user/fragments/footer :: footer}"></div>
 </body>
-</html>
+</html> 
