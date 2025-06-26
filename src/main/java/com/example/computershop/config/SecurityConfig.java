@@ -46,6 +46,8 @@ public class SecurityConfig {
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/user/**","/cart/**")
                                 .hasAnyAuthority("ROLE_USER", "OIDC_USER","OAUTH2_USER")
+                                .requestMatchers("/admin/product/**)","admin/categories/**").hasRole("MARKETER")
+
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)
