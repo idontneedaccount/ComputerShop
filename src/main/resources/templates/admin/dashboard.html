@@ -104,7 +104,7 @@
                                     <tr th:each="tp : ${topProducts}">
                                         <td th:text="${tp.product.name}"></td>
                                         <td>
-                                            <img th:src="@{${tp.product.imageURL}}" alt="ảnh" style="width: 50px; height: auto;">
+                                            <img th:src="@{'/assets/images/product/laptop/'+${tp.product.imageURL}}" alt="ảnh" style="width: 50px; height: auto;">
                                         </td>
                                         <td th:text="${#numbers.formatInteger(tp.product.price, 0, 'POINT')} + ' ₫'"></td>
                                         <td th:text="${tp.totalSold}"></td>
