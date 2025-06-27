@@ -582,7 +582,7 @@ public class CartController {
                 User user = getUserFromPrincipal(principal);
                 if (user != null && order.getUserId() != null && 
                     !order.getUserId().equals(user.getUserId()) && 
-                    !user.getRole().name().equals("ADMIN")) {
+                    !user.getRole().name().equals("Admin")) {
                     model.addAttribute(CartConstants.ERROR, CartConstants.MSG_PERMISSION_DENIED);
                     return CartConstants.REDIRECT_CART_VIEW;
                 }

@@ -17,8 +17,16 @@
     <!-- Start My Account Area  -->
     <div class="axil-dashboard-area axil-section-gap">
         <div class="container">
+            <!-- Success message display -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
             <!-- Error message display -->
             <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i>
                 <span th:text="${error}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -78,7 +86,7 @@
                                                         </span>
                                                         
                                                         <strong>Vai trò:</strong> <span class="badge" th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' : 'bg-success'" th:text="${user.role.name()}"></span><br>
-                                                        <strong>Trạng thái:</strong> <span class="badge" th:classappend="${user.active} ? 'bg-success' : 'bg-warning'" th:text="${user.active} ? 'Đã kích hoạt' : 'Chưa kích hoạt'"></span>
+                                                        <strong>Trạng thái:</strong> <span class="badge" th:classappend="${user.isActive} ? 'bg-success' : 'bg-warning'" th:text="${user.isActive} ? 'Đã kích hoạt' : 'Chưa kích hoạt'"></span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -207,12 +215,13 @@
                             <div class="tab-pane fade" id="nav-account" role="tabpanel">
                                 <div class="col-lg-9">
                                     <div class="axil-dashboard-account">
-                                        <form class="account-details-form" th:action="@{/user/update-profile}" method="post">
+                                        <form class="account-details-form" th:action="@{/user/update-profile}" method="post" th:object="${userProfileUpdateRequest}">
                                             <div class="row">
                                                 <div class="col-12">
                                                     <div class="form-group">
-                                                        <label>Họ và tên</label>
-                                                        <input type="text" class="form-control" name="fullName" th:value="${user.fullName}">
+                                                        <label>Họ và tên <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" name="fullName" th:value="${user.fullName}" required>
+                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6">
@@ -234,35 +243,48 @@
                                                 <div class="col-lg-6">
                                                     <div class="form-group">
                                                         <label>Số điện thoại</label>
-                                                        <input type="text" class="form-control" name="phoneNumber" th:value="${user.phoneNumber}">
+                                                        <input type="text" class="form-control" name="phoneNumber" th:value="${user.phoneNumber}" placeholder="Nhập số điện thoại">
+                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb--40">
                                                         <label>Địa chỉ</label>
-                                                        <textarea class="form-control" name="address" rows="3" th:text="${user.address}"></textarea>
+                                                        <textarea class="form-control" name="address" rows="3" th:text="${user.address}" placeholder="Nhập địa chỉ"></textarea>
+                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('address')}" th:errors="*{address}"></div>
                                                     </div>
                                                 </div>
                                                 
                                                 <!-- Password change section - only for non-OAuth2 users -->
                                                 <div class="col-12" th:unless="${isOAuth2}">
+                                                    <hr class="my-4">
                                                     <h5 class="title">Đổi mật khẩu</h5>
+                                                    <p class="text-muted small">Để trống nếu không muốn thay đổi mật khẩu</p>
+                                                    
                                                     <div class="form-group">
                                                         <label>Mật khẩu hiện tại</label>
-                                                        <input type="password" class="form-control" name="currentPassword">
+                                                        <input type="password" class="form-control" name="currentPassword" placeholder="Nhập mật khẩu hiện tại">
+                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></div>
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Mật khẩu mới</label>
-                                                        <input type="password" class="form-control" name="newPassword">
+                                                        <input type="password" class="form-control" name="newPassword" placeholder="Nhập mật khẩu mới">
+                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></div>
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Xác nhận mật khẩu mới</label>
-                                                        <input type="password" class="form-control" name="confirmPassword">
+                                                        <input type="password" class="form-control" name="confirmPassword" placeholder="Nhập lại mật khẩu mới">
+                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="form-group mb--0">
-                                                    <input type="submit" class="axil-btn" value="Lưu thay đổi">
+                                                    <button type="submit" class="axil-btn btn-primary">
+                                                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                                                    </button>
+                                                    <button type="reset" class="btn btn-outline-secondary ms-3">
+                                                        <i class="fas fa-undo me-2"></i>Đặt lại
+                                                    </button>
                                                 </div>
                                             </div>
                                         </form>

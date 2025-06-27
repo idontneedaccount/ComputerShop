@@ -3,6 +3,7 @@ package com.example.computershop.service;
 import com.example.computershop.dto.request.UserCreateByAdmin;
 import com.example.computershop.dto.request.UserUpdateByAdmin;
 import com.example.computershop.dto.UserProfileData;
+import com.example.computershop.dto.request.UserProfileUpdateRequest;
 import com.example.computershop.entity.User;
 import com.example.computershop.repository.UserRepository;
 import com.example.computershop.entity.Role;
@@ -198,6 +199,71 @@ public class UserService {
             userRepository.save(user);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Lỗi khi tạo người dùng: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Cập nhật thông tin cá nhân của user hiện tại
+     * @param request UserProfileUpdateRequest chứa thông tin cần cập nhật
+     * @return String message kết quả
+     */
+    @Transactional
+    public String updateProfile(@NotNull UserProfileUpdateRequest request) {
+        try {
+            // Lấy thông tin user hiện tại
+            UserProfileData currentUserData = getCurrentUser();
+            User currentUser = currentUserData.getUser();
+            
+            // Validate dữ liệu đầu vào
+            if (request.getFullName() == null || request.getFullName().trim().isEmpty()) {
+                return "Họ và tên không được để trống";
+            }
+            
+            // Kiểm tra số điện thoại có trùng với user khác không
+            if (request.getPhoneNumber() != null && !request.getPhoneNumber().trim().isEmpty()) {
+                // Chỉ check nếu số điện thoại khác với số hiện tại
+                if (!request.getPhoneNumber().equals(currentUser.getPhoneNumber()) &&
+                    userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+                    return "Số điện thoại đã được sử dụng bởi tài khoản khác";
+                }
+            }
+            
+            // Cập nhật thông tin cơ bản
+            currentUser.setFullName(request.getFullName().trim());
+            currentUser.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null);
+            currentUser.setAddress(request.getAddress() != null ? request.getAddress().trim() : null);
+            
+            // Xử lý đổi mật khẩu (chỉ cho user không phải OAuth2)
+            if (!currentUserData.isOAuth2() && request.isPasswordChangeRequested()) {
+                // Kiểm tra mật khẩu hiện tại
+                if (!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword())) {
+                    return "Mật khẩu hiện tại không đúng";
+                }
+                
+                // Kiểm tra xác nhận mật khẩu
+                if (!request.isPasswordConfirmed()) {
+                    return "Mật khẩu xác nhận không khớp";
+                }
+                
+                // Mã hóa và cập nhật mật khẩu mới
+                String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+                currentUser.setPassword(encodedNewPassword);
+                
+                log.info("Password updated for user: {}", currentUser.getUsername());
+            }
+            
+            // Lưu thay đổi
+            userRepository.save(currentUser);
+            
+            log.info("Profile updated successfully for user: {}", currentUser.getUsername());
+            return "SUCCESS";
+            
+        } catch (IllegalStateException e) {
+            log.error("Authentication error during profile update: {}", e.getMessage());
+            return "Lỗi xác thực: " + e.getMessage();
+        } catch (Exception e) {
+            log.error("Unexpected error during profile update", e);
+            return "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.";
         }
     }
 }
