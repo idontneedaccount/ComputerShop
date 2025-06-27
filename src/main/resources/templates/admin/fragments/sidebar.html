@@ -5,19 +5,21 @@
             <span>Trang Chủ</span>
         </a>
     </li>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-fw fa-tags"></i>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCategories"
+           aria-expanded="false" aria-controls="collapseCategories">
+            <i class="fas fa-fw fa-box"></i>
             <span>Quản lí danh mục</span>
         </a>
-        <div class="dropdown-menu" aria-labelledby="productDropdown">
-            <a class="dropdown-item" th:href="@{/admin/categories}">
-                <i class="fas fa-list mr-2"></i>Danh sách
-            </a>
-            <a class="dropdown-item" th:href="@{add-categories}">
-                <i class="fas fa-plus mr-2"></i>Thêm danh mục
-            </a>
+        <div id="collapseCategories" class="collapse" aria-labelledby="headingCategories" data-parent="#accordionSidebar">
+            <div class="collapse-inner">
+                <a class="collapse-item" th:href="@{/admin/categories}">
+                    <i class="fas fa-list mr-2"></i>Danh sách danh mục
+                </a>
+                <a class="collapse-item" th:href="@{add-categories}">
+                    <i class="fas fa-plus mr-2"></i>Thêm danh mục
+                </a>
+            </div>
         </div>
     </li>
     <li class="nav-item">
