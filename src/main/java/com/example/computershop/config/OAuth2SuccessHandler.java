@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +41,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
                 String email = getEmailFromAttributes(provider, attributes);
                 if (email == null) {
-                    getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=email_not_found");
+                    redirectWithError(request, response, "email_not_found");
                     return;
                 }
 
@@ -49,26 +51,28 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 if (existingUser.isPresent()) {
                     User user = existingUser.get();
                     if (user.getProvider() == null || user.getProvider().equalsIgnoreCase("local")) {
-                        getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=provider_conflict");
+                        redirectWithError(request, response, "provider_conflict");
                         return;
                     }
                     // Allow login if provider matches
                     if (!user.getProvider().equalsIgnoreCase(provider)) {
-                        getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=provider_mismatch");
+                        redirectWithError(request, response, "provider_mismatch");
                         return;
                     }
                 } else {
                     // Create new user with the provider
                     String username = generateUniqueUsername(email, provider);
+                    String uniquePhoneNumber = generateUniquePhoneNumber(provider);
                     User newUser = User.builder()
                             .email(email)
                             .username(username)
                             .password("")
-                            .role(Role.USER)
+                            .role(Role.User)
                             .isActive(true)
                             .fullName(name != null ? name : email)
                             .createdAt(LocalDateTime.now())
                             .provider(provider)
+                            .phoneNumber(uniquePhoneNumber)
                             .address("")
                             .isAccountLocked(false)
                             .build();
@@ -78,8 +82,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String targetUrl = "/user/shopping-page";
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } catch (Exception e) {
-            getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=oauth2_error");
+            redirectWithError(request, response, "oauth2_error");
         }
+    }
+
+    /**
+     * Helper method to redirect with properly encoded error message
+     */
+    private void redirectWithError(HttpServletRequest request, HttpServletResponse response, String errorMessage) throws IOException {
+        String encodedError = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        getRedirectStrategy().sendRedirect(request, response, "/auth/login?oauth2error=" + encodedError);
     }
 
     private String getEmailFromAttributes(String provider, Map<String, Object> attributes) {
@@ -152,5 +164,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
         return username;
+    }
+
+    private String generateUniquePhoneNumber(String provider) {
+        // Tạo số điện thoại unique dựa trên provider và timestamp
+        long timestamp = System.currentTimeMillis();
+        String basePhoneNumber = provider + "_" + timestamp;
+        String phoneNumber = basePhoneNumber;
+        int counter = 1;
+
+        while (userRepository.existsByPhoneNumber(phoneNumber)) {
+            phoneNumber = basePhoneNumber + "_" + counter;
+            counter++;
+        }
+
+        return phoneNumber;
     }
 }

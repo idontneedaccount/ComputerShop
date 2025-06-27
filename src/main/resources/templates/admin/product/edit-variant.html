@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Chỉnh sửa cấu hình sản phẩm</title>
+</head>
+<body id="page-top">
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/admin">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/admin/product">Sản phẩm</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{'/admin/product-variants/' + ${product.productID}}">Cấu hình sản phẩm</a>
+                </li>
+                <li class="breadcrumb-item active">Chỉnh sửa cấu hình</li>
+            </ol>
+
+            <!-- Alert Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Product Info Card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-laptop"></i>
+                    Thông tin sản phẩm
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="text-primary mb-3" th:text="${product.name}">Product Name</h5>
+                            <div class="product-info">
+                                <div class="info-item mb-2">
+                                    <strong>Mã sản phẩm:</strong> 
+                                    <span class="badge badge-light" th:text="${product.productID}"></span>
+                                </div>
+                                <div class="info-item mb-2">
+                                    <strong>Thương hiệu:</strong> 
+                                    <span class="text-info" th:text="${product.brand}"></span>
+                                </div>
+                                <div class="info-item mb-2">
+                                    <strong>Danh mục:</strong> 
+                                    <span class="text-success" th:if="${product.categories}" th:text="${product.categories.name}">Category</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="product-image-container">
+                                <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
+                                     th:alt="${product.name}"
+                                     class="img-fluid rounded border"
+                                     style="max-height: 120px;"
+                                     onerror="this.src='/assets/images/product/default-product.png'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Variant Form -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-edit"></i>
+                    Chỉnh sửa cấu hình
+                </div>
+                <div class="card-body">
+                    <form th:action="@{'/admin/product-variants/update/' + ${variant.variantId}}" method="post" th:object="${variant}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cpu">CPU <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="cpu" name="cpu" 
+                                           th:value="${variant.cpu}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ram">RAM <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="ram" name="ram" 
+                                           th:value="${variant.ram}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="storage">Bộ nhớ (SSD/HDD) <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="storage" name="storage" 
+                                           th:value="${variant.storage}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="gpu">Card đồ họa (GPU)</label>
+                                    <input type="text" class="form-control" id="gpu" name="gpu" 
+                                           th:value="${variant.gpu}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="screen">Màn hình</label>
+                                    <input type="text" class="form-control" id="screen" name="screen" 
+                                           th:value="${variant.screen}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="price">Giá <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="price" name="price" 
+                                           th:value="${variant.price}" required min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="quantity">Số lượng <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" 
+                                           th:value="${variant.quantity}" required min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sku">Mã SKU</label>
+                                    <input type="text" class="form-control" id="sku" name="sku" 
+                                           th:value="${variant.sku}" readonly>
+                                    <small class="form-text text-muted">Mã SKU tự động tạo và không thể thay đổi</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="variantName">Tên cấu hình</label>
+                                    <input type="text" class="form-control" id="variantName" name="variantName" 
+                                           th:value="${variant.variantName}" 
+                                           placeholder="Để trống để tự động tạo từ thông số">
+                                    <small class="form-text text-muted">Nếu để trống, tên sẽ được tạo tự động từ thông số</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="isActive" name="isActive" 
+                                       th:checked="${variant.isActive}">
+                                <label class="form-check-label" for="isActive">
+                                    Kích hoạt cấu hình này
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Lưu thay đổi
+                            </button>
+                            <a th:href="@{'/admin/product-variants/' + ${product.productID}}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Current Configuration Summary -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i>
+                    Thông tin hiện tại
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Tên cấu hình:</strong></td>
+                                    <td th:text="${variant.variantName ?: variant.displayName}">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CPU:</strong></td>
+                                    <td th:text="${variant.cpu}">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>RAM:</strong></td>
+                                    <td th:text="${variant.ram}">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Storage:</strong></td>
+                                    <td th:text="${variant.storage}">-</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>GPU:</strong></td>
+                                    <td th:text="${variant.gpu ?: 'Không có'}">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Màn hình:</strong></td>
+                                    <td th:text="${variant.screen ?: 'Không có'}">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Giá hiện tại:</strong></td>
+                                    <td class="text-danger font-weight-bold" 
+                                        th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tồn kho:</strong></td>
+                                    <td>
+                                        <span th:text="${variant.quantity}">0</span>
+                                        <span th:if="${variant.quantity == 0}" class="badge badge-danger ml-1">Hết hàng</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+    <!-- /.content-wrapper -->
+</div>
+<!-- /#wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<style>
+.product-image-container {
+    text-align: center;
+}
+
+.form-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.info-item {
+    margin-bottom: 8px;
+}
+</style>
+
+</body>
+</html>

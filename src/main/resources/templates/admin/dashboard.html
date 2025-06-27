@@ -7,98 +7,198 @@
 
 <body id="page-top">
 
-<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+    <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
 
-<div id="wrapper">
+    <div id="wrapper">
 
-    <!-- Sidebar -->
-    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+        <!-- Sidebar -->
+        <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
 
-    <div id="content-wrapper">
+        <div id="content-wrapper">
 
-        <div class="container-fluid">
+            <div class="container-fluid">
 
-            <!-- Breadcrumbs-->
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="#">Dashboard</a>
-                </li>
-                <li class="breadcrumb-item active">Overview</li>
-            </ol>
+                <!-- Breadcrumbs-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="#">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active">Overview</li>
+                </ol>
 
-            <!-- Icon Cards-->
-            <div th:replace="~{admin/fragments/icon-cards :: icon-cards}"></div>
+                <!-- Icon Cards-->
+                <div th:replace="~{admin/fragments/icon-cards :: icon-cards}"></div>
 
-            <!-- Area Chart Example-->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <i class="fas fa-chart-area"></i>
-                    Area Chart Example
-                </div>
-                <div class="card-body">
-                    <canvas id="myAreaChart" width="100%" height="30"></canvas>
-                </div>
-                <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-            </div>
-
-            <!-- DataTables Example -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <i class="fas fa-table"></i>
-                    Data Table Example
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Office</th>
-                                <th>Age</th>
-                                <th>Start date</th>
-                                <th>Salary</th>
-                            </tr>
-                            </thead>
-                            <tfoot>
-                            <tr>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Office</th>
-                                <th>Age</th>
-                                <th>Start date</th>
-                                <th>Salary</th>
-                            </tr>
-                            </tfoot>
-                            <tbody>
-                            <tr>
-                                <td>Tiger Nixon</td>
-                                <td>System Architect</td>
-                                <td>Edinburgh</td>
-                                <td>61</td>
-                                <td>2011/04/25</td>
-                                <td>$320,800</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <!-- Area Chart Example-->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-chart-area"></i> Doanh Thu
+                        <div>
+                            <form method="get" action="/admin/dashboard">
+                                <select name="year" class="form-select form-control" onchange="this.form.submit()" style="width: 150px;">
+                                <option th:each="y : ${years}"
+                                        th:value="${y}"
+                                        th:text="'Năm ' + ${y}"
+                                        th:selected="${y} == ${selectedYear}">
+                                </option>
+                            </select>
+                            </form>
+                        </div>
                     </div>
+
+                    <div class="card-body">
+                        <canvas id="myAreaChart" width="100%" height="30"></canvas>
+                    </div>
+                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                 </div>
-                <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+
+                <!-- DataTables Example -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i> Top 5 Sản Phẩm Tồn Kho
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Ảnh</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng tồn kho</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="product : ${topStockProducts}">
+                                        <td th:text="${product.name}"></td>
+                                        <td>
+                                            <img th:src="@{'/assets/images/product/laptop/'+${product.name}+'.jpg'}" alt="ảnh" style="width: 50px; height: auto;">
+                                        </td>
+                                        <td th:text="${#numbers.formatInteger(product.price, 0, 'POINT')} + ' ₫'"></td>
+                                        <td th:text="${product.quantity}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                </div>
+
+                <!-- DataTables Example -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i> Top 5 Sản Phẩm Bán Chạy
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Ảnh</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng bán</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="tp : ${topProducts}">
+                                        <td th:text="${tp.product.name}"></td>
+                                        <td>
+                                            <img th:src="@{${tp.product.imageURL}}" alt="ảnh" style="width: 50px; height: auto;">
+                                        </td>
+                                        <td th:text="${#numbers.formatInteger(tp.product.price, 0, 'POINT')} + ' ₫'"></td>
+                                        <td th:text="${tp.totalSold}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- DataTables Example -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <i class="fas fa-table"></i> Top 5 Khách Hàng Vip
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên người mua</th>
+                                            <th>Số lượng đơn</th>
+                                            <th>Tổng tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${userStats}">
+                                            <td th:text="${item[1]}"></td>
+                                            <!-- fullName -->
+                                            <td th:text="${item[2]}"></td>
+                                            <!-- count đơn -->
+                                            <td th:text="${#numbers.formatInteger(item[3], 0, 'POINT')} + ' ₫'"></td>
+                                            <!-- tổng tiền -->
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                </div>
             </div>
+            <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
         </div>
-        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
     </div>
-</div>
-<!-- /#wrapper -->
+    <!-- /#wrapper -->
 
-<!-- Scroll to Top Button-->
-<a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-</a>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
 
-<!-- Logout Modal-->
-<div th:replace="~{admin/fragments/logout :: logout}"></div>
+    <!-- Logout Modal-->
+    <div th:replace="~{admin/fragments/logout :: logout}"></div>
+    <script th:inline="javascript">
+        const labels = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+            "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+        ];
 
+        // Dữ liệu doanh thu từ Controller
+        const data = /*[[${monthlyRevenue}]]*/ [];
+
+        const ctx1 = document.getElementById("myAreaChart");
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString("vi-VN") + " ₫";
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Tổng doanh thu (VNĐ)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

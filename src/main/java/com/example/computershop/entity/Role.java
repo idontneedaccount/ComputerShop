@@ -2,13 +2,12 @@ package com.example.computershop.entity;
 
 import lombok.Getter;
 
-
 @Getter
 public enum Role {
-    ADMIN("Quản trị viên"),
-    USER("Người dùng"),
-    MARKETER("Marketing"),
-    SALES("Nhân viên bán hàng");
+    Admin("Quản trị viên"),
+    User("Người dùng"),
+    Marketer("Marketing"),
+    Sales("Nhân viên bán hàng");
 
     private final String displayName;
 

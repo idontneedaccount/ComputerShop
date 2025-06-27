@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
+import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "Order_Details")
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -1,4 +1,6 @@
 package com.example.computershop.repository;
+import com.example.computershop.dto.ProductSalesDTO;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -24,4 +26,16 @@ public interface ProductRepository extends JpaRepository<Products, String> {
     // Method for homepage - fetch only needed data without specifications
     @Query("SELECT p FROM Products p LEFT JOIN FETCH p.categories WHERE p.isActive = true")
     List<Products> findAllActiveForHomepage();
+
+    @Query("SELECT p FROM Products p ORDER BY p.quantity DESC")
+    List<Products> findTop5ProductsByStock(Pageable pageable);
+
+    @Query("SELECT new com.example.computershop.dto.ProductSalesDTO(od.product, SUM(od.quantity)) " +
+            "FROM OrderDetail od " +
+            "GROUP BY od.product " +
+            "ORDER BY SUM(od.quantity) DESC")
+    List<ProductSalesDTO> findTop5BestSellingProducts(Pageable pageable);
+
+    @Query("SELECT COUNT(p) FROM Products p")
+    long countProducts();
 }

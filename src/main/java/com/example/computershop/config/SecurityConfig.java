@@ -43,9 +43,11 @@ public class SecurityConfig {
                                         "/js/**", "/images/**", "/assets/**","/error/**","/assets2/**","/uploads/**",
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page")
                                 .permitAll()
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/admin/**").hasRole("Admin")
                                 .requestMatchers("/user/**","/cart/**")
-                                .hasAnyAuthority("ROLE_USER", "OIDC_USER","OAUTH2_USER")
+                                .hasAnyAuthority("ROLE_User", "OIDC_USER","OAUTH2_USER")
+                                .requestMatchers("/admin/product)","admin/categories")
+                                .hasAnyAuthority("ROLE_Marketer", "OIDC_MARKETER","OAUTH2_MARKETER")
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)

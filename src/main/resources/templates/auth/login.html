@@ -18,12 +18,13 @@
 		</div>
 		<div th:if="${param.oauth2error}" class="alert error" role="alert">
 			<span class="alert-message" th:switch="${param.oauth2error[0]}">
-				<span th:case="'email_not_found'">Không tìm thấy email từ Google.</span>
+				<span th:case="'email_not_found'">Không tìm thấy email từ nhà cung cấp OAuth2.</span>
 				<span th:case="'email_already_exists'">Email này đã tồn tại. Vui lòng đăng nhập bằng tài khoản đã có.</span>
-				<span th:case="'access_denied'">Bạn bị từ chối khi đăng nhặp.</span>
+				<span th:case="'access_denied'">Bạn bị từ chối khi đăng nhập.</span>
 				<span th:case="'oauth2_error'">Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.</span>
 				<span th:case="'provider_conflict'">Email này đã được đăng ký bằng tài khoản thường. Vui lòng đăng nhập bằng mật khẩu hoặc sử dụng chức năng quên mật khẩu.</span>
-				<span th:case="*">Đăng nhập Google thất bại.</span>
+				<span th:case="'provider_mismatch'">Email này đã được đăng ký với nhà cung cấp OAuth2 khác. Vui lòng đăng nhập bằng phương thức đã sử dụng ban đầu.</span>
+				<span th:case="*">Đăng nhập OAuth2 thất bại. Vui lòng thử lại.</span>
 			</span>
 		</div>
 		<div th:if="${message}" class="alert success" role="alert">

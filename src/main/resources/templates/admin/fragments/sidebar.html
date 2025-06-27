@@ -2,14 +2,23 @@
     <li class="nav-item active">
         <a class="nav-link" th:href="@{/admin/dashboard}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
+            <span>Trang Chủ</span>
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" th:href="@{/admin/categories}">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-fw fa-tags"></i>
             <span>Quản lí danh mục</span>
         </a>
+        <div class="dropdown-menu" aria-labelledby="productDropdown">
+            <a class="dropdown-item" th:href="@{/admin/categories}">
+                <i class="fas fa-list mr-2"></i>Danh sách
+            </a>
+            <a class="dropdown-item" th:href="@{add-categories}">
+                <i class="fas fa-plus mr-2"></i>Thêm danh mục
+            </a>
+        </div>
     </li>
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProducts"

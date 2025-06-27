@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="category">Danh mục<span class="text-danger">*</span></label>
-                                    <select id="category" class="form-control" th:field="*{categories.categoryID}" required>
+                                    <select id="category" class="form-control" th:field="*{categories.categoryID}" style="padding: 7px" required>
                                         <option value="" disabled selected>Chọn danh mục</option>
                                         <option th:each="category : ${categories}" th:value="${category.categoryID}"
                                                 th:text="${category.name}"></option>
@@ -68,7 +68,7 @@
                                 <div class="form-group mb-4">
                                     <label for="imageURL">Hình ảnh<span class="text-danger">*</span></label>
                                     <input id="imageURL" class="form-control" th:type="file" name="productImage"
-                                           required>
+                                       style="padding: 5px"    required>
                                 </div>
                                 <div class="form-group mb-4">
                                     <label>Trạng thái<span class="text-danger">*</span></label>

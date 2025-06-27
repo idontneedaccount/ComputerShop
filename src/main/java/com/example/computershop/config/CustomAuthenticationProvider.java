@@ -40,7 +40,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new LockedException("Tài khoản của bạn đã bị khóa");
         }
 
-        if (!user.isActive()) {
+        if (!user.getIsActive()) {
             throw new DisabledException("Vui lòng xác thực email của bạn trước khi đăng nhập. Kiểm tra hộp thư của bạn để lấy mã xác thực.");
         }
 
