@@ -4,9 +4,12 @@ import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.repository.OrderRepository;
 import com.example.computershop.repository.OrderDetailRepository;
+import com.example.computershop.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -85,5 +88,24 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order updateOrder(Order order) {
         return orderRepository.save(order);
+    }
+     @Override
+    public List<Object[]> getMonthlyRevenue(int year) {
+        return orderRepository.getMonthlyRevenue(year);
+    }
+
+    @Override
+    public List<Integer> getDistinctYears() {
+        return orderRepository.getDistinctYears();
+    }
+
+    @Override
+    public long countOrders() {
+        return orderRepository.countOrders();
+    }
+
+    @Override
+    public BigInteger getTotalRevenue() {
+        return orderRepository.getTotalRevenue();
     }
 } 

@@ -1,5 +1,7 @@
 package com.example.computershop.entity;
 
+import jakarta.persistence.Entity;
+import lombok.experimental.FieldDefaults;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

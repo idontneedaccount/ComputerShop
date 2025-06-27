@@ -45,7 +45,7 @@ class ShoppingEnhancements {
         let sortedProducts = [...products]; // Create a copy to avoid mutation
         
         switch (sortType) {
-            case 'Sắp xếp theo tên':
+            case 'Sắp xếp theo tên A-Z':
                 sortedProducts.sort((a, b) => {
                     try {
                         const nameA = a.querySelector('.title a')?.textContent?.trim().toLowerCase() || '';
@@ -57,12 +57,36 @@ class ShoppingEnhancements {
                 });
                 break;
                 
-            case 'Sắp xếp theo giá':
+            case 'Sắp xếp theo tên Z-A':
+                sortedProducts.sort((a, b) => {
+                    try {
+                        const nameA = a.querySelector('.title a')?.textContent?.trim().toLowerCase() || '';
+                        const nameB = b.querySelector('.title a')?.textContent?.trim().toLowerCase() || '';
+                        return nameB.localeCompare(nameA, 'vi', { sensitivity: 'base' });
+                    } catch (error) {
+                        return 0;
+                    }
+                });
+                break;
+                
+            case 'Sắp xếp theo giá tăng dần':
                 sortedProducts.sort((a, b) => {
                     try {
                         const priceA = this.extractPrice(a.querySelector('.current-price')?.textContent || '0');
                         const priceB = this.extractPrice(b.querySelector('.current-price')?.textContent || '0');
                         return priceA - priceB;
+                    } catch (error) {
+                        return 0;
+                    }
+                });
+                break;
+                
+            case 'Sắp xếp theo giá giảm dần':
+                sortedProducts.sort((a, b) => {
+                    try {
+                        const priceA = this.extractPrice(a.querySelector('.current-price')?.textContent || '0');
+                        const priceB = this.extractPrice(b.querySelector('.current-price')?.textContent || '0');
+                        return priceB - priceA;
                     } catch (error) {
                         return 0;
                     }

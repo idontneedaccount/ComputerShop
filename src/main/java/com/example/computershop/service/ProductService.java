@@ -1,9 +1,10 @@
 package com.example.computershop.service;
-
+import com.example.computershop.dto.ProductSalesDTO;
 import java.util.List;
 import com.example.computershop.entity.Products;
 import com.example.computershop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,15 @@ public class ProductService {
     public Products findById(String productID) {
         return this.repo.findById(productID).orElse(null);
     }
-
+    public Boolean update(Products product) {
+        try {
+            this.repo.save(product);
+            return true;
+        } catch (Exception e) {
+            logger.error(ERROR, e.getMessage(), e);
+        }
+        return false;
+    }
     public Boolean delete(String productID) {
         try {
             this.repo.deleteById(productID);
@@ -49,4 +58,14 @@ public class ProductService {
     public List<String> getDistinctBrands() {
         return repo.findDistinctBrands();
     }
+    public List<Products> findTop5ProductsByStock() {
+        return repo.findTop5ProductsByStock(PageRequest.of(0,5));
+    }
+    public List<ProductSalesDTO> findTop5BestSellingProducts() {
+        return repo.findTop5BestSellingProducts(PageRequest.of(0,5));
+    }
+    public long countProducts() {
+        return repo.countProducts();
+    }
+
 }

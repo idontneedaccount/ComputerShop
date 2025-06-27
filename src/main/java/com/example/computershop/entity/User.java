@@ -80,6 +80,9 @@ public class User implements UserDetails, OAuth2User {
     public boolean isEnabled() {
         return isActive != null && isActive;
     }
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
+
 
     @Override
     public Map<String, Object> getAttributes() {
