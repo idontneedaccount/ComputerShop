@@ -1,7 +1,7 @@
 // Cart Animation JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Cart animation script loaded');
+    
     
     // Handle all add to cart buttons
     initializeAddToCartButtons();
@@ -94,7 +94,7 @@ function addToCartAjax(productId, button, originalText) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        
         showErrorMessage('Có lỗi xảy ra. Vui lòng thử lại!');
         
         // Reset button
@@ -232,36 +232,20 @@ function showErrorMessage(message) {
 }
 
 function initializeCartReview() {
-    console.log('Initializing cart review...');
-    
     // Handle cart dropdown button click
     const cartDropdownBtn = document.querySelector('.cart-dropdown-btn');
     const cartDropdown = document.getElementById('cart-dropdown');
     const cartClose = document.querySelector('.cart-close');
     
-    console.log('Cart elements found:', {
-        cartDropdownBtn: !!cartDropdownBtn,
-        cartDropdown: !!cartDropdown,
-        cartClose: !!cartClose
-    });
-    
     if (cartDropdownBtn && cartDropdown) {
-        console.log('Adding click event to cart button');
         cartDropdownBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Cart button clicked');
             showCartReview();
-        });
-    } else {
-        console.error('Missing cart elements:', {
-            cartDropdownBtn,
-            cartDropdown
         });
     }
     
     if (cartClose && cartDropdown) {
         cartClose.addEventListener('click', function() {
-            console.log('Cart close button clicked');
             hideCartReview();
         });
     }
@@ -279,7 +263,6 @@ function initializeCartReview() {
     // Handle remove product from cart review
     if (cartDropdown) {
         const removeButtons = cartDropdown.querySelectorAll('.close-btn');
-        console.log('Found remove buttons:', removeButtons.length);
         removeButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -312,24 +295,18 @@ function initializeCartReview() {
 }
 
 function showCartReview() {
-    console.log('Showing cart review...');
     const cartDropdown = document.getElementById('cart-dropdown');
     
     if (cartDropdown) {
         cartDropdown.classList.add('show');
-        console.log('Cart review shown');
-    } else {
-        console.error('Cannot show cart review - missing cart dropdown element');
     }
 }
 
 function hideCartReview() {
-    console.log('Hiding cart review...');
     const cartDropdown = document.getElementById('cart-dropdown');
     
     if (cartDropdown) {
         cartDropdown.classList.remove('show');
-        console.log('Cart review hidden');
     }
 }
 
@@ -359,7 +336,6 @@ function removeFromCartReview(productId, button) {
         }
     })
     .catch(error => {
-        console.error('Error removing item:', error);
         showErrorMessage('Có lỗi xảy ra khi xóa sản phẩm!');
         
         // Restore button state
@@ -413,13 +389,11 @@ function updateCartCountFromServer() {
         });
     })
     .catch(error => {
-        console.error('Error updating cart count:', error);
+        // Silently fail for cart count updates
     });
 }
 
 function updateCartReviewContent() {
-    console.log('Updating cart review content...');
-    
     const currentCartDropdown = document.getElementById('cart-dropdown');
     if (currentCartDropdown) {
         // Add updating class for animation
@@ -468,13 +442,10 @@ function updateCartReviewContent() {
                 
                 // Re-initialize cart review functionality for new elements
                 initializeCartReviewEvents();
-                
-                console.log('Cart review content updated successfully');
             }, 150);
         }
     })
     .catch(error => {
-        console.error('Error updating cart review content:', error);
         if (currentCartDropdown) {
             currentCartDropdown.classList.remove('updating');
         }
@@ -482,8 +453,6 @@ function updateCartReviewContent() {
 }
 
 function initializeCartReviewEvents() {
-    console.log('Re-initializing cart review events...');
-    
     const cartDropdown = document.getElementById('cart-dropdown');
     if (!cartDropdown) return;
     
@@ -491,7 +460,6 @@ function initializeCartReviewEvents() {
     const cartClose = cartDropdown.querySelector('.cart-close');
     if (cartClose) {
         cartClose.addEventListener('click', function() {
-            console.log('Cart close button clicked');
             hideCartReview();
         });
     }
@@ -506,7 +474,6 @@ function initializeCartReviewEvents() {
     
     // Handle remove product buttons
     const removeButtons = cartDropdown.querySelectorAll('.close-btn');
-    console.log('Re-initializing remove buttons:', removeButtons.length);
     removeButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();

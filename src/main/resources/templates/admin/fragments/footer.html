@@ -32,5 +32,30 @@
         <script th:src="@{/assets2/js/colReorder-dataTables-min.js}"></script>
         <script th:src="@{/assets2/js/colReorder-bootstrap4-min.js}"></script>
 
+    <!-- Sidebar Collapse JavaScript -->
+    <script>
+    $(document).ready(function() {
+        // Sidebar collapse handling
+        $('.sidebar .nav-link[data-toggle="collapse"]').on('click', function(e) {
+            e.preventDefault();
+            
+            const $this = $(this);
+            const target = $this.attr('data-target');
+            const $target = $(target);
+            
+            // Toggle collapsed class
+            $this.toggleClass('collapsed');
+            
+            // Toggle collapse
+            $target.collapse('toggle');
+            
+            // Close other open collapses
+            $('.sidebar .collapse').not($target).collapse('hide');
+            $('.sidebar .nav-link[data-toggle="collapse"]').not($this).addClass('collapsed');
+        });
+    });
+    </script>
+
+</footer>
     </footer>
 </div>

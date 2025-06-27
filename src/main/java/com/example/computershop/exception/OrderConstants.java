@@ -44,6 +44,6 @@ public final class OrderConstants {
     public static final String MSG_ERROR_UPDATING_ORDER_STATUS = "Error updating order status: ";
     public static final String MSG_ERROR_LOADING_STATISTICS = "Error loading statistics: ";
     
-    // Redirect URLs
+    // Redirect URLs  
     public static final String REDIRECT_ADMIN_ORDERS = "redirect:/admin/orders";
 } 

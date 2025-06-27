@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Chi tiết Đơn hàng</title>
+</head>
+
+<body id="page-top">
+
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs -->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/admin/dashboard}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/admin/orders}">Quản lý Đơn hàng</a>
+                </li>
+                <li class="breadcrumb-item active">Chi tiết Đơn hàng</li>
+            </ol>
+
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-file-invoice mr-2"></i>Chi tiết Đơn hàng
+                </h1>
+                <a th:href="@{/admin/orders}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i>Quay lại danh sách
+                </a>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="row">
+                
+                <!-- Order Information -->
+                <div class="col-lg-8">
+                    
+                    <!-- Order Basic Info -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-info-circle mr-2"></i>Thông tin đơn hàng
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Mã đơn hàng:</strong> 
+                                        <code class="text-primary" th:text="${order?.id ?: 'N/A'}">ORDER123</code>
+                                    </p>
+                                    <p><strong>Ngày đặt:</strong> 
+                                        <span th:if="${order?.orderDate}" 
+                                              th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm:ss')}">
+                                            25/12/2023 14:30:00
+                                        </span>
+                                        <span th:unless="${order?.orderDate}" class="text-muted">N/A</span>
+                                    </p>
+                                    <p><strong>Phương thức thanh toán:</strong> 
+                                        <span th:text="${order?.paymentMethod ?: 'N/A'}" class="badge badge-info">COD</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Tổng tiền:</strong> 
+                                        <span class="text-success font-weight-bold" th:if="${order?.totalAmount}">
+                                            <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">
+                                                1,500,000
+                                            </span> VNĐ
+                                        </span>
+                                        <span th:unless="${order?.totalAmount}" class="text-muted">N/A</span>
+                                    </p>
+                                    <p><strong>Ghi chú:</strong> 
+                                        <span th:text="${order?.note ?: 'Không có ghi chú'}" class="text-muted">
+                                            Giao hàng buổi sáng
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Info -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-user mr-2"></i>Thông tin khách hàng
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Họ tên:</strong> 
+                                        <span th:text="${order?.fullName ?: (order?.user?.username ?: 'N/A')}">
+                                            Nguyễn Văn A
+                                        </span>
+                                    </p>
+                                    <p><strong>Email:</strong> 
+                                        <span th:text="${order?.email ?: (order?.user?.email ?: 'N/A')}" class="text-primary">
+                                            nguyenvana@email.com
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Số điện thoại:</strong> 
+                                        <span th:text="${order?.phone ?: 'N/A'}" class="text-info">
+                                            0123456789
+                                        </span>
+                                    </p>
+                                    <p><strong>Địa chỉ giao hàng:</strong> 
+                                        <span th:text="${order?.shippingAddress ?: order?.address ?: 'N/A'}" class="text-muted">
+                                            123 Đường ABC, Quận XYZ, TP.HCM
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="card shadow mb-4" th:if="${order?.orderDetails}">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-shopping-cart mr-2"></i>Sản phẩm đã đặt
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Sản phẩm</th>
+                                            <th class="text-center">Số lượng</th>
+                                            <th class="text-right">Đơn giá</th>
+                                            <th class="text-right">Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="detail : ${order.orderDetails}">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div>
+                                                        <div class="font-weight-bold" 
+                                                             th:text="${detail?.product?.name ?: 'Sản phẩm không tồn tại'}">
+                                                            Laptop Dell XPS 13
+                                                        </div>
+                                                        <small class="text-muted" 
+                                                               th:text="'Mã SP: ' + (${detail?.product?.productID} ?: 'N/A')">
+                                                            Mã SP: LAPTOP001
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge badge-secondary" th:text="${detail?.quantity ?: 0}">1</span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span th:if="${detail?.unitPrice}">
+                                                    <span th:text="${#numbers.formatDecimal(detail.unitPrice, 0, 'COMMA', 0, 'POINT')}">
+                                                        25,000,000
+                                                    </span> VNĐ
+                                                </span>
+                                                <span th:unless="${detail?.unitPrice}" class="text-muted">N/A</span>
+                                            </td>
+                                            <td class="text-right font-weight-bold text-success">
+                                                <span th:if="${detail?.unitPrice != null && detail?.quantity != null}">
+                                                    <span th:text="${#numbers.formatDecimal(detail.unitPrice * detail.quantity, 0, 'COMMA', 0, 'POINT')}">
+                                                        25,000,000
+                                                    </span> VNĐ
+                                                </span>
+                                                <span th:unless="${detail?.unitPrice != null && detail?.quantity != null}" class="text-muted">N/A</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Status Management -->
+                <div class="col-lg-4">
+                    
+                    <!-- Current Status -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-tasks mr-2"></i>Quản lý trạng thái
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="font-weight-bold">Trạng thái hiện tại:</label>
+                                <div class="mt-2">
+                                    <span th:switch="${order?.status}" class="badge badge-pill p-2">
+                                        <span th:case="'PENDING'" class="badge badge-warning">⏳ Chờ xác nhận</span>
+                                        <span th:case="'CONFIRMED'" class="badge badge-info">✅ Đã xác nhận</span>
+                                        <span th:case="'PROCESSING'" class="badge badge-primary">🔄 Đang xử lý</span>
+                                        <span th:case="'SHIPPED'" class="badge badge-secondary">🚚 Đang giao hàng</span>
+                                        <span th:case="'DELIVERED'" class="badge badge-success">📦 Đã giao hàng</span>
+                                        <span th:case="'CANCELLED'" class="badge badge-danger">❌ Đã hủy</span>
+                                        <span th:case="*" class="badge badge-light">❓ Không xác định</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Update Status Form -->
+                            <form method="post" th:action="@{/admin/orders/update-status}" id="updateStatusForm">
+                                <input type="hidden" name="orderId" th:value="${order?.id}">
+                                
+                                <div class="form-group">
+                                    <label for="newStatus" class="font-weight-bold">Cập nhật trạng thái:</label>
+                                    <select class="form-control" id="newStatus" name="status" required>
+                                        <option value="">-- Chọn trạng thái --</option>
+                                        <option value="PENDING" th:selected="${order?.status == 'PENDING'}">⏳ Chờ xác nhận</option>
+                                        <option value="CONFIRMED" th:selected="${order?.status == 'CONFIRMED'}">✅ Đã xác nhận</option>
+                                        <option value="PROCESSING" th:selected="${order?.status == 'PROCESSING'}">🔄 Đang xử lý</option>
+                                        <option value="SHIPPED" th:selected="${order?.status == 'SHIPPED'}">🚚 Đang giao hàng</option>
+                                        <option value="DELIVERED" th:selected="${order?.status == 'DELIVERED'}">📦 Đã giao hàng</option>
+                                        <option value="CANCELLED" th:selected="${order?.status == 'CANCELLED'}">❌ Đã hủy</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-block" id="submitButton">
+                                    <i class="fas fa-save mr-1"></i>Cập nhật trạng thái
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-chart-pie mr-2"></i>Tóm tắt đơn hàng
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <strong>Số lượng sản phẩm:</strong>
+                                <span class="float-right" 
+                                      th:text="${order?.orderDetails != null ? #lists.size(order.orderDetails) : 0}">
+                                    2
+                                </span>
+                            </div>
+                            <hr>
+                            <div class="h5 mb-0">
+                                <strong class="text-success">Tổng tiền: 
+                                    <span th:if="${order?.totalAmount}">
+                                        <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">
+                                            1,500,000
+                                        </span> VNĐ
+                                    </span>
+                                    <span th:unless="${order?.totalAmount}">0 VNĐ</span>
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+
+    </div>
+    <!-- /.content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+
+<!-- Scroll to Top Button -->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal -->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<!-- Bootstrap core JavaScript -->
+<script th:src="@{/assets2/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/assets2/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript -->
+<script th:src="@{/assets2/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<!-- Custom scripts for all pages -->
+<script th:src="@{/assets2/js/sb-admin.min.js}"></script>
+
+<!-- Custom CSS for better dropdown display -->
+<style>
+/* Fix dropdown option display */
+#newStatus, #statusFilter, #sortSelect {
+    min-width: 200px;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+#newStatus option, #statusFilter option, #sortSelect option {
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+/* Make sure dropdown is wide enough for content */
+.form-control {
+    min-height: 38px;
+}
+
+/* Better spacing for status badges */
+.badge {
+    font-size: 14px;
+    padding: 8px 12px;
+    line-height: 1.2;
+}
+
+</style>
+
+<!-- Page level custom scripts -->
+<script>
+$(document).ready(function() {
+    
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+    
+    // Handle status update form submission
+    $('#updateStatusForm').on('submit', function(e) {
+        e.preventDefault(); // Ngăn form submit mặc định
+        
+        const selectedStatus = $('#newStatus').val();
+        const selectedText = $('#newStatus option:selected').text();
+        
+        // Kiểm tra xem đã chọn trạng thái chưa
+        if (!selectedStatus || selectedStatus === '') {
+            alert('Vui lòng chọn trạng thái mới!');
+            return false;
+        }
+        
+        // Hiển thị confirm dialog với tên tiếng Việt
+        const confirmMessage = `Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng thành "${selectedText}"?`;
+        
+        if (confirm(confirmMessage)) {
+            // Nếu user ấn OK, submit form
+            this.submit();
+        }
+        // Nếu user ấn Cancel, không làm gì cả
+    });
+    
+});
+</script>
+
+</body>
+
+</html> 

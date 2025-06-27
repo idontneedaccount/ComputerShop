@@ -6,6 +6,8 @@ import com.example.computershop.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +17,30 @@ public class ProductService {
     private final ProductRepository repo;
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
     private static final String ERROR = "Error creating category: {}";
+    
     public List<Products> getAll() {
         return this.repo.findAll();
     }
+    
+    // Optimized method for homepage - no specifications loaded
+    @Cacheable(value = "homepageProducts")
+    public List<Products> getAllActiveForHomepage() {
+        return this.repo.findAllActiveForHomepage();
+    }
+    
+    // Optimized method when specifications are needed
+    @Cacheable(value = "activeProducts")
+    public List<Products> getAllActiveWithSpecifications() {
+        return this.repo.findAllActiveWithSpecifications();
+    }
+    
+    // Optimized method for admin - all products with specifications
+    @Cacheable(value = "products")
+    public List<Products> getAllWithSpecifications() {
+        return this.repo.findAllWithSpecifications();
+    }
 
+    @CacheEvict(value = {"products", "activeProducts", "homepageProducts", "brands"}, allEntries = true)
     public Boolean create(Products product) {
         try {
             this.repo.save(product);
@@ -32,6 +54,8 @@ public class ProductService {
     public Products findById(String productID) {
         return this.repo.findById(productID).orElse(null);
     }
+
+    @CacheEvict(value = {"products", "activeProducts", "homepageProducts", "brands"}, allEntries = true)
     public Boolean update(Products product) {
         try {
             this.repo.save(product);
@@ -55,6 +79,7 @@ public class ProductService {
         return repo.existsByName(name);
     }
 
+    @Cacheable(value = "brands")
     public List<String> getDistinctBrands() {
         return repo.findDistinctBrands();
     }

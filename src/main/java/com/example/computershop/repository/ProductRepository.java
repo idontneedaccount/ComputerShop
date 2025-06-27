@@ -14,7 +14,20 @@ public interface ProductRepository extends JpaRepository<Products, String> {
     
     @Query("SELECT DISTINCT p.brand FROM Products p WHERE p.brand IS NOT NULL ORDER BY p.brand")
     List<String> findDistinctBrands();
-     @Query("SELECT p FROM Products p ORDER BY p.quantity DESC")
+    
+    // Optimized method to fetch products with specifications in one query
+    @Query("SELECT p FROM Products p LEFT JOIN FETCH p.specifications LEFT JOIN FETCH p.categories WHERE p.isActive = true")
+    List<Products> findAllActiveWithSpecifications();
+    
+    // Method to fetch all products with specifications (for admin)
+    @Query("SELECT p FROM Products p LEFT JOIN FETCH p.specifications LEFT JOIN FETCH p.categories")
+    List<Products> findAllWithSpecifications();
+    
+    // Method for homepage - fetch only needed data without specifications
+    @Query("SELECT p FROM Products p LEFT JOIN FETCH p.categories WHERE p.isActive = true")
+    List<Products> findAllActiveForHomepage();
+
+    @Query("SELECT p FROM Products p ORDER BY p.quantity DESC")
     List<Products> findTop5ProductsByStock(Pageable pageable);
 
     @Query("SELECT new com.example.computershop.dto.ProductSalesDTO(od.product, SUM(od.quantity)) " +

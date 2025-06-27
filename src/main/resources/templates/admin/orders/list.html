@@ -1,161 +1,324 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Management - Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Quản lý Đơn hàng</title>
 </head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Admin Sidebar -->
-            <nav class="col-md-2 d-none d-md-block bg-dark sidebar vh-100">
-                <div class="sidebar-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/dashboard">
-                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white active" href="/admin/orders">
-                                <i class="fas fa-shopping-cart me-2"></i>Orders
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/orders/statistics">
-                                <i class="fas fa-chart-bar me-2"></i>Statistics
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/products">
-                                <i class="fas fa-box me-2"></i>Products
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/users">
-                                <i class="fas fa-users me-2"></i>Users
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
 
-            <!-- Main content -->
-            <main class="col-md-10 ms-sm-auto px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Order Management</h1>
-                </div>
+<body id="page-top">
 
-                <!-- Alert Messages -->
-                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <span th:text="${success}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
 
-                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    <span th:text="${error}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+<div id="wrapper">
 
-                <!-- Filter Form -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <form method="get" action="/admin/orders">
-                            <div class="row align-items-end">
-                                <div class="col-md-4">
-                                    <label for="status" class="form-label">Filter by Status:</label>
-                                    <select class="form-select" id="status" name="status">
-                                        <option value="">All Orders</option>
-                                        <option th:each="status : ${statusOptions}" 
-                                                th:value="${status}" 
-                                                th:text="${status}"
-                                                th:selected="${status == selectedStatus}"></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-filter me-1"></i>Filter
-                                    </button>
-                                </div>
-                                <div class="col-md-6 text-end">
-                                    <span class="badge bg-info fs-6">
-                                        Total Orders: <span th:text="${#lists.size(orders)}"></span>
-                                    </span>
-                                </div>
+    <!-- Sidebar -->
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs -->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/admin/dashboard}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">Quản lý Đơn hàng</li>
+            </ol>
+
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-shopping-cart mr-2"></i>Quản lý Đơn hàng
+                </h1>
+                <div class="badge badge-info badge-pill">
+                    Tổng: <span th:text="${totalOrders ?: 0}">0</span> đơn hàng
+                </div>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Filter & Search Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-filter mr-2"></i>Tìm kiếm & Lọc đơn hàng
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" th:action="@{/admin/orders}">
+                        <div class="row">
+                            <!-- Search -->
+                            <div class="col-lg-4 col-md-6 mb-3">
+                                <label for="searchInput" class="form-label font-weight-bold">Tìm kiếm:</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="searchInput" 
+                                       name="search" 
+                                       th:value="${searchTerm}"
+                                       placeholder="Mã đơn, tên khách hàng, email, SĐT...">
                             </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Orders Table -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Orders List</h5>
-                    </div>
-                    <div class="card-body">
-                        <div th:if="${#lists.isEmpty(orders)}" class="text-center py-4">
-                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">No orders found.</p>
+                            
+                            <!-- Status Filter -->
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <label for="statusFilter" class="form-label font-weight-bold">Trạng thái:</label>
+                                <select class="form-control" id="statusFilter" name="status">
+                                    <option value="">-- Tất cả trạng thái --</option>
+                                    <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">⏳ Chờ xác nhận</option>
+                                    <option value="CONFIRMED" th:selected="${selectedStatus == 'CONFIRMED'}">✅ Đã xác nhận</option>
+                                    <option value="PROCESSING" th:selected="${selectedStatus == 'PROCESSING'}">🔄 Đang xử lý</option>
+                                    <option value="SHIPPED" th:selected="${selectedStatus == 'SHIPPED'}">🚚 Đang giao hàng</option>
+                                    <option value="DELIVERED" th:selected="${selectedStatus == 'DELIVERED'}">📦 Đã giao hàng</option>
+                                    <option value="CANCELLED" th:selected="${selectedStatus == 'CANCELLED'}">❌ Đã hủy</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Sort -->
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <label for="sortSelect" class="form-label font-weight-bold">Sắp xếp:</label>
+                                <select class="form-control" id="sortSelect" name="sort">
+                                    <option value="date_desc" th:selected="${selectedSort == 'date_desc'}">Ngày mới nhất</option>
+                                    <option value="date_asc" th:selected="${selectedSort == 'date_asc'}">Ngày cũ nhất</option>
+                                    <option value="price_desc" th:selected="${selectedSort == 'price_desc'}">Giá cao nhất</option>
+                                    <option value="price_asc" th:selected="${selectedSort == 'price_asc'}">Giá thấp nhất</option>
+                                    <option value="status" th:selected="${selectedSort == 'status'}">Theo trạng thái</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Search Buttons -->
+                            <div class="col-lg-2 col-md-6 mb-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary mr-2 flex-fill">
+                                    <i class="fas fa-search mr-1"></i>Tìm
+                                </button>
+                                <a th:href="@{/admin/orders}" class="btn btn-outline-secondary" title="Xóa bộ lọc">
+                                    <i class="fas fa-eraser"></i>
+                                </a>
+                            </div>
                         </div>
+                    </form>
+                </div>
+            </div>
 
-                        <div th:if="${!#lists.isEmpty(orders)}" class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Customer</th>
-                                        <th>Order Date</th>
-                                        <th>Status</th>
-                                        <th>Total Amount</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="order : ${orders}">
-                                        <td>
-                                            <strong th:text="${order.id}"></strong>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <div th:text="${order.user.username}"></div>
-                                                <small class="text-muted" th:text="${order.user.email}"></small>
+            <!-- Orders Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-list mr-2"></i>Danh sách đơn hàng
+                    </h6>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Empty State -->
+                    <div th:if="${orders == null or #lists.isEmpty(orders)}" class="text-center py-5">
+                        <i class="fas fa-inbox fa-4x text-gray-300 mb-3"></i>
+                        <h5 class="text-gray-500">Không có đơn hàng nào</h5>
+                        <p class="text-muted">Chưa có đơn hàng nào phù hợp với tiêu chí tìm kiếm.</p>
+                        <a th:href="@{/admin/orders}" class="btn btn-outline-primary">
+                            <i class="fas fa-refresh mr-1"></i>Xem tất cả đơn hàng
+                        </a>
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div th:if="${orders != null and !#lists.isEmpty(orders)}" class="table-responsive">
+                        <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="text-center" style="width: 120px;">Mã đơn</th>
+                                    <th style="width: 200px;">Thông tin khách hàng</th>
+                                    <th class="text-center" style="width: 130px;">Ngày đặt</th>
+                                    <th class="text-right" style="width: 120px;">Tổng tiền</th>
+                                    <th class="text-center" style="width: 100px;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="order : ${orders}">
+                                    <!-- Order ID -->
+                                    <td class="text-center">
+                                        <code class="text-primary font-weight-bold" 
+                                              th:text="${#strings.length(order.id) > 8 ? #strings.substring(order.id, 0, 8) + '...' : order.id}">
+                                            ORDER123
+                                        </code>
+                                    </td>
+                                    
+                                    <!-- Customer Info -->
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <strong class="text-dark mb-1" 
+                                                    th:text="${order.fullName ?: (order.user?.username ?: 'N/A')}">
+                                                Tên khách hàng
+                                            </strong>
+                                            <small class="text-muted mb-1" 
+                                                   th:text="${order.email ?: (order.user?.email ?: 'N/A')}">
+                                                email@example.com
+                                            </small>
+                                            <small class="text-info" 
+                                                   th:if="${order.phone}" 
+                                                   th:text="'📞 ' + ${order.phone}">
+                                                📞 0123456789
+                                            </small>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Order Date -->
+                                    <td class="text-center">
+                                        <div th:if="${order.orderDate}">
+                                            <div class="font-weight-bold text-dark" 
+                                                 th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">
+                                                25/12/2023
                                             </div>
-                                        </td>
-                                        <td>
-                                            <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></span>
-                                        </td>
-                                        <td>
-                                            <span class="badge" 
-                                                  th:classappend="${order.status == 'PENDING'} ? 'bg-warning text-dark' : 
-                                                                 (${order.status == 'CONFIRMED'} ? 'bg-info' : 
-                                                                 (${order.status == 'PROCESSING'} ? 'bg-primary' : 
-                                                                 (${order.status == 'SHIPPED'} ? 'bg-secondary' : 
-                                                                 (${order.status == 'DELIVERED'} ? 'bg-success' : 'bg-danger'))))"
-                                                  th:text="${order.status}"></span>
-                                        </td>
-                                        <td>
-                                            <strong>$<span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')}"></span></strong>
-                                        </td>
-                                        <td>
-                                            <a th:href="@{'/admin/orders/' + ${order.id}}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye me-1"></i>View Details
+                                            <small class="text-muted" 
+                                                   th:text="${#temporals.format(order.orderDate, 'HH:mm')}">
+                                                14:30
+                                            </small>
+                                        </div>
+                                        <span th:unless="${order.orderDate}" class="text-muted">N/A</span>
+                                    </td>
+                                    
+                                    <!-- Total Amount -->
+                                    <td class="text-right">
+                                        <strong class="text-success" th:if="${order.totalAmount}">
+                                            <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">
+                                                1,500,000
+                                            </span>
+                                            <small class="text-muted d-block">VNĐ</small>
+                                        </strong>
+                                        <span th:unless="${order.totalAmount}" class="text-muted">N/A</span>
+                                    </td>
+                                    
+                                    <!-- Actions -->
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a th:href="@{'/admin/orders/' + ${order.id}}" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
                                             </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
+            </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        </div>
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+
+    </div>
+    <!-- /.content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+
+<!-- Scroll to Top Button -->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal -->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<!-- Bootstrap core JavaScript -->
+<script th:src="@{/assets2/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/assets2/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript -->
+<script th:src="@{/assets2/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<!-- Custom scripts for all pages -->
+<script th:src="@{/assets2/js/sb-admin.min.js}"></script>
+
+<!-- Custom CSS for better dropdown display -->
+<style>
+/* Fix dropdown option display */
+#statusFilter, #sortSelect, .form-control {
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+#statusFilter {
+    min-width: 180px;
+}
+
+#sortSelect {
+    min-width: 160px;
+}
+
+#searchInput {
+    min-width: 250px;
+}
+
+#statusFilter option, #sortSelect option {
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+/* Better form control styling */
+.form-control {
+    min-height: 38px;
+    border: 1px solid #d1d3e2;
+}
+
+.form-control:focus {
+    border-color: #5a5c69;
+    box-shadow: 0 0 0 0.2rem rgba(90, 92, 105, 0.25);
+}
+
+/* Better button spacing */
+.btn {
+    min-height: 38px;
+    line-height: 1.4;
+}
+
+</style>
+
+<!-- Page level custom scripts -->
+<script>
+$(document).ready(function() {
+    
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+    
+    // Clear search input shortcut
+    $('#searchInput').on('keyup', function(e) {
+        if (e.key === 'Escape') {
+            $(this).val('');
+        }
+    });
+    
+    // Quick search on Enter
+    $('#searchInput').on('keypress', function(e) {
+        if (e.which === 13) {
+            $(this).closest('form').submit();
+        }
+    });
+});
+</script>
+
 </body>
+
 </html> 

@@ -48,7 +48,7 @@ public class UserProfileController {
             model.addAttribute("orders", userOrders);
             model.addAttribute("hasOrders", !userOrders.isEmpty());
             
-            // Thêm OAuth2 debug info nếu cần
+    
             if (profileData.isOAuth2()) {
                 model.addAttribute("oauth2Attributes", profileData.getOauth2Attributes());
                 model.addAttribute("oauth2Authorities", profileData.getOauth2Authorities());
