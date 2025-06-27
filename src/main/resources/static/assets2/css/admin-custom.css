@@ -448,10 +448,8 @@
 /* Table improvements */
 .table thead th {
     border-bottom: 2px solid #e3e6f0;
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    color: #5a5c69;
+    font-weight: 600;
+    color: #fffdfd;
 }
 
 .table-active {
