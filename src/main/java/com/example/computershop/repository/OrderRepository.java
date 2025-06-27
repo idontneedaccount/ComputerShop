@@ -16,14 +16,18 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     
     List<Order> findByUserIdOrderByOrderDateDesc(String userId);
     
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails WHERE o.id = :orderId")
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails od LEFT JOIN FETCH od.product LEFT JOIN FETCH o.user WHERE o.id = :orderId")
     Optional<Order> findByIdWithDetails(@Param("orderId") String orderId);
     
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails WHERE o.userId = :userId ORDER BY o.orderDate DESC")
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails od LEFT JOIN FETCH od.product LEFT JOIN FETCH o.user WHERE o.userId = :userId ORDER BY o.orderDate DESC")
     List<Order> findByUserWithDetails(@Param("userId") String userId);
     
-    List<Order> findByStatus(String status);
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.user WHERE o.status = :status ORDER BY o.orderDate DESC")
+    List<Order> findByStatus(@Param("status") String status);
     
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails WHERE o.status = :status ORDER BY o.orderDate DESC")
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails od LEFT JOIN FETCH od.product LEFT JOIN FETCH o.user WHERE o.status = :status ORDER BY o.orderDate DESC")
     List<Order> findByStatusWithDetails(@Param("status") String status);
+    
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.user ORDER BY o.orderDate DESC")
+    List<Order> findAllWithUser();
 } 

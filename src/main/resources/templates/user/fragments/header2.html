@@ -64,10 +64,10 @@
         <div class="container">
             <div class="header-navbar">
                 <div class="header-brand">
-                    <a href="index.html" class="logo logo-dark">
+                    <a th:href="@{/}" class="logo logo-dark">
                         <img th:src="@{/assets/images/logo/logo.png}" alt="Site Logo">
                     </a>
-                    <a href="index.html" class="logo logo-light">
+                    <a th:href="@{/}" class="logo logo-light">
                         <img th:src="@{/assets/images/logo/logo-light.png}" alt="Site Logo">
                     </a>
                 </div>
@@ -76,7 +76,7 @@
                     <nav class="mainmenu-nav">
                         <button class="mobile-close-btn mobile-nav-toggler"><i class="fas fa-times"></i></button>
                         <div class="mobile-nav-brand">
-                            <a href="index.html" class="logo">
+                            <a th:href="@{/}" class="logo">
                                 <img th:src="@{/assets/images/logo/logo.png}" alt="Site Logo">
                             </a>
                         </div>
@@ -93,7 +93,7 @@
                                     <li><a href="wishlist.html">Yêu thích</a></li>
                                     <li><a th:href="@{/cart/view}">Giỏ hàng</a></li>
                                     <li><a th:href="@{/cart/checkout}">Thanh toán</a></li>
-                                    <li sec:authorize="isAuthenticated()"><a th:href="@{/my-account}">Tài khoản</a></li>
+                                    <li sec:authorize="isAuthenticated()"><a th:href="@{/user/user-profile}">Tài khoản</a></li>
                                     <li sec:authorize="!isAuthenticated()"><a th:href="@{/auth/register}">Đăng ký</a></li>
                                     <li sec:authorize="!isAuthenticated()"><a th:href="@{/auth/login}">Đăng nhập</a></li>
                                     <li sec:authorize="!isAuthenticated()"><a th:href="@{/auth/forgot-password}">Quên mật khẩu</a></li>
@@ -128,7 +128,7 @@
                             </a>
                         </li>
                         <li class="shopping-cart">
-                            <a href="#" class="cart-dropdown-btn" onclick="console.log('Cart icon clicked directly')">
+                            <a href="#" class="cart-dropdown-btn">
                                 <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}">0</span>
                                 <i class="flaticon-shopping-cart"></i>
                             </a>
@@ -144,7 +144,7 @@
                                         <a th:href="@{/user/user-profile}">Tài khoản của tôi</a>
                                     </li>
                                     <li sec:authorize="isAuthenticated()">
-                                        <a th:href="@{/order-history}">Lịch sử đơn hàng</a>
+                                        <a th:href="@{/user/user-profile}">Lịch sử đơn hàng</a>
                                     </li>
                                     <li sec:authorize="isAuthenticated()">
                                         <a href="#">Yêu cầu trả hàng</a>

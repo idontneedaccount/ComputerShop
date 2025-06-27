@@ -647,36 +647,7 @@ public class CartController {
         }
     }
 
-    /**
-     * Debug endpoint to show cart information
-     */
-    @GetMapping("/debug")
-    @ResponseBody
-    public String debugCart(Principal principal) {
-        if (principal == null) {
-            return "No user logged in";
-        }
 
-        String username = principal.getName();
-        User user = userRepository.findByUsername(username).orElse(null);
-        if (user == null) {
-            return "User not found: " + username;
-        }
-
-        List<Cart> dbCart = cartRepository.findByUser(user);
-
-        StringBuilder result = new StringBuilder();
-        result.append("User: ").append(username).append("\n");
-        result.append("Database Cart size: ").append(dbCart.size()).append("\n\n");
-
-        result.append("Database Cart items:\n");
-        for (Cart item : dbCart) {
-            result.append("- Product ID: ").append(item.getProduct() != null ? item.getProduct().getProductID() : "NULL")
-                  .append(", Quantity: ").append(item.getQuantity()).append("\n");
-        }
-
-        return result.toString();
-    }
 
     /**
      * Add product variant to cart - New feature from PR #23
@@ -783,4 +754,5 @@ public class CartController {
             return ResponseEntity.status(500).body(response);
         }
     }
+
 }

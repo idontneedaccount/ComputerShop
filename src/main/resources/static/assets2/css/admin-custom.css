@@ -378,4 +378,110 @@
 
 .hover-lift:hover {
     transform: translateY(-2px);
+}
+
+/* Admin Custom Styles */
+
+/* Order Details Specific Styles */
+.icon-circle {
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-lg {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Status badges */
+.badge-warning {
+    background-color: #f6c23e !important;
+    color: #fff !important;
+}
+
+.badge-info {
+    background-color: #36b9cc !important;
+    color: #fff !important;
+}
+
+.badge-primary {
+    background-color: #4e73df !important;
+    color: #fff !important;
+}
+
+.badge-secondary {
+    background-color: #858796 !important;
+    color: #fff !important;
+}
+
+.badge-success {
+    background-color: #1cc88a !important;
+    color: #fff !important;
+}
+
+.badge-danger {
+    background-color: #e74a3b !important;
+    color: #fff !important;
+}
+
+/* Form improvements */
+.form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Card shadows */
+.card.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+/* Alert improvements */
+.alert {
+    border: none;
+    border-radius: 0.35rem;
+}
+
+/* Table improvements */
+.table thead th {
+    border-bottom: 2px solid #e3e6f0;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #5a5c69;
+}
+
+.table-active {
+    background-color: #eaecf4 !important;
+}
+
+/* Button loading state */
+.btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Status update panel */
+.sticky-top {
+    top: 1rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .d-sm-flex {
+        flex-direction: column;
+    }
+    
+    .d-none.d-sm-inline-block {
+        display: inline-block !important;
+        margin-top: 1rem;
+    }
+    
+    .sticky-top {
+        position: relative !important;
+        top: auto !important;
+    }
 } 

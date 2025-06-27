@@ -1,13 +1,870 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="layout/layout :: layout (~{::title}, ~{::section})">
+<!doctype html>
+<html class="no-js" lang="en" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <title>Homepage</title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Computer Shop || Homepage</title>
+    <meta name="robots" content="noindex, follow" />
+    <meta name="description" content="Best Computer Shop - Laptops, Desktops, Accessories">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/images/favicon.png}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/font-awesome.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/flaticon/flaticon.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/slick.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/slick-theme.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/jquery-ui.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/sal.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/magnific-popup.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/vendor/base.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/cart-animation.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/cart-custom.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/homepage-custom.css}">
 </head>
+
+
 <body class="sticky-header newsletter-popup-modal">
-<section>
-    <div class="container py-5">
+
+<!--[if lte IE 9]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+<![endif]-->
+<a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
+
+<!-- Header -->
+<header class="header axil-header header-style-1">
+    <div th:replace="~{user/fragments/header2 :: header}"></div>
+</header>
+
+<main class="main-wrapper">
+    <div class="axil-main-slider-area main-slider-style-1">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-5 col-sm-6">
+                    <div class="main-slider-content">
+                        <div class="slider-content-activation-one">
+                            <div class="single-slide slick-slide" data-sal="slide-up" data-sal-delay="400" data-sal-duration="800">
+                                <span class="subtitle"><i class="fas fa-fire"></i> Hot Deal In This Week</span>
+                                <h1 class="title">Roco Wireless Headphone</h1>
+                                <div class="slide-action">
+                                    <div class="shop-btn">
+                                        <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Shop Now</a>
+                                    </div>
+                                    <div class="item-rating">
+                                        <div class="thumb">
+                                            <ul>
+                                                <li><img src="assets/images/others/author1.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author2.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author3.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author4.png" alt="Author"></li>
+                                            </ul>
+                                        </div>
+                                        <div class="content">
+                                                <span class="rating-icon">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fal fa-star"></i>
+                                        </span>
+                                            <span class="review-text">
+                                            <span>100+</span> Reviews
+                                                </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="single-slide slick-slide">
+                                <span class="subtitle"><i class="fas fa-fire"></i> Hot Deal In This Week</span>
+                                <h1 class="title">Smart Digital Watch</h1>
+                                <div class="slide-action">
+                                    <div class="shop-btn">
+                                        <a href="shop.html" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Shop Now</a>
+                                    </div>
+                                    <div class="item-rating">
+                                        <div class="thumb">
+                                            <ul>
+                                                <li><img src="assets/images/others/author1.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author2.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author3.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author4.png" alt="Author"></li>
+                                            </ul>
+                                        </div>
+                                        <div class="content">
+                                                <span class="rating-icon">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fal fa-star"></i>
+                                        </span>
+                                            <span class="review-text">
+                                            <span>100+</span> Reviews
+                                                </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="single-slide slick-slide">
+                                <span class="subtitle"><i class="fas fa-fire"></i> Hot Deal In This Week</span>
+                                <h1 class="title">Roco Wireless Headphone</h1>
+                                <div class="slide-action">
+                                    <div class="shop-btn">
+                                        <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Shop Now</a>
+                                    </div>
+                                    <div class="item-rating">
+                                        <div class="thumb">
+                                            <ul>
+                                                <li><img src="assets/images/others/author1.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author2.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author3.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author4.png" alt="Author"></li>
+                                            </ul>
+                                        </div>
+                                        <div class="content">
+                                                <span class="rating-icon">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fal fa-star"></i>
+                                        </span>
+                                            <span class="review-text">
+                                            <span>100+</span> Reviews
+                                                </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="single-slide slick-slide">
+                                <span class="subtitle"><i class="fas fa-fire"></i> Hot Deal In This Week</span>
+                                <h1 class="title">Smart Digital Watch</h1>
+                                <div class="slide-action">
+                                    <div class="shop-btn">
+                                        <a href="shop.html" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Shop Now</a>
+                                    </div>
+                                    <div class="item-rating">
+                                        <div class="thumb">
+                                            <ul>
+                                                <li><img src="assets/images/others/author1.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author2.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author3.png" alt="Author"></li>
+                                                <li><img src="assets/images/others/author4.png" alt="Author"></li>
+                                            </ul>
+                                        </div>
+                                        <div class="content">
+                                                <span class="rating-icon">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fal fa-star"></i>
+                                        </span>
+                                            <span class="review-text">
+                                            <span>100+</span> Reviews
+                                                </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7 col-sm-6">
+                    <div class="main-slider-large-thumb">
+                        <div class="slider-thumb-activation-one axil-slick-dots">
+                            <div class="single-slide slick-slide" data-sal="slide-up" data-sal-delay="600" data-sal-duration="1500">
+                                <img src="assets/images/product/product-38.png" alt="Product">
+                                <div class="product-price">
+                                    <span class="text">From</span>
+                                    <span class="price-amount">$49.00</span>
+                                </div>
+                            </div>
+                            <div class="single-slide slick-slide" data-sal="slide-up" data-sal-delay="600" data-sal-duration="1500">
+                                <img src="assets/images/product/product-39.png" alt="Product">
+                                <div class="product-price">
+                                    <span class="text">From</span>
+                                    <span class="price-amount">$49.00</span>
+                                </div>
+                            </div>
+                            <div class="single-slide slick-slide">
+                                <img src="assets/images/product/product-38.png" alt="Product">
+                                <div class="product-price">
+                                    <span class="text">From</span>
+                                    <span class="price-amount">$49.00</span>
+                                </div>
+                            </div>
+                            <div class="single-slide slick-slide">
+                                <img src="assets/images/product/product-39.png" alt="Product">
+                                <div class="product-price">
+                                    <span class="text">From</span>
+                                    <span class="price-amount">$49.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul class="shape-group">
+            <li class="shape-1"><img src="assets/images/others/shape-1.png" alt="Shape"></li>
+            <li class="shape-2"><img src="assets/images/others/shape-2.png" alt="Shape"></li>
+        </ul>
     </div>
-</section>
+
+    <!-- Start Categorie Area  -->
+    <div class="axil-categorie-area bg-color-white axil-section-gapcommon">
+        <div class="container">
+            <div class="section-title-wrapper">
+                <span class="title-highlighter highlighter-secondary"> <i class="far fa-tags"></i> Brands</span>
+                <h2 class="title">Browse by Brand</h2>
+                <p class="subtitle">Discover products from your favorite computer brands</p>
+            </div>
+            <div class="categrie-product-activation slick-layout-wrapper--15 axil-slick-arrow arrow-top-slide"
+                 data-slick-options='{
+                     "slidesToShow": 5,
+                     "slidesToScroll": 1,
+                     "infinite": true,
+                     "arrows": true,
+                     "prevArrow": "<button class=\"prev-arrow\"><i class=\"fal fa-long-arrow-left\"></i></button>",
+                     "nextArrow": "<button class=\"next-arrow\"><i class=\"fal fa-long-arrow-right\"></i></button>",
+                     "responsive": [
+                         {"breakpoint": 1200, "settings": {"slidesToShow": 4}},
+                         {"breakpoint": 992, "settings": {"slidesToShow": 3}},
+                         {"breakpoint": 768, "settings": {"slidesToShow": 2}},
+                         {"breakpoint": 480, "settings": {"slidesToShow": 1}}
+                     ]
+                 }'>
+                <!-- Dynamic Brands from Database -->
+                <div class="slick-single-layout" th:each="brand, iterStat : ${brands}">
+                    <div class="categrie-product" data-sal="zoom-out" th:attr="data-sal-delay=${200 + iterStat.index * 100}" data-sal-duration="500">
+                        <a th:href="@{/user/shopping-page(brand=${brand})}">
+                            <img class="img-fluid" 
+                                 th:src="@{'/assets/images/product/categories/elec-' + (${iterStat.index % 11 + 1}) + '.png'}" 
+                                 th:alt="${brand}"
+                                 style="height: 120px; object-fit: contain; background: white; border-radius: 8px; padding: 10px;">
+                            <h6 class="cat-title" th:text="${brand}" style="margin-top: 15px; font-weight: 600; color: #333;">Brand Name</h6>
+                        </a>
+                    </div>
+                    <!-- End .categrie-product -->
+                </div>
+                <!-- End .slick-single-layout -->
+            </div>
+        </div>
+    </div>
+    <!-- End Categorie Area  -->
+
+
+
+    <!-- Start Expolre Product Area  -->
+    <div class="axil-product-area bg-color-white axil-section-gap">
+        <div class="container">
+            <div class="section-title-wrapper">
+                <span class="title-highlighter highlighter-primary"> <i class="far fa-shopping-basket"></i> Our Products</span>
+                <h2 class="title">Explore our Products</h2>
+                <p class="subtitle" th:text="'Total Products: ' + ${totalProducts}">Total Products: 0</p>
+            </div>
+            <div class="explore-product-activation slick-layout-wrapper slick-layout-wrapper--15 axil-slick-arrow arrow-top-slide">
+                <div class="slick-single-layout">
+                    <div class="row row--15">
+                        <!-- Dynamic Featured Products -->
+                        <div class="col-xl-3 col-lg-4 col-sm-6 col-12 mb--30" 
+                             th:each="product, iterStat : ${featuredProducts}" 
+                             th:if="${iterStat.index < 8}">
+                            <div class="axil-product product-style-one">
+                                <div class="thumbnail">
+                                    <a th:href="@{'/user/single-product?id=' + ${product.productID}}">
+                                        <img th:if="${product.imageURL != null}" 
+                                             th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
+                                             th:alt="${product.name}"
+                                             class="main-img" loading="lazy"
+                                             data-sal="zoom-out" th:attr="data-sal-delay=${200 + iterStat.index * 100}" data-sal-duration="800">
+                                        <img th:unless="${product.imageURL != null}" 
+                                             th:src="@{/assets/images/product/laptop/default.jpg}" 
+                                             alt="Product Image"
+                                             class="main-img" loading="lazy">
+                                    </a>
+                                    <div class="product-hover-action">
+                                        <ul class="cart-action">
+                                            <li class="quickview">
+                                                <a th:href="@{'/user/single-product?id=' + ${product.productID}}" title="Quick View">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                            </li>
+                                            <li class="select-option">
+                                                <a th:href="@{'/cart/add/' + ${product.productID}}" title="Add to Cart">
+                                                    Add to Cart
+                                                </a>
+                                            </li>
+                                            <li class="wishlist">
+                                                <a href="#" title="Add to Wishlist">
+                                                    <i class="far fa-heart"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="product-content">
+                                    <div class="inner">
+                                        <h5 class="title">
+                                            <a th:href="@{'/user/single-product?id=' + ${product.productID}}" 
+                                               th:text="${product.name}">Product Name</a>
+                                        </h5>
+                                        <div class="product-price-variant">
+                                            <span class="price current-price" 
+                                                  th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                                $29.99
+                                            </span>
+                                        </div>
+                                        <div class="product-brand" th:if="${product.brand}">
+                                            <small class="text-muted" th:text="'Brand: ' + ${product.brand}">Brand: Unknown</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Dynamic Featured Products -->
+                        
+                        <!-- Empty state if no products -->
+                        <div class="col-12" th:if="${#lists.isEmpty(featuredProducts)}">
+                            <div class="text-center py-5">
+                                <h4>No products available</h4>
+                                <p>Please check back later for new products.</p>
+                                <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-primary">Browse Shop</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End First Layout -->
+            </div>
+            
+            <!-- View All Products Button -->
+            <div class="row" th:unless="${#lists.isEmpty(featuredProducts)}">
+                <div class="col-lg-12">
+                    <div class="axil-product-area">
+                        <div class="product-area-header">
+                            <div class="text-center mt--50">
+                                <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-lighter btn-load-more">
+                                    View All Products <i class="fal fa-long-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Featured Products Area -->
+
+    <!-- Start Testimonila Area  -->
+    <div class="axil-testimoial-area axil-section-gap bg-vista-white">
+        <div class="container">
+            <div class="section-title-wrapper">
+                <span class="title-highlighter highlighter-secondary"> <i class="fal fa-quote-left"></i>Testimonials</span>
+                <h2 class="title">Users Feedback</h2>
+            </div>
+            <!-- End .section-title -->
+            <div class="testimonial-slick-activation testimonial-style-one-wrapper slick-layout-wrapper--20 axil-slick-arrow arrow-top-slide">
+                <div class="slick-single-layout testimonial-style-one">
+                    <div class="review-speech">
+                        <p>" It's amazing how much easier it has been to
+                            meet new people and create instantly non
+                            connections. I have the exact same personal
+                            the only thing that has changed is my mind
+                            set and a few behaviors. "</p>
+                    </div>
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img src="assets/images/testimonial/image-1.png" alt="testimonial image">
+                        </div>
+                        <div class="media-body">
+                            <span class="designation">Head Of Idea</span>
+                            <h6 class="title">James C. Anderson</h6>
+                        </div>
+                    </div>
+                    <!-- End .thumbnail -->
+                </div>
+                <!-- End .slick-single-layout -->
+                <div class="slick-single-layout testimonial-style-one">
+                    <div class="review-speech">
+                        <p>" It's amazing how much easier it has been to
+                            meet new people and create instantly non
+                            connections. I have the exact same personal
+                            the only thing that has changed is my mind
+                            set and a few behaviors. "</p>
+                    </div>
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img src="assets/images/testimonial/image-2.png" alt="testimonial image">
+                        </div>
+                        <div class="media-body">
+                            <span class="designation">Head Of Idea</span>
+                            <h6 class="title">James C. Anderson</h6>
+                        </div>
+                    </div>
+                    <!-- End .thumbnail -->
+                </div>
+                <!-- End .slick-single-layout -->
+                <div class="slick-single-layout testimonial-style-one">
+                    <div class="review-speech">
+                        <p>" It's amazing how much easier it has been to
+                            meet new people and create instantly non
+                            connections. I have the exact same personal
+                            the only thing that has changed is my mind
+                            set and a few behaviors. "</p>
+                    </div>
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img src="assets/images/testimonial/image-3.png" alt="testimonial image">
+                        </div>
+                        <div class="media-body">
+                            <span class="designation">Head Of Idea</span>
+                            <h6 class="title">James C. Anderson</h6>
+                        </div>
+                    </div>
+                    <!-- End .thumbnail -->
+                </div>
+                <!-- End .slick-single-layout -->
+                <div class="slick-single-layout testimonial-style-one">
+                    <div class="review-speech">
+                        <p>" It's amazing how much easier it has been to
+                            meet new people and create instantly non
+                            connections. I have the exact same personal
+                            the only thing that has changed is my mind
+                            set and a few behaviors. "</p>
+                    </div>
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img src="assets/images/testimonial/image-2.png" alt="testimonial image">
+                        </div>
+                        <div class="media-body">
+                            <span class="designation">Head Of Idea</span>
+                            <h6 class="title">James C. Anderson</h6>
+                        </div>
+                    </div>
+                    <!-- End .thumbnail -->
+                </div>
+                <!-- End .slick-single-layout -->
+
+            </div>
+        </div>
+    </div>
+    <!-- End Testimonila Area  -->
+
+    <!-- Start New Arrivals Product Area  -->
+    <div class="axil-new-arrivals-product-area bg-color-white axil-section-gap pb--0">
+        <div class="container">
+            <div class="product-area pb--50">
+                <div class="section-title-wrapper">
+                    <span class="title-highlighter highlighter-primary"><i class="far fa-shopping-basket"></i>This Week's</span>
+                    <h2 class="title">New Arrivals</h2>
+                </div>
+                <div class="new-arrivals-product-activation slick-layout-wrapper--30 axil-slick-arrow arrow-top-slide">
+                    <!-- Dynamic New Products from Database -->
+                    <div class="slick-single-layout" th:each="product, iterStat : ${newProducts}">
+                        <div class="axil-product product-style-two">
+                            <div class="thumbnail">
+                                <a th:href="@{'/user/single-product?id=' + ${product.productID}}">
+                                    <img data-sal="zoom-out" th:attr="data-sal-delay=${200 + iterStat.index * 100}" data-sal-duration="500" 
+                                         th:if="${product.imageURL != null}" 
+                                         th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
+                                         th:alt="${product.name}"
+                                         loading="lazy">
+                                    <img data-sal="zoom-out" th:attr="data-sal-delay=${200 + iterStat.index * 100}" data-sal-duration="500"
+                                         th:unless="${product.imageURL != null}" 
+                                         th:src="@{/assets/images/product/laptop/default.jpg}" 
+                                         alt="Product Image"
+                                         loading="lazy">
+                                </a>
+                                <div class="label-block label-right" th:if="${iterStat.index < 2}">
+                                    <div class="product-badget">NEW</div>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <div class="inner">
+                                    <h5 class="title">
+                                        <a th:href="@{'/user/single-product?id=' + ${product.productID}}" 
+                                           th:text="${product.name}">Product Name</a>
+                                    </h5>
+                                    <div class="product-price-variant">
+                                        <span class="price current-price" 
+                                              th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                            $30
+                                        </span>
+                                    </div>
+                                    <div class="product-brand" th:if="${product.brand}">
+                                        <small class="text-muted" th:text="'Brand: ' + ${product.brand}">Brand: Unknown</small>
+                                    </div>
+                                    <div class="product-hover-action">
+                                        <ul class="cart-action">
+                                            <li class="quickview">
+                                                <a th:href="@{'/user/single-product?id=' + ${product.productID}}" title="Quick View">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                            </li>
+                                            <li class="select-option">
+                                                <a th:href="@{'/cart/add/' + ${product.productID}}" title="Add to Cart">
+                                                    Add to Cart
+                                                </a>
+                                            </li>
+                                            <li class="wishlist">
+                                                <a href="#" title="Add to Wishlist">
+                                                    <i class="far fa-heart"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End .slick-single-layout -->
+                    
+                    <!-- Empty state if no new products -->
+                    <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(newProducts)}">
+                        <h4>No new products available</h4>
+                        <p>Please check back later for new arrivals.</p>
+                        <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-primary">Browse All Products</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End New Arrivals Product Area  -->
+
+    <!-- Start Most Sold Product Area  -->
+    <div class="axil-most-sold-product axil-section-gap">
+        <div class="container">
+            <div class="product-area pb--50">
+                <div class="section-title-wrapper section-title-center">
+                    <span class="title-highlighter highlighter-primary"><i class="fas fa-star"></i> Most Sold</span>
+                    <h2 class="title">Hot Products in Computer Shop</h2>
+                    <p class="subtitle">Top selling computers and accessories that customers love most</p>
+                </div>
+                <div class="row row-cols-xl-2 row-cols-1 row--15">
+                    <!-- Dynamic Most Sold Products from Database -->
+                    <div class="col" th:each="product, iterStat : ${mostSoldProducts}">
+                        <div class="axil-product-list">
+                            <div class="thumbnail">
+                                <a th:href="@{'/user/single-product?id=' + ${product.productID}}">
+                                    <img data-sal="zoom-in" th:attr="data-sal-delay=${100 + iterStat.index * 100}" data-sal-duration="1500" 
+                                         th:if="${product.imageURL != null}" 
+                                         th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
+                                         th:alt="${product.name}">
+                                    <img data-sal="zoom-in" th:attr="data-sal-delay=${100 + iterStat.index * 100}" data-sal-duration="1500"
+                                         th:unless="${product.imageURL != null}" 
+                                         th:src="@{/assets/images/product/laptop/default.jpg}" 
+                                         alt="Product Image">
+                                </a>
+                                <div class="product-badge" th:if="${iterStat.index < 3}">
+                                    <span class="badge-hot">🔥 HOT</span>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <div class="product-rating">
+                                    <span class="rating-icon">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i th:class="${iterStat.index % 2 == 0 ? 'fas fa-star' : 'fal fa-star'}"></i>
+                                    </span>
+                                    <span class="rating-number">
+                                        <span th:text="${(100 - iterStat.index * 10) + '+'}">100+</span> Reviews
+                                    </span>
+                                </div>
+                                <h6 class="product-title">
+                                    <a th:href="@{'/user/single-product?id=' + ${product.productID}}" 
+                                       th:text="${product.name}">Product Name</a>
+                                </h6>
+                                <div class="product-price-variant">
+                                    <span class="price current-price" 
+                                          th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                        $29.99
+                                    </span>
+                                </div>
+                                <div class="product-brand" th:if="${product.brand}">
+                                    <small class="text-primary" th:text="'Brand: ' + ${product.brand}">Brand: Unknown</small>
+                                </div>
+                                <div class="stock-info" th:if="${product.quantity != null}">
+                                    <small th:class="${product.quantity <= 5 ? 'text-danger' : 'text-success'}" 
+                                           th:text="${product.quantity <= 5 ? 'Only ' + product.quantity + ' left!' : 'In Stock'}">
+                                        In Stock
+                                    </small>
+                                </div>
+                                <div class="product-cart">
+                                    <a th:href="@{'/cart/add/' + ${product.productID}}" class="cart-btn" title="Add to Cart">
+                                        <i class="fal fa-shopping-cart"></i>
+                                    </a>
+                                    <a href="#" class="cart-btn" title="Add to Wishlist">
+                                        <i class="fal fa-heart"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Dynamic Most Sold Products -->
+                    
+                    <!-- Empty state if no hot products -->
+                    <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(mostSoldProducts)}">
+                        <h4>No hot products available</h4>
+                        <p>Check back later for trending products.</p>
+                        <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-primary">Browse All Products</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Most Sold Product Area  -->
+
+    <!-- Start Why Choose Area  -->
+    <div class="axil-why-choose-area pb--50 pb_sm--30">
+        <div class="container">
+            <div class="section-title-wrapper section-title-center">
+                <span class="title-highlighter highlighter-secondary"><i class="fal fa-thumbs-up"></i>Why Us</span>
+                <h2 class="title">Why People Choose Us</h2>
+            </div>
+            <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 row--20">
+                <div class="col">
+                    <div class="service-box">
+                        <div class="icon">
+                            <img src="assets/images/icons/service6.png" alt="Service">
+                        </div>
+                        <h6 class="title">Fast &amp; Secure Delivery</h6>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="service-box">
+                        <div class="icon">
+                            <img src="assets/images/icons/service7.png" alt="Service">
+                        </div>
+                        <h6 class="title">100% Guarantee On Product</h6>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="service-box">
+                        <div class="icon">
+                            <img src="assets/images/icons/service8.png" alt="Service">
+                        </div>
+                        <h6 class="title">24 Hour Return Policy</h6>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="service-box">
+                        <div class="icon">
+                            <img src="assets/images/icons/service9.png" alt="Service">
+                        </div>
+                        <h6 class="title">24 Hour Return Policy</h6>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="service-box">
+                        <div class="icon">
+                            <img src="assets/images/icons/service10.png" alt="Service">
+                        </div>
+                        <h6 class="title">Next Level Pro Quality</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Why Choose Area  -->
+
+
+
+    <!-- End Axil Newsletter Area  -->
+
+</main>
+
+
+<div class="service-area">
+    <div class="container">
+        <div class="row row-cols-xl-4 row-cols-sm-2 row-cols-1 row--20">
+            <div class="col">
+                <div class="service-box service-style-2">
+                    <div class="icon">
+                        <img src="assets/images/icons/service1.png" alt="Service">
+                    </div>
+                    <div class="content">
+                        <h6 class="title">Fast &amp; Secure Delivery</h6>
+                        <p>Tell about your service.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="service-box service-style-2">
+                    <div class="icon">
+                        <img src="assets/images/icons/service2.png" alt="Service">
+                    </div>
+                    <div class="content">
+                        <h6 class="title">Money Back Guarantee</h6>
+                        <p>Within 10 days.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="service-box service-style-2">
+                    <div class="icon">
+                        <img src="assets/images/icons/service3.png" alt="Service">
+                    </div>
+                    <div class="content">
+                        <h6 class="title">24 Hour Return Policy</h6>
+                        <p>No question ask.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="service-box service-style-2">
+                    <div class="icon">
+                        <img src="assets/images/icons/service4.png" alt="Service">
+                    </div>
+                    <div class="content">
+                        <h6 class="title">Pro Quality Support</h6>
+                        <p>24/7 Live support.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<div th:replace="~{user/fragments/footer :: footer}"></div>
+
+<!-- Additional fragments -->
+<div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
+<div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
+
+<!-- Offer Modal Start -->
+<div class="offer-popup-modal" id="offer-popup-modal">
+    <div class="offer-popup-wrap">
+        <div class="card-body">
+            <button class="popup-close"><i class="fas fa-times"></i></button>
+            <div class="content">
+                <div class="section-title-wrapper">
+                    <span class="title-highlighter highlighter-primary"> <i class="far fa-shopping-basket"></i> Don't Miss!!</span>
+                    <h3 class="title">Best Sales Offer<br> Grab Yours</h3>
+                </div>
+                <div class="poster-countdown countdown"></div>
+                <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-primary">Shop Now <i class="fal fa-long-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="closeMask"></div>
+<!-- Offer Modal End -->
+
+<!-- Login Required Modal -->
+<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginRequiredModalLabel">
+                    <i class="fas fa-sign-in-alt text-primary"></i>
+                    Yêu cầu đăng nhập
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                </div>
+                <h6 class="mb-3">Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng</h6>
+                <p class="text-muted">Bạn cần có tài khoản để có thể mua sắm và theo dõi đơn hàng của mình.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <a th:href="@{/auth/login}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Đăng nhập ngay
+                </a>
+                <a th:href="@{/auth/register}" class="btn btn-outline-secondary">
+                    <i class="fas fa-user-plus"></i>
+                    Đăng ký tài khoản
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<!-- Modernizer JS -->
+<script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
+<!-- jQuery JS -->
+<script th:src="@{/assets/js/vendor/jquery.js}"></script>
+<!-- Bootstrap JS -->
+<script th:src="@{/assets/js/vendor/popper.min.js}"></script>
+<script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
+<script th:src="@{/assets/js/vendor/slick.min.js}"></script>
+<script th:src="@{/assets/js/vendor/js.cookie.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-ui.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery.ui.touch-punch.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery.countdown.min.js}"></script>
+<script th:src="@{/assets/js/vendor/sal.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery.magnific-popup.min.js}"></script>
+<script th:src="@{/assets/js/vendor/imagesloaded.pkgd.min.js}"></script>
+<script th:src="@{/assets/js/vendor/isotope.pkgd.min.js}"></script>
+<script th:src="@{/assets/js/vendor/counterup.js}"></script>
+<script th:src="@{/assets/js/vendor/waypoints.min.js}"></script>
+
+<!-- Custom JS -->
+<script th:src="@{/assets/js/main.js}"></script>
+<script th:src="@{/assets/js/cart-animation.js}"></script>
+<script th:src="@{/assets/js/shopping-enhancement.js}"></script>
+<script th:src="@{/assets/js/common-utils.js}"></script>
+<script th:src="@{/assets/js/homepage-handler.js}"></script>
+
+<!-- Fix for account dropdown on homepage -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Find my-account elements
+    const myAccountLink = document.querySelector('.my-account > a');
+    const myAccountDropdown = document.querySelector('.my-account-dropdown');
+    
+    if (myAccountLink && myAccountDropdown) {
+        // Add click handler
+        myAccountLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Toggle open class
+            this.classList.toggle('open');
+            myAccountDropdown.classList.toggle('open');
+            
+            // Ensure proper CSS display
+            if (myAccountDropdown.classList.contains('open')) {
+                myAccountDropdown.style.opacity = '1';
+                myAccountDropdown.style.visibility = 'visible';
+                myAccountDropdown.style.transform = 'translateY(0)';
+                myAccountDropdown.style.zIndex = '9999';
+            } else {
+                myAccountDropdown.style.opacity = '0';
+                myAccountDropdown.style.visibility = 'hidden';
+                myAccountDropdown.style.transform = 'translateY(-10px)';
+            }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.my-account')) {
+                myAccountLink.classList.remove('open');
+                myAccountDropdown.classList.remove('open');
+                myAccountDropdown.style.opacity = '0';
+                myAccountDropdown.style.visibility = 'hidden';
+                myAccountDropdown.style.transform = 'translateY(-10px)';
+            }
+        });
+    }
+});
+</script>
+
 </body>
 </html>
