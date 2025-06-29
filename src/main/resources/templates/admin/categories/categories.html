@@ -12,7 +12,7 @@
   <!-- Sidebar -->
   <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
 
-  <div id="content-wrapper">
+  <div id="content-wrapper" class="flex-grow-1">
     <div class="container-fluid">
 
       <!-- Breadcrumbs-->
@@ -24,35 +24,71 @@
           <a href="/admin/categories">Quản lý danh mục</a>
         </li>
       </ol>
-      <div class="card mb-3">
-        <div class="card-header">
-          <i class="fas fa-table"></i>
-          Danh sách danh mục
+
+      <!-- Page Header -->
+      <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý danh mục</h1>
+        <a href="/admin/add-categories" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm hover-lift">
+          <i class="fas fa-plus fa-sm text-white-50"></i> Thêm danh mục mới
+        </a>
+      </div>
+
+      <!-- Success/Error Messages -->
+      <div th:if="${success}" class="alert alert-success alert-dismissible fade show fade-in" role="alert">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show fade-in" role="alert">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+      <!-- DataTales Table -->
+      <div class="card shadow mb-4 hover-lift">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-white">
+            <i class="fas fa-list-alt"></i>
+            Danh sách danh mục
+          </h6>
         </div>
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable">
+            <table class="table table-bordered fade-in" id="dataTable" width="100%" cellspacing="0">
               <thead>
               <tr>
                 <th>ID</th>
                 <th>Tên danh mục</th>
                 <th>Mô tả</th>
+                <th>Ngày tạo</th>
                 <th>Hành động</th>
               </tr>
               </thead>
               <tbody>
-              <tr th:each="category : ${categories}">
+              <tr th:each="category, iterStat : ${categories}" class="hover-lift" th:style="'animation-delay: ' + ${iterStat.index * 0.1} + 's'">
                 <td th:text="${category.categoryID}"></td>
-                <td th:text="${category.name}"></td>
-                <td th:text="${category.description}"></td>
                 <td>
-                  <a th:href="@{/admin/edit-categories/{id}(id=${category.categoryID})}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-edit"></i>
-                  </a>
-                  <a th:href="@{/admin/delete-categories/{id}(id=${category.categoryID})}" class="btn btn-sm btn-danger"
-                     onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
-                    <i class="fas fa-trash-alt"></i>
-                  </a>
+                  <strong th:text="${category.name}" class="text-primary"></strong>
+                </td>
+                <td th:text="${category.description}"></td>
+                <td th:text="${#temporals.format(category.createdAt, 'dd/MM/yyyy HH:mm')}" class="text-muted"></td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <a th:href="@{/admin/edit-categories/{id}(id=${category.categoryID})}" 
+                       class="btn btn-sm btn-primary hover-lift" 
+                       data-bs-toggle="tooltip" 
+                       title="Chỉnh sửa danh mục">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <a th:href="@{/admin/delete-categories/{id}(id=${category.categoryID})}" 
+                       class="btn btn-sm btn-danger hover-lift ml-1"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.');"
+                       data-bs-toggle="tooltip" 
+                       title="Xóa danh mục">
+                      <i class="fas fa-trash-alt"></i>
+                    </a>
+                  </div>
                 </td>
               </tr>
               </tbody>
@@ -60,16 +96,128 @@
           </div>
         </div>
       </div>
+
+      <!-- Quick Stats -->
+      <div class="row fade-in" style="animation-delay: 0.3s">
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2 hover-lift">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    Tổng số danh mục
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#lists.size(categories)}">0</div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-list-alt fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-  <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
- </div>
+    <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
+  </div>
 </div>
+
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
   <i class="fas fa-angle-up"></i>
 </a>
+
 <!-- Logout Modal-->
 <div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<script>
+$(document).ready(function() {
+    // Initialize DataTable with animation
+    $('#dataTable').DataTable({
+        "lengthChange": false,
+        "pageLength": 10,
+        "language": {
+            "search": "Tìm kiếm:",
+            "paginate": {
+                "first": "Đầu",
+                "last": "Cuối",
+                "next": "Tiếp",
+                "previous": "Trước"
+            },
+            "info": "Hiển thị _START_ đến _END_ của _TOTAL_ danh mục",
+            "infoEmpty": "Hiển thị 0 đến 0 của 0 danh mục",
+            "zeroRecords": "Không tìm thấy danh mục nào",
+            "emptyTable": "Chưa có danh mục nào trong hệ thống"
+        },
+        "drawCallback": function(settings) {
+            // Add animation to new rows
+            $('#dataTable tbody tr').addClass('fade-in');
+        }
+    });
+    
+    // Initialize tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+    
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+    
+    // Add loading state to buttons
+    $('.btn').on('click', function() {
+        if ($(this).hasClass('btn-danger')) {
+            // Don't add loading to delete buttons
+            return;
+        }
+        $(this).addClass('disabled').append(' <i class="fas fa-spinner fa-spin"></i>');
+    });
+    
+    // Stagger animation for table rows
+    $('#dataTable tbody tr').each(function(index) {
+        $(this).css('animation-delay', (index * 0.05) + 's');
+        $(this).addClass('fade-in');
+    });
+});
+</script>
+
+<style>
+/* Custom animation for table rows */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Enhance hover effects */
+.hover-lift {
+    transition: all 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+}
+
+/* Button group spacing */
+.btn-group .btn + .btn {
+    margin-left: 0.25rem;
+}
+
+/* Border enhancement for cards */
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+</style>
 
 </body>
 </html>

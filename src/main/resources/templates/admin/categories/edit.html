@@ -14,7 +14,7 @@
   <!-- Sidebar -->
   <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
 
-  <div id="content-wrapper">
+  <div id="content-wrapper" class="flex-grow-1">
     <div class="container-fluid">
 
       <!-- Breadcrumbs-->
@@ -27,11 +27,16 @@
         </li>
         <li class="breadcrumb-item active">Chỉnh sửa danh mục</li>
       </ol>
-      <div class="row justify-content-center">
+
+      <!-- Main body information -->
+      <div class="row justify-content-center fade-in">
         <div class="col-md-8 col-lg-6">
-          <div class="card shadow mb-4">
+          <div class="card shadow mb-4 hover-lift">
             <div class="card-header bg-primary text-white">
-              <h4 class="mb-0">Chỉnh sửa danh mục </h4>
+              <h4 class="mb-0">
+                <i class="fas fa-edit"></i>
+                Chỉnh sửa danh mục
+              </h4>
             </div>
             <div class="card-body">
               <!-- Error message display -->
@@ -40,29 +45,104 @@
                 <span th:text="${error}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
-              <form th:action="@{/admin/edit-categories}" th:object="${categories}" method="post">
+
+              <!-- Success message display -->
+              <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+
+              <form th:action="@{/admin/edit-categories}" th:object="${categories}" method="post" class="fade-in" style="animation-delay: 0.2s">
                 <div class="form-group mb-3">
-                  <label for="categoryId">Mã danh mục</label>
-                  <textarea  id="categoryId" class="form-control" th:field="*{categoryID}" readonly></textarea>
+                  <label for="categoryId">
+                    Mã danh mục
+                    <i class="fas fa-lock text-muted ml-1" data-bs-toggle="tooltip" title="Không thể thay đổi"></i>
+                  </label>
+                  <textarea id="categoryId" class="form-control bg-light" th:field="*{categoryID}" readonly rows="1"></textarea>
+                  <small class="form-text text-muted">
+                    <i class="fas fa-info-circle"></i>
+                    Mã danh mục được tạo tự động và không thể thay đổi
+                  </small>
                 </div>
+
                 <div class="form-group mb-3">
-                  <label for="name">Tên danh mục</label>
-                  <textarea id="name" class="form-control" th:field="*{name}"></textarea>
+                  <label for="name">
+                    Tên danh mục
+                    <span class="text-danger">*</span>
+                  </label>
+                  <textarea id="name" class="form-control" th:field="*{name}" 
+                            rows="2" placeholder="Nhập tên danh mục..." required></textarea>
+                  <small class="form-text text-muted">
+                    <i class="fas fa-info-circle"></i>
+                    Tên danh mục phải có ít nhất 2 ký tự
+                  </small>
                 </div>
+
                 <div class="form-group mb-4">
-                  <label for="description">Mô tả</label>
-                  <textarea id="description" class="form-control" th:field="*{description}"></textarea>
+                  <label for="description">
+                    Mô tả
+                    <span class="text-danger">*</span>
+                  </label>
+                  <textarea id="description" class="form-control" th:field="*{description}" 
+                            rows="4" placeholder="Nhập mô tả chi tiết về danh mục..." required></textarea>
+                  <small class="form-text text-muted">
+                    <i class="fas fa-info-circle"></i>
+                    Mô tả giúp khách hàng hiểu rõ hơn về danh mục sản phẩm
+                  </small>
                 </div>
+
                 <div class="d-flex justify-content-center gap-3">
-                  <a th:href="@{/admin/categories}" class="btn btn-secondary w-50 " onclick="return confirm('Bạn có ' +
-                   'chắc chắn muốn hủy chỉnh sửa?');">
-                    <i class="fas fa-times"></i> Hủy
+                  <a th:href="@{/admin/categories}" class="btn btn-secondary btn-lg px-4 hover-lift" 
+                     onclick="return confirm('Bạn có chắc chắn muốn hủy chỉnh sửa? Các thay đổi sẽ không được lưu.');">
+                    <i class="fas fa-times"></i> Hủy bỏ
                   </a>
-                  <button type="submit" class="btn btn-success w-50">
-                    <i class="fas fa-save"></i> Chỉnh sửa danh mục
+                  <button type="submit" class="btn btn-success btn-lg px-4 hover-lift">
+                    <i class="fas fa-save"></i> Lưu thay đổi
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+
+          <!-- Information Panel -->
+          <div class="card shadow-sm border-left-warning fade-in" style="animation-delay: 0.4s">
+            <div class="card-body">
+              <h6 class="card-title text-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                Lưu ý quan trọng
+              </h6>
+              <ul class="mb-0 text-muted small">
+                <li><strong>Thay đổi tên danh mục:</strong> Có thể ảnh hưởng đến việc tìm kiếm của khách hàng</li>
+                <li><strong>Thay đổi mô tả:</strong> Nên cập nhật để phản ánh đúng nội dung danh mục</li>
+                <li><strong>Sản phẩm liên quan:</strong> Tất cả sản phẩm thuộc danh mục này sẽ được cập nhật</li>
+                <li><strong>Backup:</strong> Hệ thống tự động sao lưu thông tin trước khi thay đổi</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Category Statistics -->
+          <div class="card shadow-sm border-left-info fade-in" style="animation-delay: 0.6s">
+            <div class="card-body">
+              <h6 class="card-title text-info">
+                <i class="fas fa-chart-bar"></i>
+                Thống kê danh mục
+              </h6>
+              <div class="row text-center">
+                <div class="col-6">
+                  <div class="mb-0">
+                    <small class="text-muted">Ngày tạo</small>
+                    <div class="font-weight-bold" th:text="${#temporals.format(categories.createdAt, 'dd/MM/yyyy')}">01/01/2024</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="mb-0">
+                    <small class="text-muted">Lần cập nhật cuối</small>
+                    <div class="font-weight-bold" th:text="${#temporals.format(categories.updatedAt, 'dd/MM/yyyy')}" th:if="${categories.updatedAt != null}">Chưa cập nhật</div>
+                    <div class="font-weight-bold text-muted" th:if="${categories.updatedAt == null}">Chưa cập nhật</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -71,10 +151,233 @@
     <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
   </div>
 </div>
-</body>
+
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
   <i class="fas fa-angle-up"></i>
 </a>
 
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<script>
+$(document).ready(function() {
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+    
+    // Initialize tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+    
+    // Form validation
+    $('form').on('submit', function(e) {
+        var name = $('#name').val().trim();
+        var description = $('#description').val().trim();
+        
+        if (name.length < 2) {
+            e.preventDefault();
+            showAlert('Tên danh mục phải có ít nhất 2 ký tự!', 'danger');
+            $('#name').focus();
+            return false;
+        }
+        
+        if (description.length < 10) {
+            e.preventDefault();
+            showAlert('Mô tả phải có ít nhất 10 ký tự!', 'danger');
+            $('#description').focus();
+            return false;
+        }
+        
+        // Add loading state to submit button
+        var $btn = $(this).find('button[type="submit"]');
+        $btn.prop('disabled', true)
+            .html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...');
+    });
+    
+    // Track changes for unsaved warning
+    var originalData = $('form').serialize();
+    var hasChanges = false;
+    
+    $('form input, form textarea').on('input change', function() {
+        hasChanges = ($('form').serialize() !== originalData);
+        updateSaveButton();
+    });
+    
+    function updateSaveButton() {
+        var $saveBtn = $('button[type="submit"]');
+        if (hasChanges) {
+            $saveBtn.removeClass('btn-success').addClass('btn-warning')
+                   .html('<i class="fas fa-save"></i> Lưu thay đổi *');
+        } else {
+            $saveBtn.removeClass('btn-warning').addClass('btn-success')
+                   .html('<i class="fas fa-save"></i> Lưu thay đổi');
+        }
+    }
+    
+    // Warn before leaving if there are unsaved changes
+    $(window).on('beforeunload', function() {
+        if (hasChanges) {
+            return 'Bạn có thay đổi chưa được lưu. Bạn có chắc chắn muốn rời khỏi trang?';
+        }
+    });
+    
+    // Enhanced form interactions
+    $('.form-control').on('focus', function() {
+        $(this).parent().addClass('focused');
+    }).on('blur', function() {
+        $(this).parent().removeClass('focused');
+    });
+    
+    // Character counter
+    $('#name, #description').each(function() {
+        var $this = $(this);
+        var maxLength = 255; // Default max length
+        
+        $this.on('input', function() {
+            var length = $(this).val().length;
+            var $counter = $(this).siblings('.char-counter');
+            
+            if ($counter.length === 0) {
+                $counter = $('<small class="form-text text-muted char-counter"></small>');
+                $(this).after($counter);
+            }
+            
+            var remaining = maxLength - length;
+            var percent = (length / maxLength) * 100;
+            
+            $counter.text(length + '/' + maxLength + ' ký tự');
+            
+            if (percent > 90) {
+                $counter.removeClass('text-muted text-warning').addClass('text-danger');
+            } else if (percent > 75) {
+                $counter.removeClass('text-muted text-danger').addClass('text-warning');
+            } else {
+                $counter.removeClass('text-warning text-danger').addClass('text-muted');
+            }
+        });
+        
+        $this.trigger('input'); // Initialize counter
+    });
+});
+
+function showAlert(message, type) {
+    var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                    '<i class="fas fa-exclamation-circle"></i> ' + message +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                    '</div>';
+    $('.card-body').prepend(alertHtml);
+}
+</script>
+
+<style>
+/* Enhanced form styling */
+.form-group.focused {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+}
+
+.form-control {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(78, 115, 223, 0.25);
+}
+
+.form-control:read-only {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+/* Animation classes */
+.fade-in {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hover-lift {
+    transition: all 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+}
+
+/* Card enhancements */
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Button enhancements */
+.btn {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Enhanced gap for buttons */
+.gap-3 {
+    gap: 1rem !important;
+}
+
+/* Loading animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Character counter styling */
+.char-counter {
+    float: right;
+    font-size: 0.8rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .d-flex.gap-3 {
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+</body>
 </html>
