@@ -45,6 +45,11 @@ public class HomeController {
                 .limit(8)
                 .collect(Collectors.toList());
 
+            // Get products for main slider (first 4 products)
+            List<Products> sliderProducts = allProducts.stream()
+                .limit(4)
+                .collect(Collectors.toList());
+
             // Get new products (sorted by creation date, newest first, limit to 6)
             List<Products> newProducts = allProducts.stream()
                 .sorted((p1, p2) -> {
@@ -88,6 +93,7 @@ public class HomeController {
 
             // Add data to model
             model.addAttribute("featuredProducts", featuredProducts);
+            model.addAttribute("sliderProducts", sliderProducts);
             model.addAttribute("newProducts", newProducts);
             model.addAttribute("mostSoldProducts", mostSoldProducts);
             model.addAttribute("categories", categories);
@@ -104,6 +110,7 @@ public class HomeController {
                 "MSI", "Acer", "ThinkPad", "Razer", "Alienware"
             );
             model.addAttribute("featuredProducts", java.util.Collections.emptyList());
+            model.addAttribute("sliderProducts", java.util.Collections.emptyList());
             model.addAttribute("newProducts", java.util.Collections.emptyList());
             model.addAttribute("mostSoldProducts", java.util.Collections.emptyList());
             model.addAttribute("categories", java.util.Collections.emptyList());

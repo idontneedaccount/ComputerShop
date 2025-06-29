@@ -12,7 +12,7 @@
     <!-- Sidebar -->
     <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
 
-    <div id="content-wrapper">
+    <div id="content-wrapper" class="flex-grow-1">
         <div class="container-fluid">
 
             <!-- Breadcrumbs-->
@@ -25,12 +25,16 @@
                 </li>
                 <li class="breadcrumb-item active">Thêm danh mục</li>
             </ol>
+            
             <!-- Main body information -->
-            <div class="row justify-content-center">
+            <div class="row justify-content-center fade-in">
                 <div class="col-md-8 col-lg-6">
-                    <div class="card shadow mb-4">
+                    <div class="card shadow mb-4 hover-lift">
                         <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0">Thêm danh mục mới</h4>
+                            <h4 class="mb-0">
+                                <i class="fas fa-plus-circle"></i>
+                                Thêm danh mục mới
+                            </h4>
                         </div>
                         <div class="card-body">
                             <!-- Error message display -->
@@ -39,26 +43,71 @@
                                 <span th:text="${error}"></span>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
-                            <form th:action="@{/admin/add-categories}" th:object="${categories}" method="post">
+
+                            <!-- Success message display -->
+                            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle"></i>
+                                <span th:text="${success}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+
+                            <form th:action="@{/admin/add-categories}" th:object="${categories}" method="post" class="fade-in" style="animation-delay: 0.2s">
                                 <div class="form-group mb-3">
-                                    <label for="name">Tên danh mục<span class="text-danger">*</span></label>
-                                    <textarea id="name" class="form-control" th:field="*{name}" required></textarea>
+                                    <label for="name">
+                                        Tên danh mục
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea id="name" class="form-control" th:field="*{name}" 
+                                              rows="2" placeholder="Nhập tên danh mục..." required></textarea>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle"></i>
+                                        Tên danh mục phải có ít nhất 2 ký tự
+                                    </small>
                                 </div>
+                                
                                 <div class="form-group mb-4">
-                                    <label for="description">Mô tả<span class="text-danger">*</span></label>
-                                    <textarea id="description" class="form-control" th:field="*{description}" required></textarea>
+                                    <label for="description">
+                                        Mô tả
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea id="description" class="form-control" th:field="*{description}" 
+                                              rows="4" placeholder="Nhập mô tả chi tiết về danh mục..." required></textarea>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle"></i>
+                                        Mô tả giúp khách hàng hiểu rõ hơn về danh mục sản phẩm
+                                    </small>
                                 </div>
-                                <div class="d-flex justify-content-center gap-3">
-                                    <a th:href="@{/admin/categories}" class="btn btn-secondary w-50" onclick="return confirm
-                                    ('Bạn có chắc chắn muốn hủy thêm mới?');">
-                                        <i class="fas fa-times"></i> Hủy
-                                    </a>
-                                    <button type="submit" class="btn btn-success w-50">
+
+                                <div class="form-group text-center">
+                                    <button type="submit" class="btn btn-success btn-lg px-5 hover-lift">
                                         <i class="fas fa-save"></i> Thêm danh mục
                                     </button>
                                 </div>
 
+                                <hr class="my-4">
+
+                                <div class="text-center">
+                                    <a th:href="@{/admin/categories}" class="btn btn-outline-secondary hover-lift">
+                                        <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                                    </a>
+                                </div>
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- Help Panel -->
+                    <div class="card shadow-sm border-left-info fade-in" style="animation-delay: 0.4s">
+                        <div class="card-body">
+                            <h6 class="card-title text-info">
+                                <i class="fas fa-lightbulb"></i>
+                                Lưu ý khi thêm danh mục
+                            </h6>
+                            <ul class="mb-0 text-muted small">
+                                <li>Tên danh mục nên ngắn gọn và dễ hiểu</li>
+                                <li>Mô tả chi tiết giúp khách hàng tìm kiếm sản phẩm dễ dàng hơn</li>
+                                <li>Kiểm tra kỹ thông tin trước khi lưu</li>
+                                <li>Sau khi thêm, bạn có thể chỉnh sửa thông tin bất kỳ lúc nào</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -67,10 +116,155 @@
         <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
     </div>
 </div>
-<div th:replace="~{admin/fragments/logout :: logout}"></div>
-</body>
+
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
+
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<script>
+$(document).ready(function() {
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+    
+    // Form validation
+    $('form').on('submit', function(e) {
+        var name = $('#name').val().trim();
+        var description = $('#description').val().trim();
+        
+        if (name.length < 2) {
+            e.preventDefault();
+            showAlert('Tên danh mục phải có ít nhất 2 ký tự!', 'danger');
+            $('#name').focus();
+            return false;
+        }
+        
+        if (description.length < 10) {
+            e.preventDefault();
+            showAlert('Mô tả phải có ít nhất 10 ký tự!', 'danger');
+            $('#description').focus();
+            return false;
+        }
+        
+        // Add loading state to submit button
+        var $btn = $(this).find('button[type="submit"]');
+        $btn.prop('disabled', true)
+            .html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...');
+    });
+    
+    // Character count for textarea
+    $('#name, #description').on('input', function() {
+        var length = $(this).val().length;
+        var maxLength = $(this).attr('maxlength');
+        if (maxLength) {
+            var remaining = maxLength - length;
+            var $feedback = $(this).next('.char-feedback');
+            if ($feedback.length === 0) {
+                $feedback = $('<small class="form-text text-muted char-feedback"></small>');
+                $(this).after($feedback);
+            }
+            $feedback.text(remaining + ' ký tự còn lại');
+        }
+    });
+    
+    // Enhanced form interactions
+    $('.form-control').on('focus', function() {
+        $(this).parent().addClass('focused');
+    }).on('blur', function() {
+        $(this).parent().removeClass('focused');
+    });
+});
+
+function showAlert(message, type) {
+    var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                    '<i class="fas fa-exclamation-circle"></i> ' + message +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                    '</div>';
+    $('.card-body').prepend(alertHtml);
+}
+</script>
+
+<style>
+/* Enhanced form styling */
+.form-group.focused {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+}
+
+.form-control {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(78, 115, 223, 0.25);
+}
+
+/* Animation classes */
+.fade-in {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hover-lift {
+    transition: all 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+}
+
+/* Card enhancements */
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Button enhancements */
+.btn {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Loading animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+</style>
+
+</body>
 </html>
