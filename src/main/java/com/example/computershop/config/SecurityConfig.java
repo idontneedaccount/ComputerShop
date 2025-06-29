@@ -45,7 +45,7 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers("/admin/**").hasRole("Admin")
                                 .requestMatchers("/user/**","/cart/**")
-                                .hasAnyAuthority("ROLE_User", "OIDC_USER","OAUTH2_USER")
+                                .hasAnyAuthority("ROLE_User", "OIDC_USER","OAUTH2_USER","ROLE_Admin")
                                 .requestMatchers("/admin/product)","admin/categories")
                                 .hasAnyAuthority("ROLE_Marketer", "OIDC_MARKETER","OAUTH2_MARKETER")
                                 .anyRequest().authenticated())

@@ -5,6 +5,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Getter
 @Setter
@@ -54,6 +57,15 @@ public class ProductVariant {
     
     @Column(name = "screen", columnDefinition = "nvarchar(255)")
     String screen;
+
+    @Column(name = "variant_image_url", columnDefinition = "nvarchar(255)")
+    String variantImageUrl;
+    
+    @Column(name = "variant_images", columnDefinition = "nvarchar(max)")
+    String variantImages;
+    
+    @Column(name = "custom_attributes", columnDefinition = "nvarchar(max)")
+    String customAttributes;
     
     @Column(name = "created_at", columnDefinition = "datetime")
     LocalDateTime createdAt = LocalDateTime.now();
@@ -65,8 +77,63 @@ public class ProductVariant {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
-    
-    // Helper method để hiển thị thông tin variant
+
+    public Map<String, String> getCustomAttributesMap() {
+        if (customAttributes == null || customAttributes.isEmpty()) {
+            return new HashMap<>();
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(customAttributes, Map.class);
+        } catch (Exception e) {
+            return new HashMap<>();
+        }
+    }
+
+    public void setCustomAttributesMap(Map<String, String> attributes) {
+        if (attributes == null || attributes.isEmpty()) {
+            this.customAttributes = null;
+            return;
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            this.customAttributes = mapper.writeValueAsString(attributes);
+        } catch (Exception e) {
+            this.customAttributes = null;
+        }
+    }
+
+    public String[] getVariantImagesArray() {
+        if (variantImages == null || variantImages.isEmpty()) {
+            return new String[0];
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(variantImages, String[].class);
+        } catch (Exception e) {
+            return new String[0];
+        }
+    }
+
+    public void setVariantImagesArray(String[] images) {
+        if (images == null || images.length == 0) {
+            this.variantImages = null;
+            return;
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            this.variantImages = mapper.writeValueAsString(images);
+        } catch (Exception e) {
+            this.variantImages = null;
+        }
+    }
+
+    public String getDisplayImageUrl() {
+        return (variantImageUrl != null && !variantImageUrl.isEmpty())
+               ? variantImageUrl 
+               : (product != null ? product.getImageURL() : null);
+    }
+
     public String getDisplayName() {
         StringBuilder name = new StringBuilder();
         if (cpu != null && !cpu.isEmpty()) {
@@ -84,6 +151,15 @@ public class ProductVariant {
             if (name.length() > 0) name.append(" - ");
             name.append(gpu);
         }
+
+        Map<String, String> customAttrs = getCustomAttributesMap();
+        for (Map.Entry<String, String> entry : customAttrs.entrySet()) {
+            if (entry.getValue() != null && !entry.getValue().isEmpty()) {
+                if (name.length() > 0) name.append(" - ");
+                name.append(entry.getValue());
+            }
+        }
+        
         return name.length() > 0 ? name.toString() : variantName;
     }
 } 

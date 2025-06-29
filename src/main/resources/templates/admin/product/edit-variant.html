@@ -84,7 +84,7 @@
                     Chỉnh sửa cấu hình
                 </div>
                 <div class="card-body">
-                    <form th:action="@{'/admin/product-variants/update/' + ${variant.variantId}}" method="post" th:object="${variant}">
+                    <form th:action="@{'/admin/product-variants/update/' + ${variant.variantId}}" method="post" th:object="${variant}" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -163,6 +163,109 @@
                             </div>
                         </div>
 
+                        <!-- Custom Fields Section -->
+                        <div th:if="${customFields != null and #lists.size(customFields) > 0}" class="custom-fields-section">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="fas fa-cogs"></i> Thông số tùy chỉnh
+                                    </h6>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- Loop through custom fields -->
+                                <div th:each="field : ${customFields}" class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label th:for="'custom_' + ${field.fieldKey}" 
+                                               th:text="${field.fieldName}">Custom Field</label>
+                                        <span th:if="${field.isRequired}" class="text-danger">*</span>
+                                        
+                                        <!-- Text Input -->
+                                        <div th:if="${field.fieldType == 'TEXT' or field.fieldType == null}">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   th:id="'custom_' + ${field.fieldKey}"
+                                                   th:name="'custom_' + ${field.fieldKey}"
+                                                   th:value="${variant.getCustomAttributesMap().get(field.fieldKey)}"
+                                                   th:required="${field.isRequired}">
+                                        </div>
+                                        
+                                        <!-- Number Input -->
+                                        <div th:if="${field.fieldType == 'NUMBER'}">
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   th:id="'custom_' + ${field.fieldKey}"
+                                                   th:name="'custom_' + ${field.fieldKey}"
+                                                   th:value="${variant.getCustomAttributesMap().get(field.fieldKey)}"
+                                                   th:required="${field.isRequired}">
+                                        </div>
+                                        
+                                        <!-- Select Input -->
+                                        <div th:if="${field.fieldType == 'SELECT'}">
+                                            <select class="form-control" 
+                                                    th:id="'custom_' + ${field.fieldKey}"
+                                                    th:name="'custom_' + ${field.fieldKey}"
+                                                    th:required="${field.isRequired}" style="padding: 7px">
+                                                <option value="">-- Chọn --</option>
+                                                <option th:each="option : ${field.getOptionsArray()}" 
+                                                        th:value="${option}" 
+                                                        th:text="${option}"
+                                                        th:selected="${variant.getCustomAttributesMap().get(field.fieldKey) == option}">
+                                                    Option
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <small th:if="${field.fieldType == 'SELECT' and field.fieldOptions != null}" 
+                                               class="form-text text-muted">
+                                            Chọn một trong các tùy chọn có sẵn
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="variantImageUrl">Hình ảnh cấu hình</label>
+                                    <input type="file" class="form-control-file" id="variantImageUrl" name="image" 
+                                           accept="image/*" onchange="previewImage(this)">
+                                    <small class="form-text text-muted">
+                                        Chọn hình ảnh để hiển thị riêng cho cấu hình này. 
+                                        <br><strong>Định dạng:</strong> JPG, PNG, GIF
+                                    </small>
+                                    <div id="image-preview" class="mt-2" style="display: none;">
+                                        <img id="preview-img" src="" alt="Preview" 
+                                             style="max-width: 150px; max-height: 100px; border-radius: 4px; border: 1px solid #ddd;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Hình ảnh hiện tại</label>
+                                    <div class="current-image-preview">
+                                        <img th:if="${variant.displayImageUrl != null}" 
+                                             th:src="@{'/assets/images/product/laptop/' + ${variant.displayImageUrl}}" 
+                                             th:alt="'Hình ảnh ' + ${variant.variantName}"
+                                             class="img-thumbnail"
+                                             style="max-height: 100px; max-width: 150px;"
+                                             onerror="this.src='/assets/images/product/default-product.png'">
+                                        <div th:if="${variant.variantImageUrl != null}" class="text-success mt-2">
+                                            <small><i class="fas fa-star"></i> Ảnh riêng của variant</small>
+                                        </div>
+                                        <div th:if="${variant.variantImageUrl == null and variant.displayImageUrl != null}" class="text-warning mt-2">
+                                            <small><i class="fas fa-info-circle"></i> Đang dùng ảnh chung của sản phẩm</small>
+                                        </div>
+                                        <div th:if="${variant.displayImageUrl == null}" class="text-muted">
+                                            <i class="fas fa-image fa-2x"></i>
+                                            <p class="mt-2">Chưa có hình ảnh</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="isActive" name="isActive" 
@@ -235,7 +338,60 @@
                                         <span th:if="${variant.quantity == 0}" class="badge badge-danger ml-1">Hết hàng</span>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td><strong>Hình ảnh:</strong></td>
+                                    <td>
+                                        <span th:if="${variant.variantImageUrl != null}" class="text-success">
+                                            <i class="fas fa-check-circle"></i> Có hình ảnh variant
+                                        </span>
+                                        <span th:if="${variant.variantImageUrl == null and variant.displayImageUrl != null}" class="text-warning">
+                                            <i class="fas fa-info-circle"></i> Dùng ảnh chung
+                                        </span>
+                                        <span th:if="${variant.variantImageUrl == null and variant.displayImageUrl == null}" class="text-muted">
+                                            <i class="fas fa-times-circle"></i> Chưa có hình ảnh
+                                        </span>
+                                    </td>
+                                </tr>
                             </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom Fields Information -->
+                    <div th:if="${customFields != null and #lists.size(customFields) > 0}" class="row mt-3">
+                        <div class="col-12">
+                            <h6 class="text-info mb-3">
+                                <i class="fas fa-cogs"></i> Thông số tùy chỉnh hiện tại
+                            </h6>
+                            <div class="custom-fields-current">
+                                <div class="row">
+                                    <div th:each="field : ${customFields}" class="col-md-6 mb-2">
+                                        <div th:if="${variant.getCustomAttributesMap().get(field.fieldKey) != null and !variant.getCustomAttributesMap().get(field.fieldKey).isEmpty()}" 
+                                             class="custom-field-item">
+                                            <small class="text-muted" th:text="${field.fieldName}">Field Name</small>
+                                            <div class="field-value">
+                                                <!-- Display value based on field type -->
+                                                <span th:if="${field.fieldType == 'CHECKBOX'}" 
+                                                      th:text="${variant.getCustomAttributesMap().get(field.fieldKey) == 'true' ? 'Có' : 'Không'}"
+                                                      th:class="${variant.getCustomAttributesMap().get(field.fieldKey) == 'true' ? 'text-success' : 'text-muted'}">
+                                                    Checkbox Value
+                                                </span>
+                                                <span th:if="${field.fieldType != 'CHECKBOX'}" 
+                                                      th:text="${variant.getCustomAttributesMap().get(field.fieldKey)}"
+                                                      class="text-dark font-weight-bold">
+                                                    Field Value
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div th:if="${variant.getCustomAttributesMap().get(field.fieldKey) == null or variant.getCustomAttributesMap().get(field.fieldKey).isEmpty()}" 
+                                             class="custom-field-item">
+                                            <small class="text-muted" th:text="${field.fieldName}">Field Name</small>
+                                            <div class="field-value text-muted">
+                                                <em>Chưa có giá trị</em>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -269,7 +425,114 @@
 .info-item {
     margin-bottom: 8px;
 }
-</style>
 
+.current-image-preview {
+    text-align: center;
+    padding: 15px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.current-image-preview img {
+    border-radius: 4px;
+}
+
+.current-image-preview .text-muted {
+    margin: 0;
+}
+
+.current-image-preview i {
+    color: #6c757d;
+}
+
+.current-image-preview .text-success small {
+    font-weight: 500;
+}
+
+.current-image-preview .text-warning small {
+    font-weight: 500;
+}
+
+/* Custom Fields Styles */
+.custom-fields-section {
+    background-color: #f8f9fc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e3e6f0;
+    margin-bottom: 20px;
+}
+
+.custom-fields-section h6 {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.custom-fields-current .custom-field-item {
+    background-color: #ffffff;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #e3e6f0;
+    margin-bottom: 8px;
+}
+
+.custom-fields-current .custom-field-item small {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.custom-fields-current .field-value {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.custom-fields-section .form-group label {
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.custom-fields-section .form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.custom-fields-section .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.custom-fields-section hr {
+    border-top: 2px solid #4e73df;
+    margin: 15px 0;
+    width: 50px;
+}
+
+#image-preview {
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    border-radius: 4px;
+}
+</style>
+<script>
+    function previewImage(input) {
+        const file = input.files[0];
+        const preview = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>

@@ -2,14 +2,21 @@ package com.example.computershop.controller;
 
 import com.example.computershop.entity.Products;
 import com.example.computershop.entity.ProductVariant;
+import com.example.computershop.entity.VariantFieldConfig;
 import com.example.computershop.service.ProductService;
 import com.example.computershop.service.ProductVariantService;
+import com.example.computershop.service.VariantFieldConfigService;
+import com.example.computershop.service.StorageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/admin/product-variants")
@@ -18,6 +25,8 @@ public class ProductVariantController {
     
     private final ProductService productService;
     private final ProductVariantService productVariantService;
+    private final VariantFieldConfigService fieldConfigService;
+    private final StorageService storageService;
 
     private static final String SUCCCESS = "success";
     private static final String ERROR = "error";
@@ -33,10 +42,12 @@ public class ProductVariantController {
         }
         
         List<ProductVariant> variants = productVariantService.getVariantsByProduct(productId);
+        List<VariantFieldConfig> customFields = fieldConfigService.getAllActiveFields();
         
         model.addAttribute("product", product);
         model.addAttribute("variants", variants);
         model.addAttribute("newVariant", new ProductVariant());
+        model.addAttribute("customFields", customFields);
         
         return "admin/product/variants";
     }
@@ -44,6 +55,9 @@ public class ProductVariantController {
     @PostMapping("/add/{productId}")
     public String addVariant(@PathVariable String productId,
                             @ModelAttribute ProductVariant variant,
+                            @RequestParam Map<String, String> allParams,
+                            @RequestParam(required = false) MultipartFile variantImage,
+                            @RequestParam(required = false) MultipartFile[] variantImages,
                             RedirectAttributes redirectAttributes) {
         try {
             Products product = productService.findById(productId);
@@ -51,6 +65,52 @@ public class ProductVariantController {
                 redirectAttributes.addFlashAttribute(ERROR, "Sản phẩm không tồn tại!");
                 return PRODUCT;
             }
+            
+            // XỬ LÝ UPLOAD ẢNH CHÍNH
+            if (variantImage != null && !variantImage.isEmpty()) {
+                try {
+                    String fileName = storageService.store(variantImage);
+                    variant.setVariantImageUrl(fileName);
+                } catch (Exception e) {
+                    redirectAttributes.addFlashAttribute(ERROR, "Lỗi upload ảnh chính: " + e.getMessage());
+                    return PRODUCT_VARIANTS + productId;
+                }
+            }
+            
+            // XỬ LÝ UPLOAD NHIỀU ẢNH
+            if (variantImages != null && variantImages.length > 0) {
+                List<String> imageNames = new ArrayList<>();
+                for (MultipartFile image : variantImages) {
+                    if (!image.isEmpty()) {
+                        try {
+                            String fileName = storageService.store(image);
+                            imageNames.add(fileName);
+                        } catch (Exception e) {
+                            redirectAttributes.addFlashAttribute(ERROR, "Lỗi upload ảnh: " + e.getMessage());
+                            return PRODUCT_VARIANTS + productId;
+                        }
+                    }
+                }
+                if (!imageNames.isEmpty()) {
+                    variant.setVariantImagesArray(imageNames.toArray(new String[0]));
+                }
+            }
+            
+            // Xử lý custom attributes
+            Map<String, String> customAttributes = new HashMap<>();
+            List<VariantFieldConfig> customFields = fieldConfigService.getAllActiveFields();
+            
+            for (VariantFieldConfig field : customFields) {
+                String value = allParams.get("custom_" + field.getFieldKey());
+                if (value != null && !value.trim().isEmpty()) {
+                    customAttributes.put(field.getFieldKey(), value.trim());
+                } else if (field.getIsRequired()) {
+                    redirectAttributes.addFlashAttribute(ERROR, "Trường " + field.getFieldName() + " là bắt buộc!");
+                    return PRODUCT_VARIANTS + productId;
+                }
+            }
+            
+            variant.setCustomAttributesMap(customAttributes);
             
             // Check if variant with same specs already exists
             if (productVariantService.existsBySpecs(productId, variant.getCpu(), 
@@ -84,8 +144,11 @@ public class ProductVariantController {
             return PRODUCT;
         }
         
+        List<VariantFieldConfig> customFields = fieldConfigService.getAllActiveFields();
+        
         model.addAttribute("variant", variant);
         model.addAttribute("product", variant.getProduct());
+        model.addAttribute("customFields", customFields);
         
         return "admin/product/edit-variant";
     }
@@ -93,6 +156,9 @@ public class ProductVariantController {
     @PostMapping("/update/{variantId}")
     public String updateVariant(@PathVariable String variantId,
                                @ModelAttribute ProductVariant updatedVariant,
+                               @RequestParam Map<String, String> allParams,
+                               @RequestParam(required = false) MultipartFile image,
+                               @RequestParam(required = false) MultipartFile[] variantImages,
                                RedirectAttributes redirectAttributes) {
         try {
             ProductVariant existing = productVariantService.findById(variantId);
@@ -100,6 +166,32 @@ public class ProductVariantController {
                 redirectAttributes.addFlashAttribute(ERROR, "Cấu hình không tồn tại!");
                 return PRODUCT;
             }
+            
+            // XỬ LÝ UPLOAD ẢNH CHÍNH
+            if (image != null && !image.isEmpty()) {
+                try {
+                    String fileName = storageService.store(image);
+                    updatedVariant.setVariantImageUrl(fileName);
+                } catch (Exception e) {
+                    redirectAttributes.addFlashAttribute(ERROR, "Lỗi upload ảnh chính: " + e.getMessage());
+                    return PRODUCT_VARIANTS + existing.getProduct().getProductID();
+                }
+            } else {
+                updatedVariant.setVariantImageUrl(existing.getVariantImageUrl());
+            }
+            
+            // Xử lý custom attributes
+            Map<String, String> customAttributes = new HashMap<>();
+            List<VariantFieldConfig> customFields = fieldConfigService.getAllActiveFields();
+            
+            for (VariantFieldConfig field : customFields) {
+                String value = allParams.get("custom_" + field.getFieldKey());
+                if (value != null && !value.trim().isEmpty()) {
+                    customAttributes.put(field.getFieldKey(), value.trim());
+                }
+            }
+            
+            updatedVariant.setCustomAttributesMap(customAttributes);
             
             ProductVariant updated = productVariantService.update(variantId, updatedVariant);
             if (updated != null) {
@@ -156,5 +248,82 @@ public class ProductVariantController {
         } catch (Exception e) {
             return ERROR;
         }
+    }
+    
+    // ENDPOINTS QUẢN LÝ DYNAMIC FIELDS
+    @GetMapping("/field-config")
+    public String fieldConfig(Model model) {
+        List<VariantFieldConfig> fields = fieldConfigService.getAllFields();
+        model.addAttribute("fields", fields);
+        model.addAttribute("newField", new VariantFieldConfig());
+        return "admin/product/field-config";
+    }
+
+    @PostMapping("/field-config/add")
+    public String addField(@ModelAttribute VariantFieldConfig fieldConfig,
+                          RedirectAttributes redirectAttributes) {
+        try {
+            fieldConfigService.create(fieldConfig);
+            redirectAttributes.addFlashAttribute(SUCCCESS, "Thêm trường thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(ERROR, LOI + e.getMessage());
+        }
+        return "redirect:/admin/product-variants/field-config";
+    }
+
+    @GetMapping("/field-config/edit/{fieldId}")
+    public String editField(@PathVariable String fieldId, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            VariantFieldConfig field = fieldConfigService.findById(fieldId);
+            if (field == null) {
+                redirectAttributes.addFlashAttribute(ERROR, "Trường không tồn tại!");
+                return "redirect:/admin/product-variants/field-config";
+            }
+            
+            List<VariantFieldConfig> allFields = fieldConfigService.getAllFields();
+            model.addAttribute("fields", allFields);
+            model.addAttribute("newField", new VariantFieldConfig());
+            model.addAttribute("editField", field);
+            model.addAttribute("isEdit", true);
+            
+            return "admin/product/field-config";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(ERROR, LOI + e.getMessage());
+            return "redirect:/admin/product-variants/field-config";
+        }
+    }
+
+    @PostMapping("/field-config/update/{fieldId}")
+    public String updateField(@PathVariable String fieldId,
+                             @ModelAttribute VariantFieldConfig fieldConfig,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            VariantFieldConfig updated = fieldConfigService.update(fieldId, fieldConfig);
+            if (updated != null) {
+                redirectAttributes.addFlashAttribute(SUCCCESS, "Cập nhật trường thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute(ERROR, "Không thể cập nhật trường!");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(ERROR, LOI + e.getMessage());
+        }
+        return "redirect:/admin/product-variants/field-config";
+    }
+
+    // Toggle functionality removed as per user request
+
+    @GetMapping("/field-config/delete/{fieldId}")
+    public String deleteField(@PathVariable String fieldId,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            if (fieldConfigService.delete(fieldId)) {
+                redirectAttributes.addFlashAttribute(SUCCCESS, "Xóa trường thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute(ERROR, "Không thể xóa trường!");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(ERROR, LOI + e.getMessage());
+        }
+        return "redirect:/admin/product-variants/field-config";
     }
 } 

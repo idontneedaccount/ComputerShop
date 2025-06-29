@@ -22,7 +22,7 @@ public class FileSystemStorageService implements StorageService {
     }
     
     @Override
-    public void store(MultipartFile file) {
+    public String store(MultipartFile file) {
         try {
             Path destinationFile = this.location.resolve(Paths.get(file.getOriginalFilename())).normalize().toAbsolutePath();
             try (InputStream inputStream = file.getInputStream()){
@@ -32,6 +32,7 @@ public class FileSystemStorageService implements StorageService {
         } catch (IOException e) {
             logger.error("Failed to store file: {}", file.getOriginalFilename(), e);
         }
+        return file.getOriginalFilename();
     }
     
     @Override

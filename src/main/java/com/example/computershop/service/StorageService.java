@@ -5,6 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public interface StorageService {
     void init();
-    void store(MultipartFile file);
+    String store(MultipartFile file);
     void delete(String fileName);
 }
