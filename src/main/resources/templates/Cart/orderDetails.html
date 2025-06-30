@@ -204,40 +204,15 @@
     <!-- Additional fragments -->
     <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
     <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
-    
-    <!-- JS -->
-    <script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.js}"></script>
-    <script th:src="@{/assets/js/vendor/popper.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/slick.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/js.cookie.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery-ui.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.ui.touch-punch.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.countdown.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/sal.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery.magnific-popup.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/imagesloaded.pkgd.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/isotope.pkgd.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/counterup.js}"></script>
-    <script th:src="@{/assets/js/vendor/waypoints.min.js}"></script>
-    <script th:src="@{/assets/js/main.js}"></script>
 
-    <!-- Success Notification -->
+    <!-- Simple JS like shopping page -->
     <script>
-        // Show success notification when page loads
-        $(document).ready(function() {
-            // You can use a toast notification library here
-            // For now, we'll use a simple alert
-            setTimeout(function() {
-                if (typeof toastr !== 'undefined') {
-                    toastr.success('Your order has been placed successfully!', 'Order Confirmed');
-                } else {
-                    // Fallback notification
-                    $('.order-success-message').addClass('animate-bounce');
-                }
-            }, 500);
-        });
+    // Simple success notification
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.order-success-message').addClass('animate-bounce');
+        }, 500);
+    });
     </script>
 
 </body>

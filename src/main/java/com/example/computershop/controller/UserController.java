@@ -88,7 +88,9 @@ public class UserController {
     @PostMapping("/edit-user")
     public String updateUser(@Valid @ModelAttribute("userUpdateByAdmin") UserUpdateByAdmin user,BindingResult result,Model model) {
         if (result.hasErrors()) {
-            model.addAttribute(ERROR, "Vui lòng kiểm tra lại thông tin." + result.getFieldError().getDefaultMessage());
+            String errorMessage = result.getFieldError() != null ? 
+                result.getFieldError().getDefaultMessage() : "Thông tin không hợp lệ";
+            model.addAttribute(ERROR, "Vui lòng kiểm tra lại thông tin. " + errorMessage);
             model.addAttribute(USER_UPDATE_BY_ADMIN, user);
             return EDIT_USER;
         }

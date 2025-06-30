@@ -40,7 +40,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             }
             if ("ROLE_Customer".equals(authority)) {
                 log.info("Redirecting user {} to shopping page", username);
-                response.sendRedirect("/user/shopping-page");
+                response.sendRedirect("/");
                 return;
             }
             if ("ROLE_Sales".equals(authority)) {

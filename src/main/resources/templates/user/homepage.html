@@ -803,34 +803,16 @@
 </div>
 
 
-        </div>
-    </div>
-</div>
 
-<!-- JS -->
-<!-- Modernizer JS -->
-<script th:src="@{/assets/js/vendor/modernizr.min.js}"></script>
-<!-- jQuery JS -->
+
+<!-- JS cần thiết -->
 <script th:src="@{/assets/js/vendor/jquery.js}"></script>
-<!-- Bootstrap JS -->
-<script th:src="@{/assets/js/vendor/popper.min.js}"></script>
 <script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
 <script th:src="@{/assets/js/vendor/slick.min.js}"></script>
-<script th:src="@{/assets/js/vendor/js.cookie.js}"></script>
-<script th:src="@{/assets/js/vendor/jquery-ui.min.js}"></script>
-<script th:src="@{/assets/js/vendor/jquery.ui.touch-punch.min.js}"></script>
-<script th:src="@{/assets/js/vendor/jquery.countdown.min.js}"></script>
-<script th:src="@{/assets/js/vendor/sal.js}"></script>
-<script th:src="@{/assets/js/vendor/jquery.magnific-popup.min.js}"></script>
-<script th:src="@{/assets/js/vendor/imagesloaded.pkgd.min.js}"></script>
-<script th:src="@{/assets/js/vendor/isotope.pkgd.min.js}"></script>
-<script th:src="@{/assets/js/vendor/counterup.js}"></script>
-<script th:src="@{/assets/js/vendor/waypoints.min.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
 
 <!-- Custom JS -->
-<script th:src="@{/assets/js/main.js}"></script>
 <script th:src="@{/assets/js/cart-animation.js}"></script>
-<script th:src="@{/assets/js/shopping-enhancement.js}"></script>
 <script th:src="@{/assets/js/common-utils.js}"></script>
 <script th:src="@{/assets/js/homepage-handler.js}"></script>
 
@@ -931,6 +913,7 @@ $(document).ready(function() {
             nextSlide();
             restartAutoplay();
         }
+
     });
     
     // Pause on hover
@@ -948,6 +931,34 @@ $(document).ready(function() {
     $('.product-image-slide').hide();
     $('.product-slide.active').show();
     $('.product-image-slide.active').show();
+});
+</script>
+
+<script>
+// Fix dropdown after all other JS loads
+$(document).ready(function() {
+    // Account dropdown
+    $('.my-account > a').off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const $dropdown = $(this).siblings('.my-account-dropdown');
+        $('.my-account-dropdown').not($dropdown).slideUp(200);
+        $dropdown.slideToggle(200);
+    });
+    
+    // Close dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.my-account').length) {
+            $('.my-account-dropdown').slideUp(200);
+        }
+    });
+    
+    // Menu dropdown
+    $('.menu-item-has-children > a').off('click').on('click', function(e) {
+        e.preventDefault();
+        $(this).siblings('.axil-submenu').slideToggle(200);
+    });
 });
 </script>
 
