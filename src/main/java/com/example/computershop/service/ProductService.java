@@ -1,20 +1,25 @@
 package com.example.computershop.service;
-import com.example.computershop.dto.ProductSalesDTO;
 import java.util.List;
-import com.example.computershop.entity.Products;
-import com.example.computershop.repository.ProductRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.CacheEvict;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import com.example.computershop.dto.ProductRatingDTO;
+import com.example.computershop.dto.ProductSalesDTO;
+import com.example.computershop.entity.Products;
+import com.example.computershop.repository.ProductRepository;
+
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
 public class ProductService {
     private final ProductRepository repo;
+    private final ReviewService reviewService;
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
     private static final String ERROR = "Error creating category: {}";
     
@@ -91,6 +96,24 @@ public class ProductService {
     }
     public long countProducts() {
         return repo.countProducts();
+    }
+    
+    /**
+     * Lấy thông tin rating của sản phẩm
+     */
+    public ProductRatingDTO getProductRating(String productId) {
+        return reviewService.getProductRating(productId);
+    }
+    
+    /**
+     * Lấy sản phẩm kèm thông tin rating
+     */
+    public Products findByIdWithRating(String productID) {
+        Products product = findById(productID);
+        if (product != null) {
+            // Rating sẽ được lấy riêng trong controller để tránh N+1 problem
+        }
+        return product;
     }
 
 }
