@@ -48,8 +48,8 @@
             <div class="row align-items-center">
                 <div class="col-lg-5 col-sm-6">
                     <div class="main-slider-content">
-                        <div class="slider-content-activation-one">
-                            <div class="single-slide slick-slide" data-sal="slide-up" data-sal-delay="400" data-sal-duration="800">
+                        <div class="product-showcase-container">
+                            <div class="product-slide active" id="slide-1" data-sal="slide-up" data-sal-delay="400" data-sal-duration="800">
                                 <span class="subtitle"><i class="fas fa-fire"></i> Hot Deal In This Week</span>
                                 <h1 class="title">ASUS ROG Strix G15 G512</h1>
                                 <div class="product-info">
@@ -63,7 +63,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="single-slide slick-slide">
+                            <div class="product-slide" id="slide-2">
                                 <span class="subtitle"><i class="fas fa-fire"></i> Hot Deal In This Week</span>
                                 <h1 class="title">MSI Raider GE76</h1>
                                 <div class="product-info">
@@ -77,7 +77,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="single-slide slick-slide">
+                            <div class="product-slide" id="slide-3">
                                 <span class="subtitle"><i class="fas fa-fire"></i> Hot Deal In This Week</span>
                                 <h1 class="title">Lenovo Legion 5 Pro</h1>
                                 <div class="product-info">
@@ -91,7 +91,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="single-slide slick-slide">
+                            <div class="product-slide" id="slide-4">
                                 <span class="subtitle"><i class="fas fa-fire"></i> Hot Deal In This Week</span>
                                 <h1 class="title">MSI Titan GT77 HX</h1>
                                 <div class="product-info">
@@ -110,34 +110,44 @@
                 </div>
                 <div class="col-lg-7 col-sm-6">
                     <div class="main-slider-large-thumb">
-                        <div class="slider-thumb-activation-one axil-slick-dots">
-                            <div class="single-slide slick-slide" data-sal="slide-up" data-sal-delay="600" data-sal-duration="1500">
+                        <div class="product-image-showcase">
+                            <div class="product-image-slide active" id="image-1" data-sal="slide-up" data-sal-delay="600" data-sal-duration="1500">
                                 <img th:src="@{/assets/images/product/laptop/ASUS ROG Strix G15 G512 IAL011T.jpg}" alt="ASUS ROG Strix G15 G512">
-                                <div class="product-price">
+                                <div class="product-price-badge">
                                     <span class="text">Save Up To</span>
                                     <span class="price-amount">15% OFF</span>
                                 </div>
                             </div>
-                            <div class="single-slide slick-slide" data-sal="slide-up" data-sal-delay="600" data-sal-duration="1500">
+                            <div class="product-image-slide" id="image-2" data-sal="slide-up" data-sal-delay="600" data-sal-duration="1500">
                                 <img th:src="@{/assets/images/product/laptop/MSI Raider GE76 12UGS.jpg}" alt="MSI Raider GE76">
-                                <div class="product-price">
+                                <div class="product-price-badge">
                                     <span class="text">Save Up To</span>
                                     <span class="price-amount">30% OFF</span>
                                 </div>
                             </div>
-                            <div class="single-slide slick-slide">
+                            <div class="product-image-slide" id="image-3">
                                 <img th:src="@{/assets/images/product/laptop/Lenovo Legion 5 Pro 16ACH6H.jpg}" alt="Lenovo Legion 5 Pro">
-                                <div class="product-price">
+                                <div class="product-price-badge">
                                     <span class="text">Save Up To</span>
                                     <span class="price-amount">15% OFF</span>
                                 </div>
                             </div>
-                            <div class="single-slide slick-slide">
-                                <img th:src="@{/assets/images/product/laptop/MSI Titan GT77 HX 13VI.jpg}" alt="MSI Titan GT77 HX">
-                                <div class="product-price">
+                            <div class="product-image-slide" id="image-4">
+                                <img th:src="@{/assets/images/product/laptop/laptop-msi-titan-gt77-cong-ket-noi-phai.webp}" alt="MSI Titan GT77 HX">
+                                <div class="product-price-badge">
                                     <span class="text">Save Up To</span>
                                     <span class="price-amount">20% OFF</span>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Dots -->
+                        <div class="product-navigation">
+                            <div class="nav-dots">
+                                <button class="nav-dot active" data-slide="1" title="ASUS ROG Strix G15"></button>
+                                <button class="nav-dot" data-slide="2" title="MSI Raider GE76"></button>
+                                <button class="nav-dot" data-slide="3" title="Lenovo Legion 5 Pro"></button>
+                                <button class="nav-dot" data-slide="4" title="MSI Titan GT77 HX"></button>
                             </div>
                         </div>
                     </div>
@@ -824,37 +834,120 @@
 <script th:src="@{/assets/js/common-utils.js}"></script>
 <script th:src="@{/assets/js/homepage-handler.js}"></script>
 
-<!-- Simple Slider - Perfect Sync -->
+<!-- Product Navigation with Fade Animation -->
 <script>
 $(document).ready(function() {
-    // Simple initialization without complex logic
-    $('.slider-content-activation-one').slick({
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-        dots: false,
-        fade: false, // No fade to avoid opacity issues
-        infinite: true,
-        autoplay: true,
-        autoplaySpeed: 4000,
-        speed: 800,
-        pauseOnHover: true,
-        asNavFor: '.slider-thumb-activation-one'
+    let currentSlide = 1;
+    const totalSlides = 4;
+    let autoplayInterval;
+    let isAnimating = false;
+    
+    // Initialize product showcase
+    function initProductShowcase() {
+        showSlide(1);
+        startAutoplay();
+    }
+    
+    // Show specific slide with fade animation
+    function showSlide(slideIndex, direction = 'next') {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        const $currentContentSlide = $('.product-slide.active');
+        const $currentImageSlide = $('.product-image-slide.active');
+        const $newContentSlide = $(`#slide-${slideIndex}`);
+        const $newImageSlide = $(`#image-${slideIndex}`);
+        const $currentDot = $('.nav-dot.active');
+        const $newDot = $(`.nav-dot[data-slide="${slideIndex}"]`);
+        
+        // Fade out current slides
+        $currentContentSlide.fadeOut(600, function() {
+            $currentContentSlide.removeClass('active');
+            // Fade in new content slide
+            $newContentSlide.addClass('active').fadeIn(600, function() {
+                isAnimating = false;
+            });
+        });
+        
+        $currentImageSlide.fadeOut(600, function() {
+            $currentImageSlide.removeClass('active');
+            // Fade in new image slide
+            $newImageSlide.addClass('active').fadeIn(600);
+        });
+        
+        // Update navigation dots
+        $currentDot.removeClass('active');
+        $newDot.addClass('active');
+        
+        currentSlide = slideIndex;
+    }
+    
+    // Navigate to next slide
+    function nextSlide() {
+        const nextIndex = currentSlide >= totalSlides ? 1 : currentSlide + 1;
+        showSlide(nextIndex, 'next');
+    }
+    
+    // Navigate to previous slide
+    function prevSlide() {
+        const prevIndex = currentSlide <= 1 ? totalSlides : currentSlide - 1;
+        showSlide(prevIndex, 'prev');
+    }
+    
+    // Start autoplay
+    function startAutoplay() {
+        autoplayInterval = setInterval(nextSlide, 4000);
+    }
+    
+    // Stop autoplay
+    function stopAutoplay() {
+        clearInterval(autoplayInterval);
+    }
+    
+    // Restart autoplay after manual navigation
+    function restartAutoplay() {
+        stopAutoplay();
+        setTimeout(startAutoplay, 2000);
+    }
+    
+    // Navigation dot click handlers
+    $('.nav-dot').on('click', function() {
+        const slideIndex = parseInt($(this).data('slide'));
+        if (slideIndex !== currentSlide && !isAnimating) {
+            stopAutoplay();
+            showSlide(slideIndex);
+            restartAutoplay();
+        }
     });
     
-    $('.slider-thumb-activation-one').slick({
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-        dots: true,
-        fade: false, // No fade to avoid opacity issues
-        infinite: true,
-        autoplay: true,
-        autoplaySpeed: 4000,
-        speed: 800,
-        pauseOnHover: true,
-        asNavFor: '.slider-content-activation-one'
+    // Keyboard navigation
+    $(document).on('keydown', function(e) {
+        if (e.which === 37) { // Left arrow
+            stopAutoplay();
+            prevSlide();
+            restartAutoplay();
+        } else if (e.which === 39) { // Right arrow
+            stopAutoplay();
+            nextSlide();
+            restartAutoplay();
+        }
     });
+    
+    // Pause on hover
+    $('.axil-main-slider-area').on('mouseenter', function() {
+        stopAutoplay();
+    }).on('mouseleave', function() {
+        startAutoplay();
+    });
+    
+    // Initialize the showcase
+    initProductShowcase();
+    
+    // Initialize with first slide visible
+    $('.product-slide').hide();
+    $('.product-image-slide').hide();
+    $('.product-slide.active').show();
+    $('.product-image-slide.active').show();
 });
 </script>
 
