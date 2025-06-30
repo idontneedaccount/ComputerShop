@@ -83,7 +83,7 @@ public class ProductController {
     public String addProduct(@ModelAttribute("product") Products product, 
                            @RequestParam("productImage") MultipartFile file,
                            Model model) {
-        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0 ||
+        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() < 0 ||
                 !product.getName().matches("^[\\-\\p{L}\\p{N}\\s]+$")) {
             return handleInvalidProduct(product, file, model, "Thông tin sản phẩm không hợp lệ.", null, false);
         }
@@ -113,7 +113,7 @@ public class ProductController {
                               @RequestParam("productImage") MultipartFile file,
                               Model model) {
         Products existingProduct = this.productService.findById(product.getProductID());
-        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() <= 0 ||
+        if (!product.getBrand().matches("^[a-zA-Z\\s]+$")||product.getPrice().compareTo(BigInteger.ZERO) <= 0|| product.getQuantity() < 0 ||
                !product.getName().matches("^[\\-\\p{L}\\p{N}\\s]+$")) {
             return handleInvalidProduct(product, file, model, "Thông tin sản phẩm không hợp lệ.", existingProduct, true);
         }

@@ -1,13 +1,15 @@
 package com.example.computershop.config;
 
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -41,13 +43,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 response.sendRedirect("/");
                 return;
             }
-            if ("ROLE_Marketer".equals(authority)) {
-                log.info("Redirecting marketer {} to dashboard", username);
+            if ("ROLE_Sales".equals(authority)) {
+                log.info("Redirecting sales user {} to dashboard", username);
                 response.sendRedirect("/admin/dashboard");
                 return;
             }
-            if ("ROLE_Sales".equals(authority)) {
-                log.info("Redirecting sales user {} to dashboard", username);
+            if ("ROLE_Shipper".equals(authority)) {
+                log.info("Redirecting shipper {} to dashboard", username);
                 response.sendRedirect("/admin/dashboard");
                 return;
             }

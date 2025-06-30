@@ -97,22 +97,11 @@
                                             <div class="col-md-3">
                                                 <div class="custom-control custom-radio">
                                                     <input type="radio" class="custom-control-input"
-                                                           th:field="*{role}" th:value="${T(com.example.computershop.entity.Role).User}"
-                                                           id="roleUser">
-                                                    <label class="custom-control-label" for="roleUser">
+                                                           th:field="*{role}" th:value="${T(com.example.computershop.entity.Role).Customer}"
+                                                           id="roleCustomer">
+                                                    <label class="custom-control-label" for="roleCustomer">
                                                         <i class="fas fa-user text-info mr-1"></i>
-                                                        Người dùng
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" class="custom-control-input"
-                                                           th:field="*{role}" th:value="${T(com.example.computershop.entity.Role).Marketer}"
-                                                           id="roleMarketer">
-                                                    <label class="custom-control-label" for="roleMarketer">
-                                                        <i class="fas fa-bullhorn text-primary mr-1"></i>
-                                                        Marketing
+                                                        Khách hàng
                                                     </label>
                                                 </div>
                                             </div>
@@ -124,6 +113,17 @@
                                                     <label class="custom-control-label" for="roleSales">
                                                         <i class="fas fa-shopping-cart text-success mr-1"></i>
                                                         Nhân viên bán hàng
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" class="custom-control-input"
+                                                           th:field="*{role}" th:value="${T(com.example.computershop.entity.Role).Shipper}"
+                                                           id="roleShipper">
+                                                    <label class="custom-control-label" for="roleShipper">
+                                                        <i class="fas fa-truck text-primary mr-1"></i>
+                                                        Nhân viên vận chuyển
                                                     </label>
                                                 </div>
                                             </div>

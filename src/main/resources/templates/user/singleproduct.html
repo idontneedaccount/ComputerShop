@@ -66,16 +66,35 @@
                                     <span class="price-amount" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
                                 </div>
                                 
+                                <!-- RATING SECTION - Cập nhật với dữ liệu thực -->
                                 <div class="product-rating">
                                     <div class="star-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="far fa-star"></i>
+                                        <!-- Display stars based on actual rating -->
+                                        <th:block th:if="${rating != null and rating.averageRating != null and rating.averageRating > 0}">
+                                            <th:block th:each="i : ${#numbers.sequence(1, rating.fullStars)}">
+                                                <i class="fas fa-star"></i>
+                                            </th:block>
+                                            <th:block th:if="${rating.hasHalfStar}">
+                                                <i class="fas fa-star-half-alt"></i>
+                                            </th:block>
+                                            <th:block th:each="i : ${#numbers.sequence(1, rating.emptyStars)}">
+                                                <i class="far fa-star"></i>
+                                            </th:block>
+                                        </th:block>
+                                        <!-- Default stars if no rating -->
+                                        <th:block th:unless="${rating != null and rating.averageRating != null and rating.averageRating > 0}">
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </th:block>
                                     </div>
                                     <div class="review-link">
-                                        <a href="#">(<span>2</span> customer reviews)</a>
+                                        <a href="#reviews">
+                                            (<span th:text="${rating != null ? rating.formattedRating : '0.0'}">0.0</span> - 
+                                             <span th:text="${rating != null ? rating.totalReviews : 0}">0</span> đánh giá)
+                                        </a>
                                     </div>
                                 </div>
                                 
@@ -160,7 +179,9 @@
                         <a id="additional-info-tab" data-bs-toggle="tab" href="#additional-info" role="tab" aria-controls="additional-info" aria-selected="false">Thông tin kỹ thuật</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Đánh giá</a>
+                        <a id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">
+                            Đánh giá (<span th:text="${rating != null ? rating.totalReviews : 0}">0</span>)
+                        </a>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
@@ -261,11 +282,65 @@
                     </div>
                     <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                         <div class="reviews-wrapper">
+                            <!-- Rating Summary -->
+                            <div class="row mb-4" th:if="${rating != null and rating.totalReviews > 0}">
+                                <div class="col-lg-4">
+                                    <div class="text-center">
+                                        <div class="average-rating mb-3">
+                                            <h2 class="rating-number mb-2" th:text="${rating.formattedRating}" style="color: #ff497c;">0.0</h2>
+                                            <div class="star-rating mb-2">
+                                                <th:block th:each="i : ${#numbers.sequence(1, rating.fullStars)}">
+                                                    <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                </th:block>
+                                                <th:block th:if="${rating.hasHalfStar}">
+                                                    <i class="fas fa-star-half-alt" style="color: #ffc107;"></i>
+                                                </th:block>
+                                                <th:block th:each="i : ${#numbers.sequence(1, rating.emptyStars)}">
+                                                    <i class="far fa-star" style="color: #e4e5e9;"></i>
+                                                </th:block>
+                                            </div>
+                                            <div class="total-reviews text-muted" th:text="${rating.totalReviews} + ' đánh giá'">0 đánh giá</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div class="rating-breakdown">
+                                        <th:block th:each="i : ${#numbers.sequence(5, 1, -1)}">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span th:text="${i} + ' sao'" style="width: 60px;">5 sao</span>
+                                                <div class="progress flex-fill mx-3" style="height: 8px;">
+                                                    <div class="progress-bar" style="background-color: #ffc107;" 
+                                                         th:style="'width: ' + ${rating.getRatingPercentage(i)} + '%'"></div>
+                                                </div>
+                                                <span th:text="${rating.ratingDistribution.get(i) ?: 0}" style="width: 30px;">0</span>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- No Reviews Message -->
+                            <div class="row" th:if="${rating == null or rating.totalReviews == 0}">
+                                <div class="col-12 text-center py-5">
+                                    <h5>Chưa có đánh giá nào</h5>
+                                    <p>Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                                </div>
+                            </div>
+
+                            <!-- Reviews List sử dụng mẫu HTML đã cung cấp -->
                             <div class="row">
-                                <div class="col-lg-12 mb--40">
-                                    <div class="text-center py-5">
-                                        <h4>Tính năng đánh giá đang được phát triển</h4>
-                                        <p>Chúng tôi đang hoàn thiện tính năng đánh giá sản phẩm. Vui lòng quay lại sau!</p>
+                                <div class="col-12">
+                                    <div class="comment-area">
+                                        <ul class="comment-list" id="reviews-list">
+                                            <!-- Reviews will be loaded here via JavaScript -->
+                                        </ul>
+                                        
+                                        <!-- Load More Button -->
+                                        <div class="text-center mt-4">
+                                            <button class="axil-btn btn-outline" id="load-more-reviews" style="display: none;">
+                                                Xem thêm đánh giá
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -285,7 +360,6 @@
 
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
 
-<!-- Add JavaScript at the bottom before closing body tag -->
 <script th:inline="javascript">
 /*<![CDATA[*/
 document.addEventListener('DOMContentLoaded', function() {
@@ -439,7 +513,112 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
+    });
+    
+    // === REVIEW FUNCTIONALITY ===
+    const productId = /*[[${product.productID}]]*/ '';
+    let currentPage = 0;
+    const pageSize = 10;
+    
+    // Load reviews when tab is clicked
+    document.getElementById('reviews-tab').addEventListener('click', function() {
+        loadReviews();
+    });
+    
+    // Load more reviews button
+    const loadMoreBtn = document.getElementById('load-more-reviews');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            currentPage++;
+            loadReviews(false); // append to existing reviews
+        });
+    }
+    
+    function loadReviews(clearExisting = true) {
+        const url = `/api/reviews/product/${productId}?page=${currentPage}&size=${pageSize}`;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const reviewsList = document.getElementById('reviews-list');
+                
+                if (clearExisting) {
+                    reviewsList.innerHTML = '';
+                    currentPage = 0;
+                }
+                
+                if (data.content && data.content.length > 0) {
+                    data.content.forEach(review => {
+                        reviewsList.appendChild(createReviewElement(review));
+                    });
+                    
+                    // Show/hide load more button
+                    const loadMoreBtn = document.getElementById('load-more-reviews');
+                    if (data.last) {
+                        loadMoreBtn.style.display = 'none';
+                    } else {
+                        loadMoreBtn.style.display = 'block';
+                    }
+                } else if (clearExisting) {
+                    reviewsList.innerHTML = '<li class="text-center py-4"><p></p></li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading reviews:', error);
+                document.getElementById('reviews-list').innerHTML = 
+                    '<li class="text-center py-4"><p class="text-danger">Có lỗi khi tải đánh giá.</p></li>';
+            });
+    }
+    
+    function createReviewElement(review) {
+        const reviewLi = document.createElement('li');
+        reviewLi.className = 'comment';
+        
+        // Generate stars HTML based on rating
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= review.rating) {
+                starsHtml += '<a href="#"><i class="fas fa-star"></i></a>';
+            } else {
+                starsHtml += '<a href="#"><i class="far fa-star"></i></a>';
+            }
+        }
+        
+        // Format date
+        const date = new Date(review.createdAt).toLocaleDateString('vi-VN');
+        
+        // Use the template structure provided
+        reviewLi.innerHTML = `
+            <div class="comment-body">
+                <div class="single-comment">
+                    <div class="comment-img">
+                        <img src="/assets/images/product/author.jpg" alt="Author Images">
+                    </div>
+                    <div class="comment-inner">
+                        <h6 class="commenter">
+                            <a class="hover-flip-item-wrapper" href="#">
+                                <span class="hover-flip-item">
+                                    <span data-text="${review.user?.fullName || 'Người dùng ẩn danh'}">${review.user?.fullName || 'Người dùng ẩn danh'}</span>
+                                </span>
+                            </a>
+                            <span class="commenter-rating">
+                                ${starsHtml}
+                            </span>
+                        </h6>
+                        <div class="comment-text">
+                            <p>"${review.comment || ''}"</p>
+                        </div>
+                        <div class="comment-date text-muted small">
+                            ${date}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return reviewLi;
+    }
+
 /*]]>*/
 </script>
 
@@ -558,6 +737,150 @@ document.addEventListener('DOMContentLoaded', function() {
     .variant-ram-storage,
     .variant-gpu {
         font-size: 11px;
+    }
+}
+
+/* Review Styles */
+.star-rating {
+    color: #ffc107;
+}
+.star-rating .far {
+    color: #e4e5e9;
+}
+.star-rating-input label {
+    transition: color 0.2s ease;
+}
+.comment-list {
+    list-style: none;
+    padding: 0;
+}
+
+.single-comment {
+    display: flex;
+    gap: 15px;
+}
+.comment-img {
+    flex-shrink: 0;
+}
+.comment-img img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.comment-inner {
+    flex: 1;
+}
+.commenter {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.commenter a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+}
+.commenter-rating {
+    color: #ffc107;
+}
+.commenter-rating .far {
+    color: #e4e5e9;
+}
+.comment-text {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 5px;
+}
+.comment-date {
+    font-size: 12px;
+    color: #999;
+}
+@media (max-width: 768px) {
+    .single-comment {
+        gap: 10px;
+    }
+    .comment-img img {
+        width: 50px;
+        height: 50px;
+    }
+    .commenter {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+/* Review Styles */
+.star-rating {
+    color: #ffc107;
+}
+.star-rating .far {
+    color: #e4e5e9;
+}
+.star-rating-input label {
+    transition: color 0.2s ease;
+}
+.comment-list {
+    list-style: none;
+    padding: 0;
+}
+.single-comment {
+    display: flex;
+    gap: 15px;
+}
+.comment-img {
+    flex-shrink: 0;
+}
+.comment-img img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.comment-inner {
+    flex: 1;
+}
+.commenter {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.commenter a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+}
+.commenter-rating {
+    color: #ffc107;
+}
+.commenter-rating .far {
+    color: #e4e5e9;
+}
+.comment-text {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 5px;
+}
+.comment-date {
+    font-size: 12px;
+    color: #999;
+}
+
+@media (max-width: 768px) {
+    .single-comment {
+        gap: 10px;
+    }
+    .comment-img img {
+        width: 50px;
+        height: 50px;
+    }
+    .commenter {
+        flex-direction: column;
+        gap: 5px;
     }
 }
 </style>

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.computershop.dto.ProductRatingDTO;
 import com.example.computershop.entity.Categories;
 import com.example.computershop.entity.ProductSpecifications;
 import com.example.computershop.entity.ProductVariant;
@@ -17,6 +18,7 @@ import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.ProductService;
 import com.example.computershop.service.ProductSpecificationService;
 import com.example.computershop.service.ProductVariantService;
+import com.example.computershop.service.ReviewService;
 
 @Controller
 @RequestMapping("/user")
@@ -26,6 +28,7 @@ public class ShopController {
     private final ProductService productService;
     private final ProductSpecificationService productSpecificationService;
     private final ProductVariantService productVariantService;
+    private final ReviewService reviewService;
     private static final String TOTAL_PRODUCTS = "totalProducts";
     private static final String PRODUCTS = "products";
     private static final String CATEGORIES = "categories";
@@ -33,11 +36,13 @@ public class ShopController {
     public ShopController(CategoriesService categoriesService,
                          ProductService productService,
                          ProductSpecificationService productSpecificationService,
-                         ProductVariantService productVariantService) {
+                         ProductVariantService productVariantService,
+                         ReviewService reviewService) {
         this.categoriesService = categoriesService;
         this.productService = productService;
         this.productSpecificationService = productSpecificationService;
         this.productVariantService = productVariantService;
+        this.reviewService = reviewService;
     }
     
     @GetMapping("/shopping-page")
@@ -219,9 +224,13 @@ public class ShopController {
         ProductSpecifications specifications = productSpecificationService.findByProductId(productId);
         List<ProductVariant> variants = productVariantService.getActiveVariantsByProductSorted(productId);
         
+        // Thêm thông tin rating
+        ProductRatingDTO rating = reviewService.getProductRating(productId);
+        
         model.addAttribute("product", product);
         model.addAttribute("specifications", specifications);
         model.addAttribute("variants", variants);
+        model.addAttribute("rating", rating); // Thêm rating vào model
 
         
         return "user/singleproduct";

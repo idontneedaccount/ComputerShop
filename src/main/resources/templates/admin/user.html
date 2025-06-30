@@ -145,14 +145,14 @@
                                             <td th:text="${user.username}">admin</td>
                                             <td th:text="${user.email}">admin@example.com</td>
                                             <td>
-                                                <span th:if="${user.role == T(com.computershop.enums.Role).ADMIN}" 
+                                                <span th:if="${user.role == T(com.example.computershop.entity.Role).Admin}" 
                                                       class="badge badge-warning">Quản trị viên</span>
-                                                <span th:if="${user.role == T(com.computershop.enums.Role).USER}" 
-                                                      class="badge badge-info">Người dùng</span>
-                                                <span th:if="${user.role == T(com.computershop.enums.Role).MARKETER}" 
-                                                      class="badge badge-primary">Marketing</span>
-                                                <span th:if="${user.role == T(com.computershop.enums.Role).SALES}" 
+                                                <span th:if="${user.role == T(com.example.computershop.entity.Role).Customer}" 
+                                                      class="badge badge-info">Khách hàng</span>
+                                                <span th:if="${user.role == T(com.example.computershop.entity.Role).Sales}" 
                                                       class="badge badge-success">Nhân viên bán hàng</span>
+                                                <span th:if="${user.role == T(com.example.computershop.entity.Role).Shipper}" 
+                                                      class="badge badge-primary">Nhân viên vận chuyển</span>
                                             </td>
                                             <td>
                                                 <span th:if="${user.active}" 
