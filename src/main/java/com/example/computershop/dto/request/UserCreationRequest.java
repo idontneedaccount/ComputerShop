@@ -35,7 +35,7 @@ public class UserCreationRequest {
     @NotBlank(message = "Họ tên không được để trống.")
     String fullName;
 
-    String role = "USER"; // Mặc định là USER, có thể thay đổi nếu cần
+    String role = "CUSTOMER"; // Mặc định là CUSTOMER, có thể thay đổi nếu cần
     @NotBlank(message = "Email không được để trống.")
     @Email(message = "Email không hợp lệ.")
     String email;

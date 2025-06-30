@@ -48,10 +48,11 @@
                         <aside class="axil-dashboard-aside">
                             <nav class="axil-dashboard-nav">
                                 <div class="nav nav-tabs" role="tablist">
-                                    <a class="nav-item nav-link active" data-bs-toggle="tab" href="#nav-dashboard" role="tab" aria-selected="true"><i class="fas fa-th-large"></i>Tổng quan</a>
+                                    <a class="nav-item nav-link active" data-bs-toggle="tab" href="#nav-account-info" role="tab" aria-selected="true"><i class="fas fa-user"></i>Thông tin tài khoản</a>
                                     <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-orders" role="tab" aria-selected="false"><i class="fas fa-shopping-basket"></i>Đơn hàng</a>
                                     <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-address" role="tab" aria-selected="false"><i class="fas fa-home"></i>Địa chỉ</a>
-                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-account" role="tab" aria-selected="false"><i class="fas fa-user"></i>Thông tin tài khoản</a>
+                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-edit-info" role="tab" aria-selected="false"><i class="fas fa-edit"></i>Chỉnh sửa thông tin</a>
+                                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-change-password" role="tab" aria-selected="false" th:unless="${isOAuth2}"><i class="fas fa-key"></i>Đổi mật khẩu</a>
                                     <a class="nav-item nav-link" href="/logout"><i class="fal fa-sign-out"></i>Đăng xuất</a>
                                 </div>
                             </nav>
@@ -59,11 +60,11 @@
                     </div>
                     <div class="col-xl-9 col-md-8">
                         <div class="tab-content">
-                            <!-- Dashboard Tab -->
-                            <div class="tab-pane fade show active" id="nav-dashboard" role="tabpanel">
+                            <!-- Account Info Tab (formerly Dashboard) -->
+                            <div class="tab-pane fade show active" id="nav-account-info" role="tabpanel">
                                 <div class="axil-dashboard-overview">
                                     <div class="welcome-text">Xin chào <span th:text="${user.fullName}"></span>! (không phải <span th:text="${user.fullName}"></span>? <a href="/logout">Đăng xuất</a>)</div>
-                                    <p>Từ trang tổng quan tài khoản, bạn có thể xem các đơn hàng gần đây, quản lý địa chỉ giao hàng và thanh toán, cũng như chỉnh sửa mật khẩu và thông tin tài khoản của mình.</p>
+                                    <p>Thông tin chi tiết về tài khoản của bạn. Để cập nhật thông tin, vui lòng sử dụng tab "Chỉnh sửa thông tin".</p>
                                     
                                     <!-- User Info Summary -->
                                     <div class="row mt-4">
@@ -72,6 +73,8 @@
                                                 <div class="card-body">
                                                     <h6 class="card-title"><i class="fas fa-info-circle"></i> Thông tin cơ bản</h6>
                                                     <p class="card-text">
+                                                        <strong>Họ và tên:</strong> <span th:text="${user.fullName}"></span><br>
+                                                        
                                                         <!-- GitHub users: chỉ hiển thị username -->
                                                         <span th:if="${authProvider == 'github' and user.email.endsWith('@github.com')}">
                                                             <strong>GitHub Username:</strong> 
@@ -85,8 +88,8 @@
                                                             <strong>Email:</strong> <span th:text="${user.email}"></span><br>
                                                         </span>
                                                         
-                                                        <strong>Vai trò:</strong> <span class="badge" th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' : 'bg-success'" th:text="${user.role.name()}"></span><br>
-                                                        <strong>Trạng thái:</strong> <span class="badge" th:classappend="${user.isActive} ? 'bg-success' : 'bg-warning'" th:text="${user.isActive} ? 'Đã kích hoạt' : 'Chưa kích hoạt'"></span>
+                                                        <strong>Số điện thoại:</strong> <span th:text="${hasPhoneNumber} ? ${user.phoneNumber} : 'Chưa cập nhật'"></span><br>
+                                                        <strong>Địa chỉ:</strong> <span th:text="${hasAddress} ? ${user.address} : 'Chưa cập nhật'"></span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -94,15 +97,18 @@
                                         <div class="col-md-6">
                                             <div class="card mb-3">
                                                 <div class="card-body">
-                                                    <h6 class="card-title"><i class="fas fa-shield-alt"></i> Bảo mật</h6>
+                                                    <h6 class="card-title"><i class="fas fa-shield-alt"></i> Bảo mật & Trạng thái</h6>
                                                     <p class="card-text">
+                                                        <strong>Vai trò:</strong> <span class="badge" th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' : 'bg-success'" th:text="${user.role.name()}"></span><br>
+                                                        <strong>Trạng thái:</strong> <span class="badge" th:classappend="${user.isActive} ? 'bg-success' : 'bg-warning'" th:text="${user.isActive} ? 'Đã kích hoạt' : 'Chưa kích hoạt'"></span><br>
                                                         <strong>Phương thức đăng nhập:</strong> 
                                                         <span th:if="${isOAuth2}" class="badge bg-info">
                                                             <i class="fab" th:classappend="${'fa-' + authProvider}"></i> 
                                                             <span th:text="${authProvider}"></span>
                                                         </span>
                                                         <span th:unless="${isOAuth2}" class="badge bg-primary">Mật khẩu</span><br>
-                                                        <strong>Tài khoản bị khóa:</strong> <span th:text="${user.isAccountLocked} ? 'Có' : 'Không'"></span>
+                                                        <strong>Tài khoản bị khóa:</strong> <span th:text="${user.isAccountLocked} ? 'Có' : 'Không'"></span><br>
+                                                        <strong>Thành viên từ:</strong> <span th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}"></span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -211,17 +217,19 @@
                                 </div>
                             </div>
                             
-                            <!-- Account Details Tab -->
-                            <div class="tab-pane fade" id="nav-account" role="tabpanel">
+                            <!-- Edit Info Tab -->
+                            <div class="tab-pane fade" id="nav-edit-info" role="tabpanel">
                                 <div class="col-lg-9">
                                     <div class="axil-dashboard-account">
-                                        <form class="account-details-form" th:action="@{/user/update-profile}" method="post" th:object="${userProfileUpdateRequest}">
+                                        <h4 class="title mb-4"><i class="fas fa-edit"></i> Chỉnh sửa thông tin cá nhân</h4>
+                                        <form class="account-details-form" th:action="@{/user/update-profile}" method="post" th:object="${userInfoUpdateRequest}">
+                            <input type="hidden" name="action" value="update-info">
                                             <div class="row">
                                                 <div class="col-12">
                                                     <div class="form-group">
                                                         <label>Họ và tên <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="fullName" th:value="${user.fullName}" required>
-                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                                                        <div class="invalid-feedback d-block" th:if="${userInfoUpdateRequest != null and #fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6">
@@ -232,55 +240,82 @@
                                                                th:value="${user.email.replace('@github.com', '')}" 
                                                                readonly
                                                                style="font-family: monospace; background-color: #f8f9fa; color: #007bff;">
+                                                        <small class="text-muted">GitHub username không thể thay đổi</small>
                                                     </div>
                                                     
                                                     <!-- Các OAuth2 khác hoặc form login: hiển thị email -->
                                                     <div class="form-group" th:unless="${authProvider == 'github' and user.email.endsWith('@github.com')}">
                                                         <label>Email</label>
                                                         <input type="email" class="form-control" th:value="${user.email}" readonly>
+                                                        <small class="text-muted">Email không thể thay đổi</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <div class="form-group">
                                                         <label>Số điện thoại</label>
                                                         <input type="text" class="form-control" name="phoneNumber" th:value="${user.phoneNumber}" placeholder="Nhập số điện thoại">
-                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                                                        <div class="invalid-feedback d-block" th:if="${userInfoUpdateRequest != null and #fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb--40">
                                                         <label>Địa chỉ</label>
                                                         <textarea class="form-control" name="address" rows="3" th:text="${user.address}" placeholder="Nhập địa chỉ"></textarea>
-                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('address')}" th:errors="*{address}"></div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Password change section - only for non-OAuth2 users -->
-                                                <div class="col-12" th:unless="${isOAuth2}">
-                                                    <hr class="my-4">
-                                                    <h5 class="title">Đổi mật khẩu</h5>
-                                                    <p class="text-muted small">Để trống nếu không muốn thay đổi mật khẩu</p>
-                                                    
-                                                    <div class="form-group">
-                                                        <label>Mật khẩu hiện tại</label>
-                                                        <input type="password" class="form-control" name="currentPassword" placeholder="Nhập mật khẩu hiện tại">
-                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Mật khẩu mới</label>
-                                                        <input type="password" class="form-control" name="newPassword" placeholder="Nhập mật khẩu mới">
-                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Xác nhận mật khẩu mới</label>
-                                                        <input type="password" class="form-control" name="confirmPassword" placeholder="Nhập lại mật khẩu mới">
-                                                        <div class="invalid-feedback d-block" th:if="${userProfileUpdateRequest != null and #fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                                                        <div class="invalid-feedback d-block" th:if="${userInfoUpdateRequest != null and #fields.hasErrors('address')}" th:errors="*{address}"></div>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="form-group mb--0">
                                                     <button type="submit" class="axil-btn btn-primary">
                                                         <i class="fas fa-save me-2"></i>Lưu thay đổi
+                                                    </button>
+                                                    <button type="reset" class="btn btn-outline-secondary ms-3">
+                                                        <i class="fas fa-undo me-2"></i>Đặt lại
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Change Password Tab - only for non-OAuth2 users -->
+                            <div class="tab-pane fade" id="nav-change-password" role="tabpanel" th:unless="${isOAuth2}">
+                                <div class="col-lg-8">
+                                    <div class="axil-dashboard-account">
+                                        <h4 class="title mb-4"><i class="fas fa-key"></i> Đổi mật khẩu</h4>
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Để bảo mật tài khoản, vui lòng sử dụng mật khẩu mạnh có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.
+                                        </div>
+                                        <form class="account-details-form" th:action="@{/user/update-profile}" method="post" th:object="${passwordChangeRequest}">
+                                            <input type="hidden" name="action" value="change-password">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label>Mật khẩu hiện tại <span class="text-danger">*</span></label>
+                                                        <input type="password" class="form-control" name="currentPassword" placeholder="Nhập mật khẩu hiện tại" required>
+                                                        <div class="invalid-feedback d-block" th:if="${passwordChangeRequest != null and #fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label>Mật khẩu mới <span class="text-danger">*</span></label>
+                                                        <input type="password" class="form-control" name="newPassword" placeholder="Nhập mật khẩu mới" required>
+                                                        <div class="invalid-feedback d-block" th:if="${passwordChangeRequest != null and #fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label>Xác nhận mật khẩu mới <span class="text-danger">*</span></label>
+                                                        <input type="password" class="form-control" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
+                                                        <div class="invalid-feedback d-block" th:if="${passwordChangeRequest != null and #fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-group mb--0">
+                                                    <button type="submit" class="axil-btn btn-warning">
+                                                        <i class="fas fa-key me-2"></i>Đổi mật khẩu
                                                     </button>
                                                     <button type="reset" class="btn btn-outline-secondary ms-3">
                                                         <i class="fas fa-undo me-2"></i>Đặt lại

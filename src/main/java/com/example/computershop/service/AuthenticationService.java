@@ -55,7 +55,7 @@ public class AuthenticationService {
                     .fullName(request.getFullName())
                     .email(request.getEmail())
                     .phoneNumber(request.getPhoneNumber())
-                    .role(Role.User)
+                    .role(Role.Customer)
                     .isActive(false)
                     .createdAt(LocalDateTime.now())
                     .address(request.getAddress())

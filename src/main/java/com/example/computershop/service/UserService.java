@@ -3,14 +3,14 @@ package com.example.computershop.service;
 import com.example.computershop.dto.request.UserCreateByAdmin;
 import com.example.computershop.dto.request.UserUpdateByAdmin;
 import com.example.computershop.dto.UserProfileData;
-import com.example.computershop.dto.request.UserProfileUpdateRequest;
+import com.example.computershop.dto.request.UserInfoUpdateRequest;
+import com.example.computershop.dto.request.PasswordChangeRequest;
 import com.example.computershop.entity.User;
 import com.example.computershop.repository.UserRepository;
 import com.example.computershop.entity.Role;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 
 @Service
@@ -39,13 +41,6 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public List<Object[]> getTop5UserByRevenueOrder() {
-        return userRepository.getUserByRevenueOrder(PageRequest.of(0, 5));
-    }
-
-    public long countUsers(){
-        return userRepository.countUsers();
-    };
     /**
      * Lấy thông tin user hiện tại từ Security Context
      * Xử lý cả OAuth2 và Form Authentication
@@ -210,13 +205,14 @@ public class UserService {
         }
     }
     
+    
     /**
-     * Cập nhật thông tin cá nhân của user hiện tại
-     * @param request UserProfileUpdateRequest chứa thông tin cần cập nhật
+     * Cập nhật thông tin cá nhân của user hiện tại (không bao gồm mật khẩu)
+     * @param request UserInfoUpdateRequest chứa thông tin cần cập nhật
      * @return String message kết quả
      */
     @Transactional
-    public String updateProfile(@NotNull UserProfileUpdateRequest request) {
+    public String updateUserInfo(@NotNull UserInfoUpdateRequest request) {
         try {
             // Lấy thông tin user hiện tại
             UserProfileData currentUserData = getCurrentUser();
@@ -241,38 +237,74 @@ public class UserService {
             currentUser.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null);
             currentUser.setAddress(request.getAddress() != null ? request.getAddress().trim() : null);
             
-            // Xử lý đổi mật khẩu (chỉ cho user không phải OAuth2)
-            if (!currentUserData.isOAuth2() && request.isPasswordChangeRequested()) {
-                // Kiểm tra mật khẩu hiện tại
-                if (!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword())) {
-                    return "Mật khẩu hiện tại không đúng";
-                }
-                
-                // Kiểm tra xác nhận mật khẩu
-                if (!request.isPasswordConfirmed()) {
-                    return "Mật khẩu xác nhận không khớp";
-                }
-                
-                // Mã hóa và cập nhật mật khẩu mới
-                String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
-                currentUser.setPassword(encodedNewPassword);
-                
-                log.info("Password updated for user: {}", currentUser.getUsername());
+            // Lưu thay đổi
+            userRepository.save(currentUser);
+            
+            log.info("User info updated successfully for user: {}", currentUser.getUsername());
+            return "SUCCESS";
+            
+        } catch (IllegalStateException e) {
+            log.error("Authentication error during user info update: {}", e.getMessage());
+            return "Lỗi xác thực: " + e.getMessage();
+        } catch (Exception e) {
+            log.error("Unexpected error during user info update", e);
+            return "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.";
+        }
+    }
+    
+    /**
+     * Đổi mật khẩu cho user hiện tại (chỉ cho non-OAuth2 users)
+     * @param request PasswordChangeRequest chứa thông tin mật khẩu
+     * @return String message kết quả
+     */
+    @Transactional
+    public String changePassword(@NotNull PasswordChangeRequest request) {
+        try {
+            // Lấy thông tin user hiện tại
+            UserProfileData currentUserData = getCurrentUser();
+            User currentUser = currentUserData.getUser();
+            
+            // Kiểm tra user có phải OAuth2 không
+            if (currentUserData.isOAuth2()) {
+                return "Không thể đổi mật khẩu cho tài khoản OAuth2";
             }
+            
+            // Kiểm tra mật khẩu hiện tại
+            if (!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword())) {
+                return "Mật khẩu hiện tại không đúng";
+            }
+            
+            // Kiểm tra xác nhận mật khẩu
+            if (!request.isPasswordConfirmed()) {
+                return "Mật khẩu xác nhận không khớp";
+            }
+            
+            // Mã hóa và cập nhật mật khẩu mới
+            String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+            currentUser.setPassword(encodedNewPassword);
             
             // Lưu thay đổi
             userRepository.save(currentUser);
             
-            log.info("Profile updated successfully for user: {}", currentUser.getUsername());
+            log.info("Password changed successfully for user: {}", currentUser.getUsername());
             return "SUCCESS";
             
         } catch (IllegalStateException e) {
-            log.error("Authentication error during profile update: {}", e.getMessage());
+            log.error("Authentication error during password change: {}", e.getMessage());
             return "Lỗi xác thực: " + e.getMessage();
         } catch (Exception e) {
-            log.error("Unexpected error during profile update", e);
+            log.error("Unexpected error during password change", e);
             return "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.";
         }
+    }
+
+    public long countUsers() {
+        return userRepository.countUsers();
+    }
+
+    public List<Object[]> getTop5UserByRevenueOrder(){
+        Pageable pageable = PageRequest.of(0, 5);
+        return userRepository.getUserByRevenueOrder(pageable);
     }
 }
 

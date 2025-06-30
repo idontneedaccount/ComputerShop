@@ -70,22 +70,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .then(data => {
-                if (!data) return; // Skip if no data (401 case)
+                console.log('=== AJAX SUCCESS RESPONSE ===');
+                console.log('Data:', data);
+                
+                if (!data) return;
                 
                 if (data.success) {
-                    // Success - show notification
+                    console.log('SUCCESS: Adding product to cart');
                     showSuccessAlert(data.message || 'Đã thêm vào giỏ hàng!');
                     
-                    // Update cart count if available
                     if (data.cartCount !== undefined) {
+                        console.log('Updating cart count to:', data.cartCount);
                         updateCartCount(data.cartCount);
                     }
                 } else {
-                    // Error but user is logged in
+                    console.log('ERROR: Server returned success=false');
                     showErrorAlert(data.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng!');
                 }
             })
             .catch(error => {
+                console.error('=== AJAX CATCH ERROR ===');
+                console.error('Error:', error);
+                
                 // Remove loading state on error
                 if (window.ComputerShop && window.ComputerShop.Loading) {
                     window.ComputerShop.Loading.hideButtonLoading(this);

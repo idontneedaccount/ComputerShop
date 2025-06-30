@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum Role {
     Admin("Quản trị viên"),
-    User("Người dùng"),
-    Marketer("Marketing"),
+    Customer("Người dùng"),
+    Shipper("Nhân viên vận chuyển"),
     Sales("Nhân viên bán hàng");
 
     private final String displayName;

@@ -41,13 +41,15 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers("/auth/**", "/home", "/css/**",
                                         "/js/**", "/images/**", "/assets/**","/error/**","/assets2/**","/uploads/**",
-                                        "/oauth2/**", "/login/oauth2/**","/user/shopping-page")
+                                        "/oauth2/**", "/login/oauth2/**","/user/shopping-page","/",
+                                        "/cart/add/**", "/cart/count", "/cart/add-variant")
                                 .permitAll()
                                 .requestMatchers("/admin/**").hasRole("Admin")
-                                .requestMatchers("/user/**","/cart/**")
-                                .hasAnyAuthority("ROLE_User", "OIDC_USER","OAUTH2_USER","ROLE_Admin")
+                                .requestMatchers("/user/user-profile","/cart/view","/cart/checkout",
+                                        "/cart/update/**","/cart/remove/**","/cart/clear")
+                                .hasRole("Customer")
                                 .requestMatchers("/admin/product)","admin/categories")
-                                .hasAnyAuthority("ROLE_Marketer", "OIDC_MARKETER","OAUTH2_MARKETER")
+                                .hasRole("Admin")
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)

@@ -36,7 +36,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 response.sendRedirect("/admin/dashboard");
                 return;
             }
-            if ("ROLE_User".equals(authority)) {
+            if ("ROLE_Customer".equals(authority)) {
                 log.info("Redirecting user {} to shopping page", username);
                 response.sendRedirect("/user/shopping-page");
                 return;
