@@ -17,6 +17,12 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -24,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.net.URI;
 
 @Component
 @Qualifier("oauth2SuccessHandler")
@@ -51,6 +58,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 }
 
                 String name = getNameFromAttributes(provider, attributes);
+                String avatarUrl = getAvatarUrlFromOAuth2(provider, attributes);
                 Optional<User> existingUser = userRepository.findByEmail(email);
 
                 User user;
@@ -68,15 +76,25 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                         redirectWithError(request, response, "provider_mismatch");
                         return;
                     }
+
+                    // ✅ CẬP NHẬT AVATAR CHO USER CŨ (NẾU CHƯA CÓ)
+                    if ((user.getImage() == null || user.getImage().isEmpty()) && avatarUrl != null) {
+                        String savedAvatarFileName = downloadAndSaveOAuth2Avatar(avatarUrl, user.getUserId(), provider);
+                        if (savedAvatarFileName != null) {
+                            user.setImage(savedAvatarFileName);
+                            userRepository.save(user);
+                        }
+                    }
                 } else {
-                    // Tạo user mới
+                    // Tạo user mới trước để có userId
                     String username = generateUniqueUsername(email, provider);
                     String uniquePhoneNumber = generateUniquePhoneNumber(provider);
+                    
                     user = User.builder()
                             .email(email)
                             .username(username)
                             .password("")
-                            .role(Role.Customer) // mặc định là Customer;
+                            .role(Role.Customer)
                             .isActive(true)
                             .fullName(name != null ? name : email)
                             .createdAt(LocalDateTime.now())
@@ -85,7 +103,18 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                             .address("")
                             .isAccountLocked(false)
                             .build();
-                    userRepository.save(user);
+                    
+                    // Save user first to get ID
+                    user = userRepository.save(user);
+                    
+                    // Now download avatar with real userId
+                    if (avatarUrl != null) {
+                        String savedAvatarFileName = downloadAndSaveOAuth2Avatar(avatarUrl, user.getUserId(), provider);
+                        if (savedAvatarFileName != null) {
+                            user.setImage(savedAvatarFileName);
+                            userRepository.save(user);
+                        }
+                    }
                 }
 
                 // ✅ GÁN QUYỀN CHO NGƯỜI DÙNG DỰA TRÊN ROLE
@@ -99,7 +128,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 OAuth2User newOauth2User = new DefaultOAuth2User(
                         authorities,
                         oauth2User.getAttributes(),
-                        "sub" // hoặc "email" nếu Google không có "sub"
+                        "email" // Key for OAuth2User name
                 );
 
                 OAuth2AuthenticationToken newAuth = new OAuth2AuthenticationToken(
@@ -120,6 +149,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             }
 
         } catch (Exception e) {
+            System.err.println("OAuth2 Authentication Error: " + e.getMessage());
+            e.printStackTrace();
             redirectWithError(request, response, "oauth2_error");
         }
     }
@@ -177,6 +208,24 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
     }
 
+    private String getAvatarUrlFromOAuth2(String provider, Map<String, Object> attributes) {
+        try {
+            if ("google".equals(provider)) {
+                return (String) attributes.get("picture");
+            } else if ("github".equals(provider)) {
+                return (String) attributes.get("avatar_url");
+            } else if ("facebook".equals(provider)) {
+                String facebookId = (String) attributes.get("id");
+                if (facebookId != null) {
+                    return "https://graph.facebook.com/" + facebookId + "/picture?type=large";
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private String generateUniqueUsername(String email, String provider) {
         if (email != null && !email.isEmpty()) {
             if (!userRepository.existsByUsername(email)) {
@@ -224,6 +273,43 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 return "/admin/dashboard";
             default:
                 return "/user/shopping-page";
+        }
+    }
+
+    private String downloadAndSaveOAuth2Avatar(String avatarUrl, String userId, String provider) {
+        try {
+            if (avatarUrl == null || avatarUrl.isEmpty()) {
+                return null;
+            }
+            
+            System.out.println("Downloading OAuth2 avatar from: " + avatarUrl);
+            
+            // Tạo thư mục nếu chưa có
+            String uploadDir = "src/main/resources/static/uploads/avatars/";
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            
+            // Download ảnh từ URL
+            URI uri = new URI(avatarUrl);
+            URL url = uri.toURL();
+            try (InputStream in = url.openStream()) {
+                // Tạo tên file unique với userId thật
+                String fileName = "oauth2_" + provider + "_" + userId + "_" + System.currentTimeMillis() + ".jpg";
+                Path filePath = uploadPath.resolve(fileName);
+                
+                // Lưu file
+                Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
+                
+                System.out.println("OAuth2 avatar saved: " + fileName);
+                return fileName;
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error downloading OAuth2 avatar: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 }
