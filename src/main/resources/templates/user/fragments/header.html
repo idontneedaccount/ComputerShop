@@ -71,17 +71,16 @@
         <div class="axil-mainmenu">
             <div class="container">
                 <div class="header-navbar">
-                    <!-- Logo -->
                     <div class="header-brand">
                         <a th:href="@{/}" class="logo logo-dark">
-                            <img th:src="@{/assets/images/logo/logo.png}" alt="Site Logo">
+                            <img th:src="@{/assets/images/logo/logo.png}" alt="Site Logo" style="width: 85px">
                         </a>
                         <a th:href="@{/}" class="logo logo-light">
                             <img th:src="@{/assets/images/logo/logo-light.png}" alt="Site Logo">
                         </a>
                     </div>
-                    <!-- Navigation -->
                     <div class="header-main-nav">
+                        <!-- Start Mainmanu Nav -->
                         <nav class="mainmenu-nav">
                             <button class="mobile-close-btn mobile-nav-toggler"><i class="fas fa-times"></i></button>
                             <div class="mobile-nav-brand">
@@ -90,38 +89,41 @@
                                 </a>
                             </div>
                             <ul class="mainmenu">
-                                <li><a th:href="@{/}">Trang chủ</a></li>
-                                <li><a th:href="@{/user/shopping-page}">Cửa hàng</a></li>
+                                <li>
+                                    <a th:href="@{/}">Trang chủ</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/user/shopping-page}">Cửa hàng</a>
+                                </li>
                                 <li class="menu-item-has-children">
                                     <a href="#">Trang</a>
-                                    <ul class="axil-submenu">
-                                        <li><a th:href="@{/cart/view}">Giỏ hàng</a></li>
-                                        <li sec:authorize="isAuthenticated()"><a th:href="@{/user/user-profile}">Thông tin cá nhân</a></li>
-                                        <li sec:authorize="!isAuthenticated()"><a th:href="@{/auth/register}">Đăng ký</a></li>
-                                        <li sec:authorize="!isAuthenticated()"><a th:href="@{/auth/login}">Đăng nhập</a></li>
-                                        <li><a href="#">Chính sách bảo mật</a></li>
-                                    </ul>
                                 </li>
-                                <li><a href="#">Liên hệ</a></li>
+                                <li><a href="contact.html">Liên hệ</a></li>
                             </ul>
                         </nav>
+                        <!-- End Mainmanu Nav -->
                     </div>
-                    <!-- Actions -->
                     <div class="header-action">
                         <ul class="action-list">
-                            <li class="axil-search">
+                            <li class="axil-search d-xl-block d-none">
+                                <input type="search" class="placeholder product-search-input" name="search2" id="search2" value="" maxlength="128" placeholder="Bạn đang tìm gì?" autocomplete="off">
+                                <button type="submit" class="icon wooc-btn-search">
+                                    <i class="flaticon-magnifying-glass"></i>
+                                </button>
+                            </li>
+                            <li class="axil-search d-xl-none d-block">
                                 <a href="javascript:void(0)" class="header-search-icon" title="Tìm kiếm">
                                     <i class="flaticon-magnifying-glass"></i>
                                 </a>
                             </li>
                             <li class="wishlist" sec:authorize="isAuthenticated()">
-                                <a th:href="@{/wishlist}">
+                                <a href="wishlist.html">
                                     <i class="flaticon-heart"></i>
                                 </a>
                             </li>
                             <li class="shopping-cart">
-                                <a th:href="@{/cart/view}" class="cart-dropdown-btn">
-                                    <span class="cart-count" th:text="${cartCount} ?: 0">0</span>
+                                <a href="#" class="cart-dropdown-btn">
+                                    <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}">0</span>
                                     <i class="flaticon-shopping-cart"></i>
                                 </a>
                             </li>
@@ -132,47 +134,34 @@
                                 <div class="my-account-dropdown">
                                     <span class="title">LIÊN KẾT NHANH</span>
                                     <ul>
-                                        <!-- Show when authenticated -->
                                         <li sec:authorize="isAuthenticated()">
-                                            <a th:href="@{/user/user-profile}">
-                                                <i class="fas fa-user me-2"></i>
-                                                Thông tin cá nhân
-                                            </a>
+                                            <a th:href="@{/user/user-profile}">Tài khoản của tôi</a>
                                         </li>
                                         <li sec:authorize="isAuthenticated()">
-                                            <a th:href="@{/user/user-profile}">
-                                                <i class="fas fa-shopping-bag me-2"></i>
-                                                Lịch sử đặt hàng
-                                            </a>
+                                            <a th:href="@{/user/user-profile}">Lịch sử đơn hàng</a>
                                         </li>
                                         <li sec:authorize="isAuthenticated()">
                                             <a href="#">Yêu cầu trả hàng</a>
                                         </li>
                                         <li><a href="#">Hỗ trợ</a></li>
-                                        <li><a href="#">Ngôn ngữ</a></li>
                                         <li sec:authorize="isAuthenticated()">
                                             <a th:href="@{/logout}">Đăng xuất</a>
                                         </li>
                                     </ul>
-                                    
-                                    <!-- Show login button only when NOT authenticated -->
                                     <div class="login-btn" sec:authorize="!isAuthenticated()">
                                         <a th:href="@{/auth/login}" class="axil-btn btn-bg-primary">Đăng nhập</a>
                                     </div>
-                                    
-                                    <!-- Show register link only when NOT authenticated -->
                                     <div class="reg-footer text-center" sec:authorize="!isAuthenticated()">
                                         Chưa có tài khoản? <a th:href="@{/auth/register}" class="btn-link">ĐĂNG KÝ TẠI ĐÂY.</a>
                                     </div>
-                                    
                                     <!-- Show user info when authenticated -->
                                     <div class="user-info text-center" sec:authorize="isAuthenticated()">
-                                        <span>Xin chào, 
-                                            <strong th:if="${#authentication.principal.attributes != null}" 
-                                                    th:text="${#authentication.principal.attributes['name'] != null ? #authentication.principal.attributes['name'] : (#authentication.principal.attributes['given_name'] != null ? #authentication.principal.attributes['given_name'] : #authentication.name)}">User</strong>
-                                            <strong th:if="${#authentication.principal.attributes == null}" 
-                                                    th:text="${#authentication.name}">User</strong>!
-                                        </span>
+                                    <span>Xin chào,
+                                        <strong th:if="${#authentication.principal.attributes != null}"
+                                                th:text="${#authentication.principal.attributes['name'] != null ? #authentication.principal.attributes['name'] : (#authentication.principal.attributes['given_name'] != null ? #authentication.principal.attributes['given_name'] : #authentication.name)}">User</strong>
+                                        <strong th:if="${#authentication.principal.attributes == null}"
+                                                th:text="${#authentication.name}">User</strong>!
+                                    </span>
                                     </div>
                                 </div>
                             </li>
