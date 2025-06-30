@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Quản lý trường tùy chỉnh</title>
+</head>
+<body id="page-top">
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/admin">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/admin/product">Sản phẩm</a>
+                </li>
+                <li class="breadcrumb-item active">Quản lý trường tùy chỉnh</li>
+            </ol>
+
+            <!-- Alert Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Add/Edit Field Form -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i th:class="${isEdit} ? 'fas fa-edit' : 'fas fa-plus'"></i>
+                    <span th:text="${isEdit} ? 'Chỉnh sửa trường' : 'Thêm trường mới'">Thêm trường mới</span>
+                    <button th:if="${isEdit}" type="button" class="btn btn-sm btn-secondary float-right" onclick="cancelEdit()">
+                        <i class="fas fa-times"></i> Hủy
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Edit Form -->
+                    <form th:if="${isEdit}" th:action="@{'/admin/product-variants/field-config/update/' + ${editField.fieldId}}" 
+                          method="post" th:object="${editField}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editFieldName">Tên trường <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="editFieldName" name="fieldName" 
+                                           th:value="*{fieldName}"
+                                           placeholder="VD: Màu sắc" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editFieldKey">Khóa trường <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="editFieldKey" name="fieldKey" 
+                                           th:value="*{fieldKey}"
+                                           readonly
+                                           placeholder="VD: color" required>
+                                    <small class="text-muted text-warning">Khóa trường không thể thay đổi khi chỉnh sửa</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="editFieldType">Loại trường</label>
+                                    <select class="form-control" id="editFieldType" name="fieldType" style="padding: 7px">
+                                        <option value="TEXT" th:selected="*{fieldType == 'TEXT'}">Văn bản</option>
+                                        <option value="NUMBER" th:selected="*{fieldType == 'NUMBER'}">Số</option>
+                                        <option value="SELECT" th:selected="*{fieldType == 'SELECT'}">Lựa chọn</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="editDisplayOrder">Thứ tự hiển thị</label>
+                                    <input type="number" class="form-control" id="editDisplayOrder" name="displayOrder" 
+                                           th:value="*{displayOrder}" value="0">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-check mt-4">
+                                        <input type="checkbox" class="form-check-input" id="editIsRequired" name="isRequired"
+                                               th:checked="*{isRequired}">
+                                        <label class="form-check-label" for="editIsRequired">
+                                            Bắt buộc
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                                                         <div class="col-md-3">
+                                 <!-- Empty column -->
+                             </div>
+                        </div>
+
+                        <div class="form-group" id="editOptionsGroup" th:style="*{fieldType} == 'SELECT' ? 'display: block;' : 'display: none;'">
+                            <label for="editFieldOptions">Các tùy chọn (cho loại "Lựa chọn")</label>
+                            <textarea class="form-control" id="editFieldOptions" name="fieldOptions" rows="3"
+                                      th:text="*{fieldOptions}"
+                                      placeholder='["Đỏ","Xanh","Đen","Trắng"]'></textarea>
+                            <small class="text-muted">Định dạng JSON array: ["option1","option2","option3"]</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 
+                            Cập nhật trường
+                        </button>
+                    </form>
+                    
+                    <!-- Add Form -->
+                    <form th:unless="${isEdit}" th:action="@{/admin/product-variants/field-config/add}" 
+                          method="post" th:object="${newField}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fieldName">Tên trường <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="fieldName" name="fieldName" 
+                                           th:value="*{fieldName}"
+                                           placeholder="VD: Màu sắc" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fieldKey">Khóa trường <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="fieldKey" name="fieldKey" 
+                                           th:value="*{fieldKey}"
+                                           placeholder="VD: color" required>
+                                    <small class="text-muted">Chỉ sử dụng chữ thường, số và dấu gạch dưới</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fieldType">Loại trường</label>
+                                    <select class="form-control" id="fieldType" name="fieldType" style="padding: 7px">
+                                        <option value="TEXT" th:selected="*{fieldType == 'TEXT'}">Văn bản</option>
+                                        <option value="NUMBER" th:selected="*{fieldType == 'NUMBER'}">Số</option>
+                                        <option value="SELECT" th:selected="*{fieldType == 'SELECT'}">Lựa chọn</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="displayOrder">Thứ tự hiển thị</label>
+                                    <input type="number" class="form-control" id="displayOrder" name="displayOrder" 
+                                           th:value="*{displayOrder}" value="0">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-check mt-4">
+                                        <input type="checkbox" class="form-check-input" id="isRequired" name="isRequired"
+                                               th:checked="*{isRequired}">
+                                        <label class="form-check-label" for="isRequired">
+                                            Bắt buộc
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <!-- Empty column for add form -->
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="optionsGroup" style="display: none;">
+                            <label for="fieldOptions">Các tùy chọn (cho loại "Lựa chọn")</label>
+                            <textarea class="form-control" id="fieldOptions" name="fieldOptions" rows="3"
+                                      th:text="*{fieldOptions}"
+                                      placeholder='["Đỏ","Xanh","Đen","Trắng"]'></textarea>
+                            <small class="text-muted">Định dạng JSON array: ["option1","option2","option3"]</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 
+                            Thêm trường
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Fields List -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-table"></i>
+                    Danh sách trường tùy chỉnh
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên trường</th>
+                                <th>Khóa</th>
+                                <th>Loại</th>
+                                <th>Bắt buộc</th>
+                                <th>Thứ tự</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="field, iterStat : ${fields}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td th:text="${field.fieldName}">Field Name</td>
+                                <td><code th:text="${field.fieldKey}">field_key</code></td>
+                                <td>
+                                    <span th:switch="${field.fieldType}">
+                                        <span th:case="'TEXT'" class="badge badge-info">Văn bản</span>
+                                        <span th:case="'NUMBER'" class="badge badge-warning">Số</span>
+                                        <span th:case="'SELECT'" class="badge badge-success">Lựa chọn</span>
+                                        <span th:case="'TEXTAREA'" class="badge badge-secondary">Văn bản dài</span>
+                                        <span th:case="'CHECKBOX'" class="badge badge-dark">Checkbox</span>
+                                        <span th:case="*" class="badge badge-light">Khác</span>
+                                    </span>
+                                    <div th:if="${field.fieldType == 'SELECT' and field.fieldOptions != null}" class="mt-1">
+                                        <small class="text-muted">
+                                            <strong>Options:</strong> <span th:text="${#strings.abbreviate(field.fieldOptions, 30)}">...</span>
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:if="${field.isRequired}" class="badge badge-danger">Có</span>
+                                    <span th:unless="${field.isRequired}" class="badge badge-secondary">Không</span>
+                                </td>
+                                <td th:text="${field.displayOrder}">0</td>
+                                <td>
+                                    <a th:href="@{'/admin/product-variants/field-config/edit/' + ${field.fieldId}}"
+                                       class="btn btn-sm btn-warning"
+                                       title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a th:href="@{'/admin/product-variants/field-config/delete/' + ${field.fieldId}}"
+                                       class="btn btn-sm btn-danger ml-1"
+                                       onclick="return confirm('Bạn có chắc muốn xóa trường này?\\nLưu ý: Dữ liệu trong các variant sẽ không bị xóa nhưng trường này sẽ không hiển thị nữa.')"
+                                       title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(fields)}">
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-info-circle"></i> Chưa có trường tùy chỉnh nào
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <a href="/admin/product" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách sản phẩm
+            </a>
+        </div>
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+    <!-- /.content-wrapper -->
+</div>
+<!-- /#wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<script>
+// Show/hide options group based on field type for Add form
+const addFieldType = document.getElementById('fieldType');
+if (addFieldType) {
+    addFieldType.addEventListener('change', function() {
+        const optionsGroup = document.getElementById('optionsGroup');
+        if (this.value === 'SELECT') {
+            optionsGroup.style.display = 'block';
+        } else {
+            optionsGroup.style.display = 'none';
+        }
+    });
+}
+
+// Show/hide options group based on field type for Edit form
+const editFieldType = document.getElementById('editFieldType');
+if (editFieldType) {
+    editFieldType.addEventListener('change', function() {
+        const editOptionsGroup = document.getElementById('editOptionsGroup');
+        if (this.value === 'SELECT') {
+            editOptionsGroup.style.display = 'block';
+        } else {
+            editOptionsGroup.style.display = 'none';
+        }
+    });
+}
+
+function cancelEdit() {
+    window.location.href = '/admin/product-variants/field-config';
+}
+
+// Toggle function removed as per user request
+
+// Auto-generate field key from field name (only for Add form)
+const addFieldName = document.getElementById('fieldName');
+if (addFieldName) {
+    addFieldName.addEventListener('input', function() {
+        const fieldKeyInput = document.getElementById('fieldKey');
+        
+        if (this.value) {
+            let fieldKey = this.value
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/\s+/g, '_')
+                .replace(/_{2,}/g, '_')
+                .replace(/^_|_$/g, '');
+            fieldKeyInput.value = fieldKey;
+        }
+    });
+}
+
+// Form validation for Add form
+const addForm = document.querySelector('form[action*="/add"]');
+if (addForm) {
+    addForm.addEventListener('submit', function(e) {
+        const fieldType = document.getElementById('fieldType').value;
+        const fieldOptions = document.getElementById('fieldOptions').value;
+        
+        if (fieldType === 'SELECT' && !fieldOptions.trim()) {
+            e.preventDefault();
+            alert('Vui lòng nhập các tùy chọn cho loại trường "Lựa chọn"!');
+            return false;
+        }
+        
+        if (fieldType === 'SELECT' && fieldOptions.trim()) {
+            try {
+                JSON.parse(fieldOptions);
+            } catch (error) {
+                e.preventDefault();
+                alert('Định dạng JSON không hợp lệ! Vui lòng sử dụng format: ["option1","option2"]');
+                return false;
+            }
+        }
+    });
+}
+
+// Form validation for Edit form
+const editForm = document.querySelector('form[action*="/update/"]');
+if (editForm) {
+    editForm.addEventListener('submit', function(e) {
+        const fieldType = document.getElementById('editFieldType').value;
+        const fieldOptions = document.getElementById('editFieldOptions').value;
+        
+        if (fieldType === 'SELECT' && !fieldOptions.trim()) {
+            e.preventDefault();
+            alert('Vui lòng nhập các tùy chọn cho loại trường "Lựa chọn"!');
+            return false;
+        }
+        
+        if (fieldType === 'SELECT' && fieldOptions.trim()) {
+            try {
+                JSON.parse(fieldOptions);
+            } catch (error) {
+                e.preventDefault();
+                alert('Định dạng JSON không hợp lệ! Vui lòng sử dụng format: ["option1","option2"]');
+                return false;
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html> 

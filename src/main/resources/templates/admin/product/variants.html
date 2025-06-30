@@ -41,6 +41,11 @@
                 <div class="card-header">
                     <i class="fas fa-laptop"></i>
                     Thông tin sản phẩm
+                    <div class="float-right">
+                        <a href="/admin/product-variants/field-config" class="btn btn-info btn-sm">
+                            <i class="fas fa-cogs"></i> Quản lý trường tùy chỉnh
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -111,7 +116,10 @@
                     Thêm cấu hình mới
                 </div>
                 <div class="card-body">
-                    <form th:action="@{'/admin/product-variants/add/' + ${product.productID}}" method="post" th:object="${newVariant}">
+                    <form th:action="@{'/admin/product-variants/add/' + ${product.productID}}" method="post" 
+                          th:object="${newVariant}" enctype="multipart/form-data">
+                        
+                        <!-- Basic Variant Info -->
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -168,6 +176,74 @@
                             <input type="text" class="form-control" id="sku" name="sku" placeholder="Tạo tự động hoặc nhập mã">
                         </div>
 
+                        <!-- DYNAMIC CUSTOM FIELDS -->
+                        <div th:if="${customFields != null and !#lists.isEmpty(customFields)}" class="mt-4">
+                            <h6 class="text-info mb-3">
+                                <i class="fas fa-magic"></i> Thông tin tùy chỉnh
+                            </h6>
+                            <div class="row" th:each="field : ${customFields}">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label th:for="'custom_' + ${field.fieldKey}" 
+                                               th:text="${field.fieldName}">Field Name</label>
+                                        <span th:if="${field.isRequired}" class="text-danger">*</span>
+                                        
+                                        <!-- TEXT Field -->
+                                        <input th:if="${field.fieldType == 'TEXT'}" 
+                                               type="text" 
+                                               class="form-control" 
+                                               th:id="'custom_' + ${field.fieldKey}"
+                                               th:name="'custom_' + ${field.fieldKey}"
+                                               th:required="${field.isRequired}">
+                                        
+                                        <!-- NUMBER Field -->
+                                        <input th:if="${field.fieldType == 'NUMBER'}" 
+                                               type="number" 
+                                               class="form-control" 
+                                               th:id="'custom_' + ${field.fieldKey}"
+                                               th:name="'custom_' + ${field.fieldKey}"
+                                               th:required="${field.isRequired}">
+                                        
+                                        <!-- SELECT Field -->
+                                        <select th:if="${field.fieldType == 'SELECT'}" 
+                                                class="form-control" 
+                                                th:id="'custom_' + ${field.fieldKey}"
+                                                th:name="'custom_' + ${field.fieldKey}"
+                                                th:required="${field.isRequired}" style="padding: 7px;">
+                                            <option value="">-- Chọn --</option>
+                                            <option th:each="option : ${field.optionsArray}" 
+                                                    th:value="${option}" 
+                                                    th:text="${option}">Option</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IMAGE UPLOAD SECTION -->
+                        <div class="mt-4">
+                            <h6 class="text-warning mb-3">
+                                <i class="fas fa-images"></i> Hình ảnh variant
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="variantImage">Ảnh chính của variant</label>
+                                        <input type="file" class="form-control-file" id="variantImage" name="variantImage" accept="image/*">
+                                        <small class="text-muted">Chọn ảnh đại diện cho variant này (ví dụ: màu sắc khác)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="variantImages">Ảnh bổ sung (nhiều ảnh)</label>
+                                        <input type="file" class="form-control-file" id="variantImages" name="variantImages" 
+                                               accept="image/*" multiple>
+                                        <small class="text-muted">Có thể chọn nhiều ảnh cùng lúc</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Thêm cấu hình
                         </button>
@@ -187,7 +263,9 @@
                             <thead>
                             <tr>
                                 <th>STT</th>
+                                <th>Ảnh</th>
                                 <th>Cấu hình</th>
+                                <th>Custom Fields</th>
                                 <th>SKU</th>
                                 <th>Giá</th>
                                 <th>Số lượng</th>
@@ -198,42 +276,79 @@
                             <tbody>
                             <tr th:each="variant, iterStat : ${variants}">
                                 <td th:text="${iterStat.count}">1</td>
+                                <!-- Variant Image -->
                                 <td>
-                                    <strong th:text="${variant.displayName}">Variant Name</strong><br>
-                                    <small>
-                                        CPU: <span th:text="${variant.cpu}"></span><br>
-                                        RAM: <span th:text="${variant.ram}"></span><br>
-                                        Storage: <span th:text="${variant.storage}"></span>
-                                        <span th:if="${variant.gpu}"><br>GPU: <span th:text="${variant.gpu}"></span></span>
-                                        <span th:if="${variant.screen}"><br>Screen: <span th:text="${variant.screen}"></span></span>
-                                    </small>
+                                    <img th:if="${variant.variantImageUrl}" 
+                                         th:src="@{'/assets/images/product/laptop/' + ${variant.variantImageUrl}}" 
+                                         style="width: 50px; height: 50px; object-fit: cover;"
+                                         class="rounded"
+                                         th:alt="${variant.variantName}"
+                                         onerror="this.src='/assets/images/product/default-product.png'">
+                                    <img th:unless="${variant.variantImageUrl}" 
+                                         th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
+                                         style="width: 50px; height: 50px; object-fit: cover;"
+                                         class="rounded opacity-50"
+                                         th:alt="${product.name}"
+                                         onerror="this.src='/assets/images/product/default-product.png'">
                                 </td>
-                                <td th:text="${variant.sku}">SKU</td>
-                                <td th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Price</td>
                                 <td>
-                                    <span th:text="${variant.quantity}">0</span>
-                                    <span th:if="${variant.quantity == 0}" class="badge badge-danger ml-1">Hết hàng</span>
+                                    <div class="variant-config">
+                                        <small><strong>CPU:</strong> <span th:text="${variant.cpu}">CPU</span></small><br>
+                                        <small><strong>RAM:</strong> <span th:text="${variant.ram}">RAM</span></small><br>
+                                        <small><strong>Storage:</strong> <span th:text="${variant.storage}">Storage</span></small><br>
+                                        <small th:if="${variant.gpu}"><strong>GPU:</strong> <span th:text="${variant.gpu}">GPU</span></small>
+                                    </div>
+                                </td>
+                                <!-- Custom Attributes -->
+                                <td>
+                                    <div th:if="${variant.customAttributesMap != null and !variant.customAttributesMap.isEmpty()}">
+                                        <div th:each="attr : ${variant.customAttributesMap}" class="custom-attr">
+                                            <small><strong th:text="${attr.key}">Key</strong>: 
+                                                   <span th:text="${attr.value}" class="text-info">Value</span></small><br>
+                                        </div>
+                                    </div>
+                                    <small th:if="${variant.customAttributesMap == null or variant.customAttributesMap.isEmpty}"
+                                           class="text-muted">Không có</small>
                                 </td>
                                 <td>
-                                    <span th:if="${variant.isActive}" class="badge badge-success">Đang bán</span>
-                                    <span th:unless="${variant.isActive}" class="badge badge-secondary">Ngừng bán</span>
+                                    <span class="badge badge-light" th:text="${variant.sku ?: 'Chưa có'}">SKU</span>
+                                </td>
+                                <td>
+                                    <span class="text-success font-weight-bold" 
+                                          th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Price</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-primary" th:text="${variant.quantity}">Quantity</span>
+                                </td>
+                                <td>
+                                    <span th:if="${variant.isActive}" class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Hoạt động
+                                    </span>
+                                    <span th:unless="${variant.isActive}" class="badge badge-danger">
+                                        <i class="fas fa-times-circle"></i> Ngừng
+                                    </span>
                                 </td>
                                 <td>
                                     <a th:href="@{'/admin/product-variants/edit/' + ${variant.variantId}}"
-                                       class="btn btn-sm btn-primary" title="Sửa">
+                                       class="btn btn-sm btn-warning" title="Sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-warning toggle-status-btn"
-                                            th:attr="data-variant-id=${variant.variantId}"
-                                            title="Đổi trạng thái">
-                                        <i class="fas fa-toggle-on"></i>
-                                    </button>
                                     <a th:href="@{'/admin/product-variants/delete/' + ${variant.variantId}}"
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('Bạn có chắc muốn xóa cấu hình này?')"
-                                       title="Xóa">
+                                       class="btn btn-sm btn-danger ml-1"
+                                       onclick="return confirm('Bạn có chắc muốn xóa cấu hình này?')" title="Xóa">
                                         <i class="fas fa-trash"></i>
                                     </a>
+                                    <button class="btn btn-sm btn-info ml-1"
+                                            onclick="toggleStatus(this)"
+                                            th:data-variant-id="${variant.variantId}"
+                                            title="Bật/Tắt">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(variants)}">
+                                <td colspan="9" class="text-center text-muted">
+                                    <i class="fas fa-info-circle"></i> Chưa có cấu hình nào
                                 </td>
                             </tr>
                             </tbody>
@@ -259,5 +374,64 @@
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
+
+<script>
+function toggleStatus(button) {
+    const variantId = button.getAttribute('data-variant-id');
+    fetch('/admin/product-variants/toggle-status/' + variantId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === 'success') {
+            location.reload();
+        } else {
+            alert('Có lỗi xảy ra!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra!');
+    });
+}
+</script>
+
+<style>
+.product-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.image-wrapper {
+    text-align: center;
+}
+
+.variant-config small {
+    display: block;
+    margin-bottom: 2px;
+}
+
+.custom-attr small {
+    display: block;
+    margin-bottom: 1px;
+}
+
+.form-control-file {
+    border: 1px dashed #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.opacity-50 {
+    opacity: 0.5;
+}
+</style>
+
 </body>
 </html>
