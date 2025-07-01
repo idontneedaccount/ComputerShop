@@ -271,14 +271,17 @@
     animation: slideInUp 0.6s ease-out 0.4s both;
 }
 
-/* Image Showcase Styles */
+/* Image Showcase Styles - Dual Product Layout */
 .product-image-showcase {
     position: relative;
     width: 100%;
-    height: 600px; /* Tăng từ 500px lên 600px để chứa ảnh to hơn */
-    overflow: visible; /* Allow navigation to show */
+    height: 600px;
+    overflow: visible;
     border-radius: 20px;
-    padding: 20px; /* Thêm padding để ảnh không bị cắt */
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .product-image-slide {
@@ -294,23 +297,67 @@
 
 .product-image-slide.active {
     opacity: 1;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     animation: fadeInScale 0.6s ease-out;
+    padding: 0 20px;
 }
 
-.product-image-slide img {
-    width: 100%;
-    height: 100%;
+/* Main product image - larger, on the left (Bootstrap 4/5 ratio) */
+.product-image-slide.active img {
+    width: 80%;
+    height: auto;
+    max-width: 550px;
     object-fit: contain;
-    max-width: 650px; /* Tăng từ 500px lên 650px để ảnh to hơn */
-    margin: 0 auto;
-    display: block;
     transition: transform 0.4s ease;
-    transform: scale(1.2); /* Zoom ảnh lên 120% */
+    transform: scale(1.2);
+    z-index: 2;
 }
 
-.product-image-slide:hover img {
-    transform: scale(1.3); /* Hover zoom từ 1.2 lên 1.3 */
+.product-image-slide.active img:hover {
+    transform: scale(1.3);
+}
+
+/* Preview image (next slide) - smaller, on the right (Bootstrap 1/5 ratio) */
+.product-image-slide.active::after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18%;
+    height: 55%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+/* Preview images for each slide */
+.product-image-slide.active#image-1::after {
+    background-image: url('../images/product/laptop/MSI Raider GE76 12UGS.jpg');
+}
+
+.product-image-slide.active#image-2::after {
+    background-image: url('../images/product/laptop/Lenovo Legion 5 Pro 16ACH6H.jpg');
+}
+
+.product-image-slide.active#image-3::after {
+    background-image: url('../images/product/laptop/laptop-msi-titan-gt77-cong-ket-noi-phai.webp');
+}
+
+.product-image-slide.active#image-4::after {
+    background-image: url('../images/product/laptop/ASUS ROG Strix G15 G512 IAL011T.jpg');
+}
+
+/* Hover effect for preview image */
+.product-image-slide.active:hover::after {
+    opacity: 0.8;
+    transform: translateY(-50%) scale(1.05);
 }
 
 /* Enhanced Discount Badge - Sticking to Product Image */
@@ -574,8 +621,16 @@
         padding: 15px; /* Thêm padding cho tablet */
     }
     
-    .product-image-slide img {
-        transform: scale(1.1); /* Giảm scale cho tablet */
+    .product-image-slide.active img {
+        width: 76%;
+        max-width: 380px;
+        transform: scale(1.15);
+    }
+    
+    .product-image-slide.active::after {
+        width: 22%;
+        height: 52%;
+        right: 12px;
     }
     
     .main-slider-content {
@@ -693,12 +748,21 @@
     }
     
     .product-image-showcase {
-        height: 380px; /* Tăng từ 280px lên 380px cho mobile */
-        padding: 10px; /* Thêm padding cho mobile */
+        height: 380px;
+        padding: 10px;
     }
     
-    .product-image-slide img {
-        transform: scale(1.0); /* Scale bình thường cho mobile */
+    .product-image-slide.active img {
+        width: 78%;
+        max-width: 320px;
+        transform: scale(1.1);
+    }
+    
+    .product-image-slide.active::after {
+        width: 20%;
+        height: 48%;
+        right: 8px;
+        margin-top: 15px;
     }
     
     .product-showcase-container {
@@ -816,12 +880,20 @@
     }
     
     .product-image-showcase {
-        height: 320px; /* Tăng từ 250px lên 320px cho màn hình nhỏ */
-        padding: 5px; /* Thêm padding cho màn hình nhỏ */
+        height: 320px;
+        padding: 5px;
     }
     
-    .product-image-slide img {
-        transform: scale(0.9); /* Scale nhỏ hơn cho màn hình nhỏ */
+    .product-image-slide.active img {
+        width: 75%;
+        max-width: 280px;
+        transform: scale(1.0);
+    }
+    
+    .product-image-slide.active::after {
+        width: 22%;
+        height: 42%;
+        right: 5px;
     }
     
     .axil-btn {
