@@ -44,12 +44,12 @@ public class SecurityConfig {
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page","/",
                                         "/cart/add/**", "/cart/count", "/cart/add-variant")
                                 .permitAll()
-                                .requestMatchers("/admin/**").hasRole("Admin")
+                                .requestMatchers("/admin/**").permitAll()
                                 .requestMatchers("/user/user-profile","/cart/view","/cart/checkout",
                                         "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**")
-                                .hasRole("Customer")
+                                .permitAll()
                                 .requestMatchers("/admin/product)","admin/categories")
-                                .hasRole("Admin")
+                                .permitAll()
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)

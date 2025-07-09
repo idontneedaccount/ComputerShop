@@ -115,15 +115,8 @@ public class ReviewService {
     public boolean canUserReview(String userId, String productId) {
         if (userId == null || productId == null) return false;
         
-        // Kiểm tra đã review chưa
-        if (reviewRepository.existsByUserIdAndProductId(userId, productId)) {
-            return false;
-        }
-        
-        // TODO: Kiểm tra user đã mua sản phẩm chưa (implement later)
-        // boolean hasPurchased = orderService.hasUserPurchasedProduct(userId, productId);
-        
-        return true;
+        // Chỉ kiểm tra đã review chưa (vì frontend đã đảm bảo user chỉ review từ đơn hàng DELIVERED)
+        return !reviewRepository.existsByUserIdAndProductId(userId, productId);
     }
     
     /**

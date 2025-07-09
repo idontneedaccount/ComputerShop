@@ -4,22 +4,22 @@ import com.example.computershop.dto.UserProfileData;
 import com.example.computershop.dto.request.UserInfoUpdateRequest;
 import com.example.computershop.dto.request.PasswordChangeRequest;
 import com.example.computershop.entity.Order;
+import com.example.computershop.entity.OrderDetail;
+import com.example.computershop.entity.Products;
 import com.example.computershop.entity.User;
 import com.example.computershop.service.OrderService;
+import com.example.computershop.service.ReviewService;
 import com.example.computershop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +32,7 @@ public class UserProfileController {
     
     private final UserService userService;
     private final OrderService orderService;
+    private final ReviewService reviewService;
     
     @GetMapping("/user-profile")
     public String showUserProfile(Model model) {
@@ -213,6 +214,105 @@ public class UserProfileController {
         }
         
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get products from order for review
+     */
+    @GetMapping("/order-products/{orderId}")
+    public ResponseEntity<Map<String, Object>> getOrderProducts(@PathVariable String orderId, Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            User user = userService.getUserFromPrincipal(principal);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy thông tin người dùng!");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Get order with details
+            Order order = orderService.getOrderByIdWithDetails(orderId);
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy đơn hàng!");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Get products from order details and check review status
+            List<Map<String, Object>> products = new ArrayList<>();
+            for (OrderDetail detail : order.getOrderDetails()) {
+                Products product = detail.getProduct();
+                if (product != null) {
+                    Map<String, Object> productInfo = new HashMap<>();
+                    productInfo.put("productID", product.getProductID());
+                    productInfo.put("name", product.getName());
+                    productInfo.put("brand", product.getBrand());
+                    productInfo.put("price", product.getPrice());
+                    productInfo.put("imageURL", product.getImageURL());
+                    
+                    boolean hasReviewed = reviewService.getUserReviewForProduct(user.getUserId(), product.getProductID()).isPresent();
+                    productInfo.put("hasReviewed", hasReviewed);
+                    
+                    products.add(productInfo);
+                }
+            }
+            
+            response.put("success", true);
+            response.put("products", products);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("Error getting order products for review", e);
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi tải danh sách sản phẩm!");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+    
+    /**
+     * Submit product review
+     */
+    @PostMapping("/submit-review")
+    public ResponseEntity<Map<String, Object>> submitReview(@RequestBody Map<String, Object> request, Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            User user = userService.getUserFromPrincipal(principal);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy thông tin người dùng!");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            String productId = (String) request.get("productId");
+            Integer rating = (Integer) request.get("rating");
+            String comment = (String) request.get("comment");
+            
+            // Basic validation
+            if (productId == null || rating == null) {
+                response.put("success", false);
+                response.put("message", "Thiếu thông tin bắt buộc!");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Create review (ReviewService sẽ handle validation)
+            reviewService.createReview(user.getUserId(), productId, rating, comment);
+            
+            response.put("success", true);
+            response.put("message", "Đánh giá sản phẩm thành công!");
+            return ResponseEntity.ok(response);
+            
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            log.error("Error submitting review", e);
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi gửi đánh giá!");
+            return ResponseEntity.internalServerError().body(response);
+        }
     }
 
 } 
