@@ -3,7 +3,6 @@ package com.example.computershop.controller;
 import com.example.computershop.entity.Order;
 import com.example.computershop.service.OrderService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

@@ -10,8 +10,13 @@ public class CheckoutRequest {
     private String address;
     private String city;
     private String region;
+    private String district;
+    private String ward;
     private String note;
     private String paymentMethod;
+    private String shippingMethod;
+    private Double distance;
+    private Long shippingFee;
 
     public CheckoutRequest() {}
 
@@ -78,5 +83,45 @@ public class CheckoutRequest {
     
     public void setPaymentMethod(String paymentMethod) { 
         this.paymentMethod = paymentMethod; 
+    }
+
+    public String getShippingMethod() { 
+        return shippingMethod; 
+    }
+    
+    public void setShippingMethod(String shippingMethod) { 
+        this.shippingMethod = shippingMethod; 
+    }
+
+    public Double getDistance() { 
+        return distance; 
+    }
+    
+    public void setDistance(Double distance) { 
+        this.distance = distance; 
+    }
+
+    public Long getShippingFee() { 
+        return shippingFee; 
+    }
+    
+    public void setShippingFee(Long shippingFee) { 
+        this.shippingFee = shippingFee; 
+    }
+
+    public String getDistrict() { 
+        return district; 
+    }
+    
+    public void setDistrict(String district) { 
+        this.district = district; 
+    }
+
+    public String getWard() { 
+        return ward; 
+    }
+    
+    public void setWard(String ward) { 
+        this.ward = ward; 
     }
 } 

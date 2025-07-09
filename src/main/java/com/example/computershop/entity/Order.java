@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "Orders")
 public class Order {
     @Id
@@ -65,6 +67,15 @@ public class Order {
     
     @Column(name = "Note", columnDefinition = "NVARCHAR(500)")
     private String note;
+
+    @Column(name = "ShippingMethod", columnDefinition = "NVARCHAR(50)")
+    private String shippingMethod;
+    
+    @Column(name = "ShippingFee")
+    private Long shippingFee;
+    
+    @Column(name = "Distance")
+    private Double distance;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
