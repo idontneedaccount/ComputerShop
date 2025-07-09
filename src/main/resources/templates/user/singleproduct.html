@@ -26,8 +26,12 @@
                                 <div class="single-product-thumbnail-wrap zoom-gallery">
                                     <div class="single-product-thumbnail product-large-thumbnail-3 axil-product">
                                         <div class="thumbnail">
-                                            <a th:href="@{'/assets/images/product/laptop/' + ${product.imageURL}}" class="popup-zoom">
-                                                <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" th:alt="${product.name}" alt="Product Images" style="height: 500px; width: 100%; object-fit: contain;">
+                                            <a th:href="@{'/assets/images/product/laptop/' + ${product.imageURL}}" class="popup-zoom" id="main-image-link">
+                                                <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
+                                                     th:alt="${product.name}" 
+                                                     alt="Product Images" 
+                                                     id="main-product-image"
+                                                     style="height: 500px; width: 100%; object-fit: contain;">
                                             </a>
                                         </div>
                                     </div>
@@ -35,17 +39,46 @@
                                         <div class="product-badget">HOT</div>
                                     </div>
                                     <div class="product-quick-view position-view">
-                                        <a th:href="@{'/assets/images/product/laptop/' + ${product.imageURL}}" class="popup-zoom">
+                                        <a th:href="@{'/assets/images/product/laptop/' + ${product.imageURL}}" class="popup-zoom" id="zoom-link">
                                             <i class="far fa-search-plus"></i>
                                         </a>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-2 order-lg-1">
-                                <div class="product-small-thumb-3 small-thumb-wrapper">
-                                    <div class="small-thumb-img">
-                                        <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" th:alt="${product.name}" alt="thumb image">
+                                <div class="product-small-thumb-3 small-thumb-wrapper" id="thumbnail-container">
+                                    <!-- Main Product Image -->
+                                    <div class="small-thumb-img active" th:attr="data-image=${product.imageURL}, data-variant-id='main'">
+                                        <img th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
+                                             th:alt="${product.name}" 
+                                             alt="thumb image"
+                                             style="cursor: pointer;">
                                     </div>
+                                    
+                                    <!-- Variant Images -->
+                                    <th:block th:if="${variants != null and !variants.isEmpty()}" th:each="variant : ${variants}">
+                                        <!-- Variant Main Image -->
+                                        <div th:if="${variant.variantImageUrl != null and !variant.variantImageUrl.isEmpty()}" 
+                                             class="small-thumb-img" 
+                                             th:attr="data-image=${variant.variantImageUrl}, data-variant-id=${variant.variantId}">
+                                            <img th:src="@{'/assets/images/product/laptop/' + ${variant.variantImageUrl}}" 
+                                                 th:alt="${variant.displayName}" 
+                                                 alt="variant thumb"
+                                                 style="cursor: pointer;">
+                                        </div>
+                                        
+                                        <!-- Additional Variant Images -->
+                                        <th:block th:if="${variant.variantImagesArray != null and variant.variantImagesArray.length > 0}" 
+                                                  th:each="variantImg : ${variant.variantImagesArray}">
+                                            <div class="small-thumb-img" 
+                                                 th:attr="data-image=${variantImg}, data-variant-id=${variant.variantId}">
+                                                <img th:src="@{'/assets/images/product/laptop/' + ${variantImg}}" 
+                                                     th:alt="${variant.displayName}" 
+                                                     alt="variant additional thumb"
+                                                     style="cursor: pointer;">
+                                            </div>
+                                        </th:block>
+                                    </th:block>
                                 </div>
                             </div>
                         </div>
@@ -105,7 +138,15 @@
                                     <div class="variant-grid">
                                         <div th:each="variant, iterStat : ${variants}" 
                                              class="variant-card" 
-                                             th:attr="data-variant-id=${variant.variantId}, data-price=${variant.price}, data-quantity=${variant.quantity}, data-cpu=${variant.cpu}, data-ram=${variant.ram}, data-storage=${variant.storage}, data-gpu=${variant.gpu}"
+                                             th:attr="data-variant-id=${variant.variantId}, 
+                                                      data-price=${variant.price}, 
+                                                      data-quantity=${variant.quantity}, 
+                                                      data-cpu=${variant.cpu}, 
+                                                      data-ram=${variant.ram}, 
+                                                      data-storage=${variant.storage}, 
+                                                      data-gpu=${variant.gpu},
+                                                      data-image=${variant.variantImageUrl ?: product.imageURL},
+                                                      data-color=${variant.customAttributesMap.get('color')}"
                                              th:classappend="${variant.quantity == 0} ? 'out-of-stock' : ''">
                                             <input type="radio" th:id="'variant-' + ${variant.variantId}" 
                                                    name="selectedVariant" th:value="${variant.variantId}"
@@ -116,6 +157,12 @@
                                                     <div class="variant-title" th:text="${variant.cpu ?: 'N/A'}">CPU</div>
                                                     <div class="variant-ram-storage" th:text="${variant.ram + ' - ' + variant.storage}">RAM - Storage</div>
                                                     <div class="variant-gpu" th:text="${variant.gpu ?: 'Integrated'}">GPU</div>
+                                                    <!-- Color Display -->
+                                                    <div th:if="${variant.customAttributesMap.get('color') != null and !variant.customAttributesMap.get('color').isEmpty()}" 
+                                                         class="variant-color">
+                                                        <span class="color-label">Màu:</span>
+                                                        <span class="color-value" th:text="${variant.customAttributesMap.get('color')}">Color</span>
+                                                    </div>
                                                 </div>
                                                 <div th:if="${variant.quantity == 0}" class="sold-out-badge">
                                                     <i class="fas fa-times"></i>
@@ -360,530 +407,9 @@
 
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
 
-<script th:inline="javascript">
-/*<![CDATA[*/
-document.addEventListener('DOMContentLoaded', function() {
-    const variantOptions = document.querySelectorAll('input[name="selectedVariant"]');
-    const priceDisplay = document.getElementById('price-display');
-    const stockDisplay = document.getElementById('variant-stock-display');
-    const stockInfo = document.getElementById('stock-info');
-    const addToCartButton = document.getElementById('add-to-cart-btn');
-    const quantityInput = document.getElementById('quantity-input');
-    
-    // Store original specifications
-    const originalSpecs = {
-        cpu: /*[[${specifications != null ? specifications.cpu : ''}]]*/ '',
-        ram: /*[[${specifications != null ? specifications.ram : ''}]]*/ '',
-        storage: /*[[${specifications != null ? specifications.ssd : ''}]]*/ '',
-        gpu: /*[[${specifications != null ? specifications.vga : ''}]]*/ ''
-    };
-    
-    // Function to format number as currency
-    function formatNumber(num) {
-        return new Intl.NumberFormat('vi-VN').format(num);
-    }
-    
-    // Function to update display based on selected variant
-    function updateVariantDisplay() {
-        const selectedVariant = document.querySelector('input[name="selectedVariant"]:checked');
-        if (selectedVariant) {
-            const variantElement = selectedVariant.closest('.variant-card');
-            const price = variantElement.dataset.price;
-            const quantity = parseInt(variantElement.dataset.quantity);
-            const variantId = variantElement.dataset.variantId;
-            
-            // Get variant specifications
-            const variantSpecs = {
-                cpu: variantElement.dataset.cpu,
-                ram: variantElement.dataset.ram,
-                storage: variantElement.dataset.storage,
-                gpu: variantElement.dataset.gpu
-            };
-            
-            // Update price display
-            if (priceDisplay) {
-                priceDisplay.innerHTML = formatNumber(price) + ' VNĐ';
-            }
-            
-            // Update stock display
-            if (stockDisplay && stockInfo) {
-                if (quantity > 0) {
-                    stockDisplay.textContent = quantity;
-                    stockInfo.innerHTML = '<i class="fal fa-check"></i>Còn hàng: <span id="variant-stock-display">' + quantity + '</span> sản phẩm';
-                    stockInfo.style.color = '';
-                } else {
-                    stockDisplay.textContent = '0';
-                    stockInfo.innerHTML = '<i class="fal fa-times"></i>Hết hàng';
-                    stockInfo.style.color = '#ff4757';
-                }
-            }
-            
-            // Update specifications table
-            updateSpecificationTable(variantSpecs);
-            
-            // Update add to cart button
-            if (quantity > 0) {
-                addToCartButton.style.display = 'inline-block';
-                addToCartButton.classList.remove('disabled');
-                addToCartButton.dataset.variantId = variantId;
-            } else {
-                addToCartButton.style.display = 'none';
-                addToCartButton.classList.add('disabled');
-            }
-        }
-    }
-    
-    // Function to update specification table
-    function updateSpecificationTable(variantSpecs) {
-        // Update CPU
-        const cpuElement = document.getElementById('spec-cpu');
-        if (cpuElement) {
-            cpuElement.textContent = variantSpecs.cpu && variantSpecs.cpu !== 'null' ? variantSpecs.cpu : originalSpecs.cpu;
-        }
-        
-        // Update RAM
-        const ramElement = document.getElementById('spec-ram');
-        if (ramElement) {
-            ramElement.textContent = variantSpecs.ram && variantSpecs.ram !== 'null' ? variantSpecs.ram : originalSpecs.ram;
-        }
-        
-        // Update Storage
-        const storageElement = document.getElementById('spec-storage');
-        if (storageElement) {
-            storageElement.textContent = variantSpecs.storage && variantSpecs.storage !== 'null' ? variantSpecs.storage : originalSpecs.storage;
-        }
-        
-        // Update GPU
-        const gpuElement = document.getElementById('spec-gpu');
-        if (gpuElement) {
-            gpuElement.textContent = variantSpecs.gpu && variantSpecs.gpu !== 'null' ? variantSpecs.gpu : originalSpecs.gpu;
-        }
-    }
-    
-    // Add event listeners to variant options
-    variantOptions.forEach(option => {
-        option.addEventListener('change', updateVariantDisplay);
-    });
-    
-    // Initialize display
-    updateVariantDisplay();
-    
-    // Handle add to cart
-    if (addToCartButton) {
-        addToCartButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const productId = this.dataset.productId;
-            const variantId = this.dataset.variantId;
-            const quantity = parseInt(quantityInput.value) || 1;
-            
-            // If product has variants
-            if (variantId) {
-                fetch('/cart/add-variant', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: `productId=${productId}&variantId=${variantId}&quantity=${quantity}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Show success notification
-                        alert(data.message);
-                        // Update cart count if available
-                        if (data.cartCount !== undefined) {
-                            const cartCountElement = document.querySelector('.cart-count');
-                            if (cartCountElement) {
-                                cartCountElement.textContent = data.cartCount;
-                            }
-                        }
-                    } else {
-                        alert(data.message || 'Có lỗi xảy ra!');
-                    }
-                })
-                .catch(error => {
-    
-                    alert('Có lỗi xảy ra khi thêm vào giỏ hàng!');
-                });
-            } else {
-                // No variants, add product directly
-                window.location.href = `/cart/add/${productId}?sl=${quantity}`;
-            }
-        });
-    }
-    });
-    
-    // === REVIEW FUNCTIONALITY ===
-    const productId = /*[[${product.productID}]]*/ '';
-    let currentPage = 0;
-    const pageSize = 10;
-    
-    // Load reviews when tab is clicked
-    document.getElementById('reviews-tab').addEventListener('click', function() {
-        loadReviews();
-    });
-    
-    // Load more reviews button
-    const loadMoreBtn = document.getElementById('load-more-reviews');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', function() {
-            currentPage++;
-            loadReviews(false); // append to existing reviews
-        });
-    }
-    
-    function loadReviews(clearExisting = true) {
-        const url = `/api/reviews/product/${productId}?page=${currentPage}&size=${pageSize}`;
-        
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                const reviewsList = document.getElementById('reviews-list');
-                
-                if (clearExisting) {
-                    reviewsList.innerHTML = '';
-                    currentPage = 0;
-                }
-                
-                if (data.content && data.content.length > 0) {
-                    data.content.forEach(review => {
-                        reviewsList.appendChild(createReviewElement(review));
-                    });
-                    
-                    // Show/hide load more button
-                    const loadMoreBtn = document.getElementById('load-more-reviews');
-                    if (data.last) {
-                        loadMoreBtn.style.display = 'none';
-                    } else {
-                        loadMoreBtn.style.display = 'block';
-                    }
-                } else if (clearExisting) {
-                    reviewsList.innerHTML = '<li class="text-center py-4"><p></p></li>';
-                }
-            })
-            .catch(error => {
-                console.error('Error loading reviews:', error);
-                document.getElementById('reviews-list').innerHTML = 
-                    '<li class="text-center py-4"><p class="text-danger">Có lỗi khi tải đánh giá.</p></li>';
-            });
-    }
-    
-    function createReviewElement(review) {
-        const reviewLi = document.createElement('li');
-        reviewLi.className = 'comment';
-        
-        // Generate stars HTML based on rating
-        let starsHtml = '';
-        for (let i = 1; i <= 5; i++) {
-            if (i <= review.rating) {
-                starsHtml += '<a href="#"><i class="fas fa-star"></i></a>';
-            } else {
-                starsHtml += '<a href="#"><i class="far fa-star"></i></a>';
-            }
-        }
-        
-        // Format date
-        const date = new Date(review.createdAt).toLocaleDateString('vi-VN');
-        
-        // Use the template structure provided
-        reviewLi.innerHTML = `
-            <div class="comment-body">
-                <div class="single-comment">
-                    <div class="comment-img">
-                        <img src="/assets/images/product/author.jpg" alt="Author Images">
-                    </div>
-                    <div class="comment-inner">
-                        <h6 class="commenter">
-                            <a class="hover-flip-item-wrapper" href="#">
-                                <span class="hover-flip-item">
-                                    <span data-text="${review.user?.fullName || 'Người dùng ẩn danh'}">${review.user?.fullName || 'Người dùng ẩn danh'}</span>
-                                </span>
-                            </a>
-                            <span class="commenter-rating">
-                                ${starsHtml}
-                            </span>
-                        </h6>
-                        <div class="comment-text">
-                            <p>"${review.comment || ''}"</p>
-                        </div>
-                        <div class="comment-date text-muted small">
-                            ${date}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        return reviewLi;
-    }
+<script th:src="@{/assets/js/single-product.js}"></script>
 
-/*]]>*/
-</script>
-
-<!-- Add custom CSS for variants -->
-<style>
-.variant-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.variant-card {
-    position: relative;
-}
-
-.variant-card input[type="radio"] {
-    display: none;
-}
-
-.variant-label {
-    display: block;
-    padding: 15px 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: white;
-    position: relative;
-    height: 100%;
-    min-height: 85px;
-}
-
-.variant-label:hover {
-    border-color: #ff497c;
-    background-color: #fff5f7;
-}
-
-.variant-card input[type="radio"]:checked + .variant-label {
-    border-color: #fb074b;
-    color: #0e0e0e;
-}
-
-.variant-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.variant-title {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 1.2;
-}
-
-.variant-ram-storage {
-    font-size: 12px;
-    font-weight: 500;
-    opacity: 0.9;
-}
-
-.variant-gpu {
-    font-size: 12px;
-    font-weight: 500;
-    opacity: 0.9;
-}
-
-.variant-card.out-of-stock .variant-label {
-    opacity: 0.4;
-    cursor: not-allowed;
-    background-color: #f5f5f5;
-}
-
-.variant-card.out-of-stock .variant-label:hover {
-    border-color: #e0e0e0;
-    background-color: #f5f5f5;
-}
-
-.sold-out-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #ff4757;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-}
-
-.price-range {
-    font-size: 28px;
-    font-weight: 700;
-    color: #ff497c;
-}
-
-@media (max-width: 768px) {
-    .variant-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    
-    .variant-label {
-        padding: 12px 8px;
-        min-height: 75px;
-    }
-    
-    .variant-title {
-        font-size: 13px;
-    }
-    
-    .variant-ram-storage,
-    .variant-gpu {
-        font-size: 11px;
-    }
-}
-
-/* Review Styles */
-.star-rating {
-    color: #ffc107;
-}
-.star-rating .far {
-    color: #e4e5e9;
-}
-.star-rating-input label {
-    transition: color 0.2s ease;
-}
-.comment-list {
-    list-style: none;
-    padding: 0;
-}
-
-.single-comment {
-    display: flex;
-    gap: 15px;
-}
-.comment-img {
-    flex-shrink: 0;
-}
-.comment-img img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-.comment-inner {
-    flex: 1;
-}
-.commenter {
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-}
-.commenter a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 600;
-}
-.commenter-rating {
-    color: #ffc107;
-}
-.commenter-rating .far {
-    color: #e4e5e9;
-}
-.comment-text {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 5px;
-}
-.comment-date {
-    font-size: 12px;
-    color: #999;
-}
-@media (max-width: 768px) {
-    .single-comment {
-        gap: 10px;
-    }
-    .comment-img img {
-        width: 50px;
-        height: 50px;
-    }
-    .commenter {
-        flex-direction: column;
-        gap: 5px;
-    }
-}
-
-/* Review Styles */
-.star-rating {
-    color: #ffc107;
-}
-.star-rating .far {
-    color: #e4e5e9;
-}
-.star-rating-input label {
-    transition: color 0.2s ease;
-}
-.comment-list {
-    list-style: none;
-    padding: 0;
-}
-.single-comment {
-    display: flex;
-    gap: 15px;
-}
-.comment-img {
-    flex-shrink: 0;
-}
-.comment-img img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-.comment-inner {
-    flex: 1;
-}
-.commenter {
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-}
-.commenter a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 600;
-}
-.commenter-rating {
-    color: #ffc107;
-}
-.commenter-rating .far {
-    color: #e4e5e9;
-}
-.comment-text {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 5px;
-}
-.comment-date {
-    font-size: 12px;
-    color: #999;
-}
-
-@media (max-width: 768px) {
-    .single-comment {
-        gap: 10px;
-    }
-    .comment-img img {
-        width: 50px;
-        height: 50px;
-    }
-    .commenter {
-        flex-direction: column;
-        gap: 5px;
-    }
-}
-</style>
+<link rel="stylesheet" th:href="@{/assets/css/single-product.css}">
 
 </body>
 </html>

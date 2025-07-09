@@ -167,16 +167,18 @@ public class ProductVariantController {
                 return PRODUCT;
             }
             
-            // XỬ LÝ UPLOAD ẢNH CHÍNH
+            // XỬ LÝ UPLOAD ẢNH CHÍNH - CẢI THIỆN VỚI CLEANUP
             if (image != null && !image.isEmpty()) {
                 try {
-                    String fileName = storageService.store(image);
+                    // Sử dụng storeAndCleanup để xóa ảnh cũ
+                    String fileName = storageService.storeAndCleanup(image, existing.getVariantImageUrl());
                     updatedVariant.setVariantImageUrl(fileName);
                 } catch (Exception e) {
                     redirectAttributes.addFlashAttribute(ERROR, "Lỗi upload ảnh chính: " + e.getMessage());
                     return PRODUCT_VARIANTS + existing.getProduct().getProductID();
                 }
             } else {
+                // Giữ nguyên ảnh cũ nếu không upload ảnh mới
                 updatedVariant.setVariantImageUrl(existing.getVariantImageUrl());
             }
             

@@ -70,6 +70,18 @@ public class ProductVariantService {
             variant.setGpu(updatedVariant.getGpu());
             variant.setScreen(updatedVariant.getScreen());
             variant.setIsActive(updatedVariant.getIsActive());
+            
+            // CRITICAL FIX: Update image and custom attributes that were missing
+            if (updatedVariant.getVariantImageUrl() != null) {
+                variant.setVariantImageUrl(updatedVariant.getVariantImageUrl());
+            }
+            if (updatedVariant.getCustomAttributes() != null) {
+                variant.setCustomAttributes(updatedVariant.getCustomAttributes());
+            }
+            if (updatedVariant.getVariantImages() != null) {
+                variant.setVariantImages(updatedVariant.getVariantImages());
+            }
+            
             return variantRepository.save(variant);
         }
         return null;
