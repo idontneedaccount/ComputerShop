@@ -2,10 +2,11 @@
 <html class="no-js" lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Cửa Hàng Máy Tính || Trang Chủ</title>
-    <!-- CSS -->
+    <!-- Custom CSS cho homepage -->
     <link rel="stylesheet" th:href="@{/assets/css/cart-animation.css}">
     <link rel="stylesheet" th:href="@{/assets/css/cart-custom.css}">
     <link rel="stylesheet" th:href="@{/assets/css/homepage-custom.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/dropdown-fix.css}">
 </head>
 
 
@@ -52,7 +53,7 @@
                                 </div>
                                 <div class="slide-action">
                                     <div class="shop-btn">
-                                        <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Mua Ngay</a>
+                                        <a th:href="@{/user/single-product?id=8079B437-EFE9-49F7-9005-5B3E9618BF59}" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Mua Ngay</a>
                                     </div>
                                 </div>
                             </div>
@@ -66,7 +67,7 @@
                                 </div>
                                 <div class="slide-action">
                                     <div class="shop-btn">
-                                        <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Mua Ngay</a>
+                                        <a th:href="@{/user/single-product?id=4A20494F-1343-466C-AE52-A3B946AADB21}" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Mua Ngay</a>
                                     </div>
                                 </div>
                             </div>
@@ -80,7 +81,7 @@
                                 </div>
                                 <div class="slide-action">
                                     <div class="shop-btn">
-                                        <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Mua Ngay</a>
+                                        <a th:href="@{/user/single-product?id=43213F47-6CAF-4697-BF19-D0FA4863E45E}" class="axil-btn btn-bg-white"><i class="fal fa-shopping-cart"></i>Mua Ngay</a>
                                     </div>
                                 </div>
                             </div>
@@ -654,14 +655,15 @@
 
 <!-- JS cần thiết -->
 <script th:src="@{/assets/js/vendor/jquery.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-ui.min.js}"></script>
 <script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
 <script th:src="@{/assets/js/vendor/slick.min.js}"></script>
-<script th:src="@{/assets/js/main.js}"></script>
 
-<!-- Custom JS -->
+<!-- Custom JS cho homepage (không load main.js để tránh xung đột) -->
 <script th:src="@{/assets/js/cart-animation.js}"></script>
 <script th:src="@{/assets/js/common-utils.js}"></script>
 <script th:src="@{/assets/js/homepage-handler.js}"></script>
+<script th:src="@{/assets/js/homepage-slider.js}"></script>
 
 <!-- Product Navigation with Fade Animation -->
 <script>
@@ -782,30 +784,58 @@ $(document).ready(function() {
 </script>
 
 <script>
-// Fix dropdown after all other JS loads
-$(document).ready(function() {
-    // Account dropdown
-    $('.my-account > a').off('click').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+// Fix dropdown functionality - Wait for everything to load
+$(window).on('load', function() {
+    setTimeout(function() {
+        console.log('Initializing dropdown functionality...');
         
-        const $dropdown = $(this).siblings('.my-account-dropdown');
-        $('.my-account-dropdown').not($dropdown).slideUp(200);
-        $dropdown.slideToggle(200);
-    });
-    
-    // Close dropdown when clicking outside
-    $(document).on('click', function(e) {
-        if (!$(e.target).closest('.my-account').length) {
-            $('.my-account-dropdown').slideUp(200);
-        }
-    });
-    
-    // Menu dropdown
-    $('.menu-item-has-children > a').off('click').on('click', function(e) {
-        e.preventDefault();
-        $(this).siblings('.axil-submenu').slideToggle(200);
-    });
+        // Remove any existing event handlers first
+        $('.my-account > a').off('click');
+        
+        // Account dropdown with proper class toggle
+        $('.my-account > a').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const $dropdown = $(this).siblings('.my-account-dropdown');
+            const $myAccount = $(this).parent('.my-account');
+            
+            console.log('Account icon clicked');
+            
+            // Close other dropdowns
+            $('.my-account').not($myAccount).removeClass('open');
+            $('.my-account-dropdown').not($dropdown).removeClass('open');
+            
+            // Toggle current dropdown
+            $myAccount.toggleClass('open');
+            $dropdown.toggleClass('open');
+            
+            console.log('Dropdown toggled, open class:', $dropdown.hasClass('open'));
+        });
+        
+        // Close dropdown when clicking outside
+        $(document).on('click.dropdown', function(e) {
+            if (!$(e.target).closest('.my-account').length) {
+                $('.my-account').removeClass('open');
+                $('.my-account-dropdown').removeClass('open');
+            }
+        });
+        
+        // Prevent dropdown from closing when clicking inside
+        $('.my-account-dropdown').on('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Menu dropdown for mobile
+        $('.menu-item-has-children > a').off('click').on('click', function(e) {
+            if (window.innerWidth <= 991) {
+                e.preventDefault();
+                $(this).siblings('.axil-submenu').slideToggle(200);
+            }
+        });
+        
+        console.log('Dropdown functionality initialized');
+    }, 200);
 });
 </script>
 

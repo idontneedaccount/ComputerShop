@@ -1,6 +1,5 @@
 package com.example.computershop.controller;
 
-import com.example.computershop.dto.CartItemDisplay;
 import com.example.computershop.dto.request.CheckoutRequest;
 import com.example.computershop.entity.Cart;
 import com.example.computershop.entity.Order;
@@ -465,8 +464,13 @@ public class CartController {
                                   @RequestParam("address") String address,
                                   @RequestParam("city") String city,
                                   @RequestParam("region") String region,
+                                  @RequestParam(value = "district", required = false) String district,
+                                  @RequestParam(value = "ward", required = false) String ward,
                                   @RequestParam(value = "note", required = false) String note,
                                   @RequestParam("paymentMethod") String paymentMethod,
+                                  @RequestParam("shippingMethod") String shippingMethod,
+                                  @RequestParam(value = "distance", required = false) Double distance,
+                                  @RequestParam(value = "shippingFee", required = false) Long shippingFee,
                                   Model model, Principal principal) {
 
         CheckoutRequest request = new CheckoutRequest();
@@ -476,8 +480,13 @@ public class CartController {
         request.setAddress(address);
         request.setCity(city);
         request.setRegion(region);
+        request.setDistrict(district);
+        request.setWard(ward);
         request.setNote(note);
         request.setPaymentMethod(paymentMethod);
+        request.setShippingMethod(shippingMethod);
+        request.setDistance(distance);
+        request.setShippingFee(shippingFee);
 
         return processCheckoutInternal(request, model, principal);
     }
@@ -529,9 +538,26 @@ public class CartController {
         order.setEmail(request.getEmail());
         order.setPhone(request.getPhone());
         order.setAddress(request.getAddress());
-        order.setShippingAddress(request.getAddress() + ", " + request.getCity() + ", " + request.getRegion());
+        
+        // Build complete shipping address
+        StringBuilder shippingAddress = new StringBuilder();
+        shippingAddress.append(request.getAddress());
+        if (request.getWard() != null && !request.getWard().trim().isEmpty()) {
+            shippingAddress.append(", ").append(request.getWard());
+        }
+        if (request.getDistrict() != null && !request.getDistrict().trim().isEmpty()) {
+            shippingAddress.append(", ").append(request.getDistrict());
+        }
+        if (request.getRegion() != null && !request.getRegion().trim().isEmpty()) {
+            shippingAddress.append(", ").append(request.getRegion());
+        }
+        order.setShippingAddress(shippingAddress.toString());
+        
         order.setPaymentMethod(request.getPaymentMethod());
         order.setNote(request.getNote());
+        order.setShippingMethod(request.getShippingMethod());
+        order.setDistance(request.getDistance());
+        order.setShippingFee(request.getShippingFee());
         order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
         return order;
@@ -542,7 +568,7 @@ public class CartController {
      */
     private List<OrderDetail> createOrderDetails(List<Cart> userCart, Order order) {
         List<OrderDetail> orderDetails = new ArrayList<>();
-        long total = 0;
+        long subtotal = 0;
 
         for (Cart cartItem : userCart) {
             Products product = loadProduct(cartItem);
@@ -555,11 +581,15 @@ public class CartController {
                 detail.setUnitPrice(price);
 
                 orderDetails.add(detail);
-                total += price * cartItem.getQuantity();
+                subtotal += price * cartItem.getQuantity();
             }
         }
 
-        order.setTotalAmount(total);
+        // Add shipping fee to total amount
+        long shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 0;
+        long totalAmount = subtotal + shippingFee;
+        order.setTotalAmount(totalAmount);
+        
         return orderDetails;
     }
 

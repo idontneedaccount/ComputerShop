@@ -124,11 +124,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 // ✅ Debug để chắc chắn
                 authorities.forEach(auth -> System.out.println(">> GrantedAuthority: " + auth.getAuthority()));
 
+                // ✅ Determine nameAttributeKey based on provider and available attributes
+                String nameAttributeKey = determineNameAttributeKey(provider, oauth2User.getAttributes());
+
                 // ✅ Tạo user mới có quyền cập nhật
                 OAuth2User newOauth2User = new DefaultOAuth2User(
                         authorities,
                         oauth2User.getAttributes(),
-                        "email" // Key for OAuth2User name
+                        nameAttributeKey // Sử dụng key phù hợp thay vì hardcode "email"
                 );
 
                 OAuth2AuthenticationToken newAuth = new OAuth2AuthenticationToken(
@@ -310,6 +313,48 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             System.err.println("Error downloading OAuth2 avatar: " + e.getMessage());
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private String determineNameAttributeKey(String provider, Map<String, Object> attributes) {
+        try {
+            // Kiểm tra provider và attributes có sẵn
+            switch (provider.toLowerCase()) {
+                case "google":
+                    // Google luôn có "sub" và thường có "email"
+                    if (attributes.containsKey("email") && attributes.get("email") != null) {
+                        return "email";
+                    }
+                    return "sub"; // Google ID
+                    
+                case "github":
+                    // GitHub có thể không có email public
+                    if (attributes.containsKey("email") && attributes.get("email") != null) {
+                        return "email";
+                    }
+                    return "login"; // GitHub username
+                    
+                case "facebook":
+                    // Facebook thường có "id" và có thể có "email"
+                    if (attributes.containsKey("email") && attributes.get("email") != null) {
+                        return "email";
+                    }
+                    return "id"; // Facebook ID
+                    
+                default:
+                    // Fallback: tìm attribute không null
+                    for (String key : new String[]{"email", "sub", "id", "login", "name"}) {
+                        if (attributes.containsKey(key) && attributes.get(key) != null) {
+                            return key;
+                        }
+                    }
+                    // Last resort
+                    return attributes.keySet().iterator().next();
+            }
+        } catch (Exception e) {
+            System.err.println("Error determining name attribute key: " + e.getMessage());
+            // Return first available key as fallback
+            return attributes.keySet().iterator().next();
         }
     }
 }

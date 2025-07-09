@@ -1,79 +1,156 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="utf-8">
     <title>Order Success</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; text-align: center; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .success-icon { font-size: 80px; color: #28a745; margin-bottom: 20px; }
         h1 { color: #28a745; margin-bottom: 10px; }
-        .order-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0; text-align: left; }
-        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
-        .info-row:last-child { border-bottom: none; font-weight: bold; font-size: 18px; }
-        .btn { background: #007bff; color: white; padding: 15px 30px; border: none; border-radius: 4px; text-decoration: none; display: inline-block; margin: 10px; }
-        .btn:hover { background: #0056b3; }
+        h2 { color: #495057; margin: 30px 0 20px 0; text-align: left; }
+        
+        .order-info { background: #f8f9fa; padding: 25px; border-radius: 8px; margin: 30px 0; text-align: left; }
+        .shipping-info { background: #e7f3ff; padding: 25px; border-radius: 8px; margin: 30px 0; text-align: left; border-left: 4px solid #007bff; }
+        
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row.total { font-weight: bold; font-size: 18px; background: rgba(40, 167, 69, 0.1); margin: 0 -25px; padding: 15px 25px; border-radius: 6px; }
+        
+        .info-label { font-weight: 600; color: #495057; }
+        .info-value { color: #212529; }
+        .shipping-method { color: #007bff; font-weight: 600; }
+        .free-shipping { color: #28a745; font-weight: 600; }
+        .paid-shipping { color: #dc3545; font-weight: 600; }
+        
+        .btn { background: #007bff; color: white; padding: 15px 30px; border: none; border-radius: 4px; text-decoration: none; display: inline-block; margin: 10px; transition: all 0.3s; }
+        .btn:hover { background: #0056b3; transform: translateY(-1px); }
         .btn-secondary { background: #6c757d; }
         .btn-secondary:hover { background: #545b62; }
+        
+        .next-steps { margin-top: 30px; padding: 25px; background: #e7f3ff; border-radius: 8px; text-align: left; }
+        .next-steps h4 { color: #007bff; margin-bottom: 15px; }
+        .next-steps p { margin: 8px 0; color: #495057; }
+        .next-steps p::before { content: "• "; color: #007bff; font-weight: bold; }
+        
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .status-pending { background: #fff3cd; color: #856404; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="success-icon">✅</div>
-        <h1>Order Placed Successfully!</h1>
-        <p>Thank you for your order. Your order has been received and is being processed.</p>
+        <h1>Đặt hàng thành công!</h1>
+        <p>Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.</p>
         
+        <!-- Order Details -->
         <div class="order-info" th:if="${order != null}">
-            <h3>Order Details:</h3>
+            <h2>📋 Thông tin đơn hàng</h2>
             <div class="info-row">
-                <span>Order ID:</span>
-                <span th:text="${order.id}">123</span>
+                <span class="info-label">Mã đơn hàng:</span>
+                <span class="info-value" th:text="${order.id}">123</span>
             </div>
             <div class="info-row">
-                <span>Customer:</span>
-                <span th:text="${order.fullName}">Customer Name</span>
+                <span class="info-label">Khách hàng:</span>
+                <span class="info-value" th:text="${order.fullName}">Customer Name</span>
             </div>
             <div class="info-row">
-                <span>Email:</span>
-                <span th:text="${order.email}">email@example.com</span>
+                <span class="info-label">Email:</span>
+                <span class="info-value" th:text="${order.email}">email@example.com</span>
             </div>
             <div class="info-row">
-                <span>Phone:</span>
-                <span th:text="${order.phone}">Phone</span>
+                <span class="info-label">Số điện thoại:</span>
+                <span class="info-value" th:text="${order.phone}">Phone</span>
             </div>
             <div class="info-row">
-                <span>Delivery Address:</span>
-                <span th:text="${order.shippingAddress}">Address</span>
+                <span class="info-label">Ngày đặt hàng:</span>
+                <span class="info-value" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">Date</span>
             </div>
             <div class="info-row">
-                <span>Payment Method:</span>
-                <span th:text="${order.paymentMethod}">COD</span>
+                <span class="info-label">Trạng thái:</span>
+                <span class="status-badge status-pending" th:text="${order.status}">PENDING</span>
             </div>
             <div class="info-row">
-                <span>Order Date:</span>
-                <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">Date</span>
+                <span class="info-label">Phương thức thanh toán:</span>
+                <span class="info-value" th:text="${order.paymentMethod == 'COD' ? 'Thanh toán khi nhận hàng' : order.paymentMethod}">COD</span>
+            </div>
+        </div>
+
+        <!-- Shipping Information -->
+        <div class="shipping-info" th:if="${order != null}">
+            <h2>🚚 Thông tin giao hàng</h2>
+            <div class="info-row">
+                <span class="info-label">Địa chỉ giao hàng:</span>
+                <span class="info-value" th:text="${order.shippingAddress}">Address</span>
             </div>
             <div class="info-row">
-                <span>Status:</span>
-                <span th:text="${order.status}">PENDING</span>
+                <span class="info-label">Phương thức giao hàng:</span>
+                <span class="shipping-method" th:text="${order.shippingMethod == 'standard' ? 'Giao hàng tiêu chuẩn (2-8 ngày)' : order.shippingMethod}">Standard</span>
+            </div>
+            <div class="info-row" th:if="${order.distance != null and order.distance > 0}">
+                <span class="info-label">Khoảng cách:</span>
+                <span class="info-value">
+                    <span th:text="${#numbers.formatDecimal(order.distance, 1, 'POINT', 1, 'POINT')}">0.0</span> km
+                </span>
             </div>
             <div class="info-row">
-                <span>Total Amount:</span>
-                <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</span>
+                <span class="info-label">Phí giao hàng:</span>
+                <span th:if="${order.shippingFee != null and order.shippingFee > 0}" 
+                      class="paid-shipping" 
+                      th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                <span th:if="${order.shippingFee == null or order.shippingFee == 0}" 
+                      class="free-shipping">Miễn phí</span>
+            </div>
+            <div class="info-row" th:if="${order.distance != null and order.distance > 0}">
+                <span class="info-label">Thời gian giao hàng dự kiến:</span>
+                <span class="info-value">
+                    <span th:if="${order.distance <= 50}">2-3 ngày</span>
+                    <span th:if="${order.distance > 50 and order.distance <= 500}">4-5 ngày</span>
+                    <span th:if="${order.distance > 500 and order.distance <= 1000}">6-7 ngày</span>
+                    <span th:if="${order.distance > 1000}">8-10 ngày</span>
+                </span>
+            </div>
+            <div class="info-row" th:if="${order.note != null and !#strings.isEmpty(order.note)}">
+                <span class="info-label">Ghi chú:</span>
+                <span class="info-value" th:text="${order.note}">Note</span>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-info" th:if="${order != null}">
+            <h2>💰 Tổng quan đơn hàng</h2>
+            <div class="info-row">
+                <span class="info-label">Tổng tiền hàng:</span>
+                <span class="info-value" th:text="${#numbers.formatDecimal((order.totalAmount - (order.shippingFee ?: 0)), 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Phí giao hàng:</span>
+                <span th:if="${order.shippingFee != null and order.shippingFee > 0}" 
+                      class="info-value" 
+                      th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                <span th:if="${order.shippingFee == null or order.shippingFee == 0}" 
+                      class="free-shipping">Miễn phí</span>
+            </div>
+            <div class="info-row total">
+                <span class="info-label">Tổng thanh toán:</span>
+                <span class="info-value" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
             </div>
         </div>
         
+        <!-- Action Buttons -->
         <div>
-            <a href="/cart/view" class="btn btn-secondary">Continue Shopping</a>
-            <a href="/products" class="btn">Browse Products</a>
+            <a href="/cart/view" class="btn btn-secondary">Tiếp tục mua sắm</a>
+            <a href="/products" class="btn">Xem sản phẩm khác</a>
         </div>
         
-        <div style="margin-top: 30px; padding: 20px; background: #e7f3ff; border-radius: 8px;">
-            <h4>What's Next?</h4>
-            <p>• You will receive an order confirmation email shortly</p>
-            <p>• Your order will be processed within 1-2 business days</p>
-            <p>• For Cash on Delivery orders, please have exact change ready</p>
-            <p>• For any questions, contact us at support@computershop.com</p>
+        <!-- Next Steps -->
+        <div class="next-steps">
+            <h4>📧 Các bước tiếp theo</h4>
+            <p>Bạn sẽ nhận được email xác nhận đơn hàng trong ít phút</p>
+            <p>Đơn hàng sẽ được xử lý trong vòng 1-2 ngày làm việc</p>
+            <p>Đối với đơn hàng COD, vui lòng chuẩn bị tiền mặt vừa đủ</p>
+            <p>Để theo dõi đơn hàng, vui lòng lưu lại mã đơn hàng</p>
+            <p>Có thắc mắc? Liên hệ: support@computershop.com hoặc hotline: 1900-xxxx</p>
         </div>
     </div>
 </body>

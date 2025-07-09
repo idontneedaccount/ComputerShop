@@ -113,37 +113,14 @@
                                 <h5 class="title mb--20">Order Summary</h5>
                                 <div class="summery-table-wrap">
                                     <table class="table summery-table mb--30">
-                                        <tbody>
                                             <tr class="order-subtotal">
                                                 <td>Subtotal</td>
                                                 <td th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
-                                            </tr>
-                                            <tr class="order-shipping">
-                                                <td>Shipping</td>
-                                                <td>
-                                                    <div class="input-group">
-                                                        <input type="radio" id="radio1" name="shipping" checked>
-                                                        <label for="radio1">Free Shipping</label>
-                                                    </div>
-                                                    <div class="input-group">
-                                                        <input type="radio" id="radio2" name="shipping">
-                                                        <label for="radio2">Local: 35.000 VND</label>
-                                                    </div>
-                                                    <div class="input-group">
-                                                        <input type="radio" id="radio3" name="shipping">
-                                                        <label for="radio3">Flat rate: 12.000 VND</label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr class="order-tax">
-                                                <td>State Tax</td>
-                                                <td>0 VND</td>
                                             </tr>
                                             <tr class="order-total">
                                                 <td>Total</td>
                                                 <td class="order-total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
                                             </tr>
-                                        </tbody>
                                     </table>
                                 </div>
                                 <a th:href="@{/cart/checkout}" class="axil-btn btn-bg-primary checkout-btn w-100">Proceed to Checkout</a>

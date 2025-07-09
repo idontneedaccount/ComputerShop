@@ -4,7 +4,6 @@ import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.repository.OrderRepository;
 import com.example.computershop.repository.OrderDetailRepository;
-import com.example.computershop.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
