@@ -326,50 +326,6 @@ class ShippingCalculator {
             `;
         }
     }
-
-    addTestButton() {
-        const checkoutForm = document.querySelector('.axil-checkout-billing');
-        if (checkoutForm) {
-            const testButton = document.createElement('button');
-            testButton.type = 'button';
-            testButton.className = 'btn btn-info btn-sm mb-3 me-2';
-            testButton.innerHTML = '🧪 Test API';
-            testButton.onclick = () => this.testAPI();
-            
-            // Add debug button
-            const debugButton = document.createElement('button');
-            debugButton.type = 'button';
-            debugButton.className = 'btn btn-secondary btn-sm mb-3';
-            debugButton.innerHTML = '🔍 Debug';
-            debugButton.onclick = () => {
-                console.log('Current subtotal:', this.subtotal);
-                console.log('Current distance:', this.currentDistance);
-                const fee = this.calculateShippingFee(this.currentDistance);
-                console.log('Current shipping fee:', fee);
-                console.log('Should be total:', this.subtotal + fee);
-            };
-            
-            const container = document.createElement('div');
-            container.appendChild(testButton);
-            container.appendChild(debugButton);
-            
-            checkoutForm.insertBefore(container, checkoutForm.firstChild);
-        }
-    }
-
-    async testAPI() {
-        try {
-            const distance = await this.getDistanceFromOpenRoute('Hoàn Kiếm, Hà Nội, Việt Nam');
-            alert(`✅ API hoạt động!\nKhoảng cách: ${distance}km`);
-        } catch (error) {
-            alert(`❌ API lỗi: ${error.message}`);
-        }
-    }
-
-    formatCurrency(amount, includeSymbol = true) {
-        const formatted = new Intl.NumberFormat('vi-VN').format(amount);
-        return includeSymbol ? `${formatted} ₫` : formatted;
-    }
 }
 
 // Initialize
