@@ -1,12 +1,11 @@
 package com.example.computershop.repository;
-import com.example.computershop.dto.ProductSalesDTO;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.example.computershop.dto.ProductSalesDTO;
 import com.example.computershop.entity.Products;
 
 public interface ProductRepository extends JpaRepository<Products, String> {
@@ -38,4 +37,6 @@ public interface ProductRepository extends JpaRepository<Products, String> {
 
     @Query("SELECT COUNT(p) FROM Products p")
     long countProducts();
+
+
 }

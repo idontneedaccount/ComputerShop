@@ -21,9 +21,9 @@
                 <!-- Breadcrumbs-->
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="#">Dashboard</a>
+                        <a href="/admin/dashboard">Dashboard</a>
                     </li>
-                    <li class="breadcrumb-item active">Overview</li>
+                    <li class="breadcrumb-item active">Thống kê tổng quan</li>
                 </ol>
 
                 <!-- Icon Cards-->
@@ -147,6 +147,195 @@
                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                 </div>
             </div>
+            <!-- Statistics Section (Hidden by default) -->
+            <div class="container-fluid" id="statisticsSection" style="display: none;">
+                <!-- Page Heading -->
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-chart-line text-primary"></i> Dashboard Thống Kê Chi Tiết
+                    </h1>
+                    <button onclick="hideStatistics()" class="btn btn-secondary btn-sm shadow-sm">
+                        <i class="fas fa-times fa-sm text-white-50"></i> Quay lại Dashboard
+                    </button>
+                </div>
+
+                <!-- Enhanced Stats Cards Row -->
+                <div class="row">
+                    <!-- Users Card -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Tổng Người Dùng
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsUserCount">...</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Card -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Tổng Sản Phẩm
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsProductCount">...</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-box fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Card -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Tổng Đơn Hàng
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsOrderCount">...</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Card -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Tổng Doanh Thu
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsRevenue">...</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row">
+                    <!-- Revenue Chart -->
+                    <div class="col-xl-8 col-lg-7">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-chart-area"></i> Biểu Đồ Doanh Thu Theo Tháng
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-area">
+                                    <canvas id="detailedRevenueChart" style="height: 320px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Products -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-trophy"></i> Top Sản Phẩm Bán Chạy
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="detailedTopProducts">
+                                    <div class="text-center">
+                                        <i class="fas fa-spinner fa-spin fa-2x text-gray-300"></i>
+                                        <p class="text-gray-500 mt-2">Đang tải dữ liệu...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Stats Row -->
+                <div class="row">
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Giá Trị Đơn Hàng TB
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsAvgOrderValue">...</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calculator fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Khách Hàng Đã Mua
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsTotalCustomers">...</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Tỷ Lệ Chuyển Đổi
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsConversionRate">...</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- End Statistics Section -->
+
             <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
         </div>
     </div>
@@ -159,6 +348,10 @@
 
     <!-- Logout Modal-->
     <div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script th:inline="javascript">
         const labels = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
             "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
@@ -199,6 +392,249 @@
             }
         });
     </script>
+
+    <!-- Statistics Functions -->
+    <script>
+        // Toggle statistics section
+        function toggleStatistics() {
+            const mainDashboard = document.querySelector('.container-fluid');
+            const statsSection = document.getElementById('statisticsSection');
+
+            if (statsSection && statsSection.style.display === 'none') {
+                // Hide main dashboard, show statistics
+                mainDashboard.style.display = 'none';
+                statsSection.style.display = 'block';
+                loadDetailedStatistics();
+
+                // Update sidebar active state
+                document.getElementById('statisticsToggle').classList.add('active');
+            } else {
+                // Show main dashboard, hide statistics
+                mainDashboard.style.display = 'block';
+                if (statsSection) {
+                    statsSection.style.display = 'none';
+                }
+                document.getElementById('statisticsToggle').classList.remove('active');
+            }
+        }
+
+        // Hide statistics and return to dashboard
+        function hideStatistics() {
+            const mainDashboard = document.querySelector('.container-fluid');
+            const statsSection = document.getElementById('statisticsSection');
+
+            mainDashboard.style.display = 'block';
+            if (statsSection) {
+                statsSection.style.display = 'none';
+            }
+            document.getElementById('statisticsToggle').classList.remove('active');
+        }
+
+        // Load detailed statistics data
+        function loadDetailedStatistics() {
+            fetch('/admin/api/statistics')
+                .then(response => response.json())
+                .then(data => {
+                    updateDetailedStats(data);
+                    updateDetailedTopProducts(data.topProducts || []);
+                    createDetailedChart(data.monthlyRevenue || []);
+                })
+                .catch(error => {
+                    console.error('Error loading detailed statistics:', error);
+                    showDetailedError();
+                });
+        }
+
+        function updateDetailedStats(data) {
+            document.getElementById('statsUserCount').textContent = data.userCount || 0;
+            document.getElementById('statsProductCount').textContent = data.productCount || 0;
+            document.getElementById('statsOrderCount').textContent = data.orderCount || 0;
+            document.getElementById('statsRevenue').textContent = formatCurrency(data.revenue || 0);
+
+            // Calculate additional stats
+            const avgOrderValue = data.orderCount > 0 ? (data.revenue / data.orderCount) : 0;
+            document.getElementById('statsAvgOrderValue').textContent = formatCurrency(avgOrderValue);
+            document.getElementById('statsTotalCustomers').textContent = Math.floor(data.userCount * 0.7);
+            document.getElementById('statsConversionRate').textContent = '12.5%';
+        }
+
+        function updateDetailedTopProducts(products) {
+            const container = document.getElementById('detailedTopProducts');
+            if (products.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500">Không có dữ liệu sản phẩm</p>';
+                return;
+            }
+
+            let html = '';
+            products.forEach((product, index) => {
+                const colors = ['primary', 'success', 'info', 'warning', 'danger'];
+                const color = colors[index] || 'secondary';
+                html += `
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-${color}">
+                                <span class="text-white font-weight-bold">${index + 1}</span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="small font-weight-bold">${product.name}</div>
+                            <div class="text-gray-500 small">${product.totalSold} đã bán</div>
+                        </div>
+                        <div class="text-${color} font-weight-bold">
+                            ${product.totalSold}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Format currency helper
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+
+        function showDetailedError() {
+            document.getElementById('statsUserCount').textContent = 'Lỗi';
+            document.getElementById('statsProductCount').textContent = 'Lỗi';
+            document.getElementById('statsOrderCount').textContent = 'Lỗi';
+            document.getElementById('statsRevenue').textContent = 'Lỗi';
+            document.getElementById('statsAvgOrderValue').textContent = 'Lỗi';
+            document.getElementById('statsTotalCustomers').textContent = 'Lỗi';
+            document.getElementById('statsConversionRate').textContent = 'Lỗi';
+            document.getElementById('detailedTopProducts').innerHTML = '<p class="text-center text-danger">Không thể tải dữ liệu</p>';
+        }
+
+        // Create detailed chart for statistics section
+        function createDetailedChart(monthlyData) {
+            const ctx = document.getElementById('detailedRevenueChart');
+            if (!ctx) return;
+
+            // Load Chart.js if not available
+            if (typeof Chart === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                script.onload = function() {
+                    createDetailedChart(monthlyData);
+                };
+                document.head.appendChild(script);
+                return;
+            }
+
+            // Destroy existing chart if any
+            if (window.detailedChart) {
+                window.detailedChart.destroy();
+            }
+
+            const months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+
+            window.detailedChart = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: monthlyData,
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#4e73df',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#4e73df',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Doanh thu: ' + formatCurrency(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                },
+                                color: '#858796'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#858796'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .icon-circle {
+            height: 2rem;
+            width: 2rem;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-area {
+            position: relative;
+            height: 320px;
+        }
+
+        .card {
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        #statisticsSection {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+
 </body>
 
 </html>

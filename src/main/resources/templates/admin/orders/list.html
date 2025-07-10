@@ -319,6 +319,15 @@ $(document).ready(function() {
 });
 </script>
 
+<!-- Statistics Panel -->
+<div th:replace="~{admin/fragments/statistics-panel :: statistics-panel}"></div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Statistics Script -->
+<div th:replace="~{admin/fragments/statistics-script :: statistics-script}"></div>
+
 </body>
 
-</html> 
+</html>

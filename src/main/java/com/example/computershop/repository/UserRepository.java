@@ -1,12 +1,16 @@
 package com.example.computershop.repository;
 
-import com.example.computershop.entity.User;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
+
+import com.example.computershop.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
@@ -24,6 +28,24 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT COUNT(u) FROM User u")
     long countUsers();
+
+    // Khách hàng mới trong khoảng thời gian
+    @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt BETWEEN :startDate AND :endDate")
+    long countNewCustomersByPeriod(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    // Top khách hàng theo số đơn hàng
+    @Query("SELECT u.userId, u.fullName, COUNT(o), COALESCE(SUM(o.totalAmount), 0) " +
+           "FROM User u LEFT JOIN u.orders o " +
+           "GROUP BY u.userId, u.fullName " +
+           "ORDER BY COUNT(o) DESC")
+    List<Object[]> getUserByOrderCount(Pageable pageable);
+
+    // Khách hàng mới nhất
+    @Query("SELECT u.userId, u.fullName, u.createdAt, COUNT(o), COALESCE(SUM(o.totalAmount), 0) " +
+           "FROM User u LEFT JOIN u.orders o " +
+           "GROUP BY u.userId, u.fullName, u.createdAt " +
+           "ORDER BY u.createdAt DESC")
+    List<Object[]> getRecentCustomers(Pageable pageable);
     
     @Override
     List<User> findAll();

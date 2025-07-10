@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Báo cáo doanh số - Admin</title>
+</head>
+
+<body id="page-top">
+
+    <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+        <div id="content-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Breadcrumbs-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/admin/dashboard">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="#">Báo cáo</a>
+                    </li>
+                    <li class="breadcrumb-item active">Doanh số</li>
+                </ol>
+
+                <!-- Page Navigation -->
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-chart-line"></i> Báo cáo doanh số
+                    </h1>
+                    <div class="btn-group" role="group">
+                        <a href="/admin/reports/sales" class="btn btn-primary btn-sm">
+                            <i class="fas fa-chart-line"></i> Doanh số
+                        </a>
+                        <a href="/admin/reports/products" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-box"></i> Sản phẩm
+                        </a>
+                        <a href="/admin/reports/customers" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-users"></i> Khách hàng
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Content Row -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i> Báo cáo doanh số
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <i class="fas fa-chart-line fa-3x text-gray-300 mb-3"></i>
+                            <h4 class="text-gray-600">Chức năng đang phát triển</h4>
+                            <p class="text-gray-500">Báo cáo doanh số chi tiết sẽ được cập nhật trong phiên bản tiếp theo.</p>
+                            <p class="text-gray-500">Bao gồm:</p>
+                            <ul class="list-unstyled text-gray-500">
+                                <li>• Doanh số theo ngày/tuần/tháng</li>
+                                <li>• So sánh doanh số các kỳ</li>
+                                <li>• Biểu đồ xu hướng doanh số</li>
+                                <li>• Báo cáo doanh số theo sản phẩm</li>
+                                <li>• Xuất báo cáo Excel/PDF</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer small text-muted">Sẽ cập nhật sớm</div>
+                </div>
+
+            </div>
+            <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+        </div>
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+    <!-- Statistics Panel -->
+    <div th:replace="~{admin/fragments/statistics-panel :: statistics-panel}"></div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Statistics Script -->
+    <div th:replace="~{admin/fragments/statistics-script :: statistics-script}"></div>
+
+</body>
+</html>
