@@ -25,6 +25,30 @@
     
     <!-- Order Details Custom CSS -->
     <link rel="stylesheet" th:href="@{/assets/css/order-details.css}">
+    
+    <style>
+        .discount-row {
+            background-color: #f8f9fa;
+            border-left: 4px solid #28a745;
+        }
+        
+        .voucher-info-note {
+            background-color: #e8f5e8;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border-left: 3px solid #28a745;
+        }
+        
+        .voucher-info-note i {
+            color: #28a745;
+            margin-right: 5px;
+        }
+        
+        .text-success {
+            color: #28a745 !important;
+        }
+    </style>
 </head>
 
 <body class="sticky-header">
@@ -178,11 +202,18 @@
                                 <div class="order-summary">
                                     <div class="summary-row">
                                         <span>Tạm tính:</span>
-                                        <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</span>
+                                        <span th:text="${#numbers.formatDecimal(order.originalAmount ?: order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</span>
                                     </div>
+                                    
+                                    <!-- Voucher Discount Row (if applied) -->
+                                    <div th:if="${order.voucherCode != null and order.discountAmount > 0}" class="summary-row discount-row">
+                                        <span>Giảm giá (<span th:text="${order.voucherCode}">VOUCHER20</span>):</span>
+                                        <span class="text-success">-<span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</span>
+                                    </div>
+                                    
                                     <div class="summary-row">
                                         <span>Phí vận chuyển:</span>
-                                        <span th:text="${order.shippingFee ?: 'Miễn phí'}">Miễn phí</span>
+                                        <span th:text="${order.shippingFee != null ? (#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT') + ' ₫') : 'Miễn phí'}">Miễn phí</span>
                                     </div>
                                     <div class="summary-row">
                                         <span>Thuế (VAT):</span>
@@ -191,6 +222,15 @@
                                     <div class="summary-row">
                                         <span><strong>Tổng cộng:</strong></span>
                                         <span><strong th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</strong></span>
+                                    </div>
+                                    
+                                    <!-- Voucher Information Note -->
+                                    <div th:if="${order.voucherCode != null}" class="voucher-info-note">
+                                        <i class="fas fa-tag"></i>
+                                        <small class="text-muted">
+                                            Đã áp dụng mã giảm giá: <strong th:text="${order.voucherCode}">VOUCHER20</strong>
+                                            - Tiết kiệm <span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')}">0</span> ₫
+                                        </small>
                                     </div>
                                 </div>
                             </div>
