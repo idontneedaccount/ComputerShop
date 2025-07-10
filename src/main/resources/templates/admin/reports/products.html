@@ -1,35 +1,25 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-
 <head th:replace="~{admin/fragments/header :: header}">
     <title>Báo cáo sản phẩm - Admin</title>
+    <style>
+        .report-section { max-width: 900px; margin: 0 auto; }
+        .table-report th, .table-report td { text-align: center; vertical-align: middle; }
+        .chart-container { position: relative; height: 350px; margin-bottom: 32px; }
+        .product-img-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; }
+    </style>
 </head>
-
 <body id="page-top">
-
     <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
-
     <div id="wrapper">
-
-        <!-- Sidebar -->
         <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
-
         <div id="content-wrapper">
-
             <div class="container-fluid">
-
-                <!-- Breadcrumbs-->
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="/admin/dashboard">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="#">Báo cáo</a>
-                    </li>
+                    <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Báo cáo</a></li>
                     <li class="breadcrumb-item active">Sản phẩm</li>
                 </ol>
-
-                <!-- Page Navigation -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">
                         <i class="fas fa-box"></i> Báo cáo sản phẩm
@@ -46,42 +36,84 @@
                         </a>
                     </div>
                 </div>
-
-                <!-- Content Row -->
-                <div class="card mb-3">
+                <div class="card mb-4 report-section">
                     <div class="card-header">
-                        <i class="fas fa-box"></i> Báo cáo sản phẩm
+                        <i class="fas fa-box"></i> Top 5 sản phẩm bán chạy nhất
                     </div>
                     <div class="card-body">
-                        <div class="text-center">
-                            <i class="fas fa-box fa-3x text-gray-300 mb-3"></i>
-                            <h4 class="text-gray-600">Chức năng đang phát triển</h4>
-                            <p class="text-gray-500">Báo cáo sản phẩm chi tiết sẽ được cập nhật trong phiên bản tiếp theo.</p>
-                            <p class="text-gray-500">Bao gồm:</p>
-                            <ul class="list-unstyled text-gray-500">
-                                <li>• Sản phẩm bán chạy nhất</li>
-                                <li>• Sản phẩm tồn kho nhiều</li>
-                                <li>• Phân tích theo danh mục</li>
-                                <li>• Báo cáo lợi nhuận theo sản phẩm</li>
-                                <li>• Xu hướng bán hàng</li>
-                            </ul>
+                        <div class="chart-container">
+                            <canvas id="productPieChart"></canvas>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-report">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Ảnh</th>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Số lượng bán</th>
+                                        <th>Doanh thu (VNĐ)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="prod, idx : ${topProducts}">
+                                        <td th:text="${idx.index + 1}"></td>
+                                        <td><img th:src="${prod.imageURL}" class="product-img-thumb" alt="Ảnh sản phẩm"></td>
+                                        <td th:text="${prod.name}"></td>
+                                        <td th:text="${prod.totalSold}"></td>
+                                        <td th:text="${#numbers.formatInteger(prod.totalRevenue, 0, 'POINT')} + ' ₫'"></td>
+                                    </tr>
+                                    <tr th:if="${topProducts.size() == 0}"><td colspan="5">Không có dữ liệu sản phẩm.</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="card-footer small text-muted">Sẽ cập nhật sớm</div>
+                    <div class="card-footer small text-muted text-right">
+                        Dữ liệu cập nhật từ hệ thống
+                    </div>
                 </div>
-
             </div>
             <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
         </div>
     </div>
-    <!-- /#wrapper -->
-
-    <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
-    <!-- Logout Modal-->
     <div th:replace="~{admin/fragments/logout :: logout}"></div>
+    <div th:replace="~{admin/fragments/statistics-panel :: statistics-panel}"></div>
+    <!-- Script truyền data từ Thymeleaf sang JS để vẽ biểu đồ -->
+    <script>
+        // Lấy dữ liệu từ Thymeleaf
+        const topProducts = /*[[${topProducts}]]*/ [];
+        // Vẽ biểu đồ tròn top sản phẩm
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('productPieChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: topProducts.map(p => p.name),
+                    datasets: [{
+                        data: topProducts.map(p => p.totalSold),
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: false }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

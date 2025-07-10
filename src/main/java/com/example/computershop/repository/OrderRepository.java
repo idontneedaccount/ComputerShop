@@ -76,4 +76,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
            "FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate " +
            "GROUP BY YEAR(o.orderDate), MONTH(o.orderDate) ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)")
     List<Object[]> getMonthlySalesReport(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT MONTH(o.orderDate), COUNT(o) FROM Order o WHERE YEAR(o.orderDate) = :year GROUP BY MONTH(o.orderDate)")
+    List<Object[]> countOrdersByMonth(@Param("year") int year);
 } 

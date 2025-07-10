@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.computershop.service.OrderService;
 import com.example.computershop.service.ProductService;
 import com.example.computershop.service.UserService;
+import com.example.computershop.dto.ProductSalesDTO;
 
 @RestController
 @RequestMapping("/admin/api")
@@ -35,38 +37,126 @@ public class StatisticsApiController {
 
         try {
             // Basic counts
-            statistics.put("userCount", userService.countUsers());
-            statistics.put("productCount", productService.countProducts());
-            statistics.put("orderCount", orderService.countOrders());
-            statistics.put("revenue", orderService.getTotalRevenue());
+            Long userCount = null;
+            try {
+                userCount = userService.countUsers();
+            } catch (Exception e) {
+                System.err.println("Lỗi lấy tổng số người dùng: " + e.getMessage());
+            }
+            statistics.put("userCount", userCount != null ? userCount : 0L);
+
+            Long productCount = null;
+            try {
+                productCount = productService.countProducts();
+            } catch (Exception e) {
+                System.err.println("Lỗi lấy tổng số sản phẩm: " + e.getMessage());
+            }
+            statistics.put("productCount", productCount != null ? productCount : 0L);
+
+            Long orderCount = null;
+            try {
+                orderCount = orderService.countOrders();
+            } catch (Exception e) {
+                System.err.println("Lỗi lấy tổng số đơn hàng: " + e.getMessage());
+            }
+            statistics.put("orderCount", orderCount != null ? orderCount : 0L);
+
+            Object revenue = null;
+            try {
+                revenue = orderService.getTotalRevenue();
+            } catch (Exception e) {
+                System.err.println("Lỗi lấy tổng doanh thu: " + e.getMessage());
+            }
+            statistics.put("revenue", revenue != null ? revenue : 0);
 
             // Monthly revenue for current year
             int currentYear = Year.now().getValue();
-            List<Object[]> results = orderService.getMonthlyRevenue(currentYear);
-
-            // Convert to array of 12 months
+            List<Object[]> results = new ArrayList<>();
+            try {
+                List<Object[]> temp = orderService.getMonthlyRevenue(currentYear);
+                if (temp != null) results = temp;
+            } catch (Exception e) {
+                System.err.println("Lỗi lấy doanh thu theo tháng: " + e.getMessage());
+            }
             long[] monthlyRevenue = new long[12];
             for (Object[] row : results) {
-                int month = (int) row[0]; // from 1 to 12
-                long revenue = (long) row[1];
-                monthlyRevenue[month - 1] = revenue;
+                if (row != null && row.length >= 2 && row[0] != null && row[1] != null) {
+                    int month = (int) row[0];
+                    long rev = ((Number) row[1]).longValue();
+                    monthlyRevenue[month - 1] = rev;
+                }
             }
             statistics.put("monthlyRevenue", monthlyRevenue);
 
-            // Top 5 best selling products - simplified to avoid serialization issues
+            // Số lượng đơn hàng theo tháng
+            long[] orderCountByMonth = new long[12];
+            List<Object[]> orderCountResults = new ArrayList<>();
+            try {
+                List<Object[]> temp = orderService.getMonthlyOrderCount(currentYear);
+                if (temp != null) orderCountResults = temp;
+            } catch (Exception e) {
+                System.err.println("Lỗi lấy số lượng đơn hàng theo tháng: " + e.getMessage());
+            }
+            for (Object[] row : orderCountResults) {
+                if (row != null && row.length >= 2 && row[0] != null && row[1] != null) {
+                    int month = (int) row[0];
+                    long count = ((Number) row[1]).longValue();
+                    orderCountByMonth[month - 1] = count;
+                }
+            }
+            statistics.put("orderCountByMonth", orderCountByMonth);
+
+            // Số lượng user mới theo tháng
+            long[] newUsersByMonth = new long[12];
+            List<Object[]> newUserResults = new ArrayList<>();
+            try {
+                List<Object[]> temp = userService.getMonthlyNewUsers(currentYear);
+                if (temp != null) newUserResults = temp;
+            } catch (Exception e) {
+                System.err.println("Lỗi lấy số lượng user mới theo tháng: " + e.getMessage());
+            }
+            for (Object[] row : newUserResults) {
+                if (row != null && row.length >= 2 && row[0] != null && row[1] != null) {
+                    int month = (int) row[0];
+                    long count = ((Number) row[1]).longValue();
+                    newUsersByMonth[month - 1] = count;
+                }
+            }
+            statistics.put("newUsersByMonth", newUsersByMonth);
+
+            // Lấy top 5 sản phẩm bán chạy nhất từ DB
+            List<ProductSalesDTO> topProductDTOs = new ArrayList<>();
+            try {
+                List<ProductSalesDTO> temp = productService.findTop5BestSellingProducts();
+                if (temp != null) topProductDTOs = temp;
+            } catch (Exception e) {
+                System.err.println("Lỗi lấy top sản phẩm bán chạy: " + e.getMessage());
+            }
             List<Map<String, Object>> topProducts = new ArrayList<>();
-            // Create simple mock data for now to avoid Hibernate proxy issues
-            topProducts.add(Map.of("name", "Laptop Dell XPS 13", "totalSold", 25));
-            topProducts.add(Map.of("name", "iPhone 15 Pro", "totalSold", 20));
-            topProducts.add(Map.of("name", "MacBook Air M2", "totalSold", 18));
-            topProducts.add(Map.of("name", "Samsung Galaxy S24", "totalSold", 15));
-            topProducts.add(Map.of("name", "iPad Pro", "totalSold", 12));
+            for (ProductSalesDTO dto : topProductDTOs) {
+                if (dto != null && dto.getProduct() != null) {
+                    Map<String, Object> prod = new HashMap<>();
+                    prod.put("name", dto.getProduct().getName());
+                    prod.put("imageURL", dto.getProduct().getImageURL());
+                    prod.put("price", dto.getProduct().getPrice());
+                    prod.put("totalSold", dto.getTotalSold());
+                    prod.put("totalRevenue", dto.getTotalRevenue());
+                    topProducts.add(prod);
+                }
+            }
             statistics.put("topProducts", topProducts);
+
+            // Giá trị đơn hàng trung bình
+            statistics.put("averageOrderValue", 0);
+            // Số khách hàng đã mua
+            statistics.put("purchasedCustomerCount", 0);
+            // Tỷ lệ chuyển đổi
+            statistics.put("conversionRate", 0);
 
             return ResponseEntity.ok(statistics);
 
         } catch (Exception e) {
-            // Return error response
+            e.printStackTrace(); // Log chi tiết lỗi
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Failed to load statistics");
             errorResponse.put("message", e.getMessage());

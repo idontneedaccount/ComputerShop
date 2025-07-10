@@ -4,10 +4,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.time.Year;
+import java.util.List;
+import com.example.computershop.service.OrderService;
+import com.example.computershop.service.ProductService;
+import com.example.computershop.service.UserService;
+import com.example.computershop.dto.ProductSalesDTO;
 
 @RequestMapping("/admin/reports")
 @Controller
 public class SimpleReportController {
+
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/statistics")
     public String showStatistics(Model model) {
@@ -86,19 +100,47 @@ public class SimpleReportController {
 
     @GetMapping("/sales")
     public String showSalesReport(Model model) {
-        model.addAttribute("message", "Báo cáo doanh số - Đang phát triển");
+        int year = Year.now().getValue();
+        List<Object[]> results = orderService.getMonthlyRevenue(year);
+        long[] monthlyRevenue = new long[12];
+        for (Object[] row : results) {
+            int month = (int) row[0];
+            long rev = ((Number) row[1]).longValue();
+            monthlyRevenue[month - 1] = rev;
+        }
+        model.addAttribute("monthlyRevenue", monthlyRevenue);
         return "admin/reports/sales";
     }
 
     @GetMapping("/products")
     public String showProductReport(Model model) {
-        model.addAttribute("message", "Báo cáo sản phẩm - Đang phát triển");
+        List<ProductSalesDTO> topProductDTOs = productService.findTop5BestSellingProducts();
+        List<java.util.Map<String, Object>> topProducts = new java.util.ArrayList<>();
+        for (ProductSalesDTO dto : topProductDTOs) {
+            if (dto != null && dto.getProduct() != null) {
+                java.util.Map<String, Object> prod = new java.util.HashMap<>();
+                prod.put("name", dto.getProduct().getName());
+                prod.put("imageURL", dto.getProduct().getImageURL());
+                prod.put("totalSold", dto.getTotalSold());
+                prod.put("totalRevenue", dto.getTotalRevenue());
+                topProducts.add(prod);
+            }
+        }
+        model.addAttribute("topProducts", topProducts);
         return "admin/reports/products";
     }
 
     @GetMapping("/customers")
     public String showCustomerReport(Model model) {
-        model.addAttribute("message", "Báo cáo khách hàng - Đang phát triển");
+        int year = Year.now().getValue();
+        List<Object[]> results = userService.getMonthlyNewUsers(year);
+        long[] newUsersByMonth = new long[12];
+        for (Object[] row : results) {
+            int month = (int) row[0];
+            long count = ((Number) row[1]).longValue();
+            newUsersByMonth[month - 1] = count;
+        }
+        model.addAttribute("newUsersByMonth", newUsersByMonth);
         return "admin/reports/customers";
     }
 }
