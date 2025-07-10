@@ -49,6 +49,16 @@ public class Order {
     @Column(name = "voucherID", columnDefinition = "UNIQUEIDENTIFIER")
      String voucherId;
 
+    // Voucher tracking fields
+    @Column(name = "original_amount")
+    private Long originalAmount;
+
+    @Column(name = "discount_amount")
+    private Long discountAmount = 0L;
+
+    @Column(name = "voucher_code", columnDefinition = "NVARCHAR(100)")
+    private String voucherCode;
+
     // Additional fields for checkout form - these need to be persisted
     @Column(name = "FullName", columnDefinition = "NVARCHAR(255)")
     private String fullName;

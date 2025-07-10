@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Quản lý Voucher</title>
+</head>
+<body id="page-top" class="newsletter-popup-modal">
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper" class="flex-grow-1">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/admin/dashboard">Trang chủ</a>
+                </li>
+                <li class="breadcrumb-item active">Quản lý voucher</li>
+            </ol>
+
+            <!-- Page Content -->
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-table"></i>
+                        <span class="ml-2">Danh sách Voucher</span>
+                    </div>
+                    <a href="/admin/vouchers/add" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Thêm voucher mới
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Alerts -->
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <span th:text="${success}"></span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <span th:text="${error}"></span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="vouchersTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Giảm giá (%)</th>
+                                    <th>Giảm tối đa (VND)</th>
+                                    <th>Ngày hết hạn</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${vouchers.empty}">
+                                    <td colspan="6" class="text-center">Không có voucher nào</td>
+                                </tr>
+                                <tr th:each="voucher : ${vouchers}">
+                                    <td th:text="${voucher.code}">CODE123</td>
+                                    <td th:text="${voucher.discountPercent} + '%'">10%</td>
+                                    <td th:text="${voucher.maxDiscountAmount != null ? #numbers.formatDecimal(voucher.maxDiscountAmount, 0, 'COMMA', 0, 'POINT') + ' VND' : 'Không giới hạn'}">100,000 VND</td>
+                                    <td th:text="${#temporals.format(voucher.expirationDate, 'dd-MM-yyyy HH:mm')}">01-01-2023 00:00</td>
+                                    <td>
+                                        <span th:if="${voucher.isActive}" class="badge badge-success">Kích hoạt</span>
+                                        <span th:unless="${voucher.isActive}" class="badge badge-secondary">Vô hiệu</span>
+                                        <span th:if="${voucher.expirationDate.isBefore(#temporals.createNow())}" class="badge badge-danger">Hết hạn</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/admin/vouchers/edit/{id}(id=${voucher.voucherId})}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a th:href="@{/admin/vouchers/delete/{id}(id=${voucher.voucherId})}" class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Bạn có chắc muốn xóa voucher này?');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/assets2/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/assets2/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript-->
+<script th:src="@{/assets2/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<!-- Page level plugin JavaScript-->
+<script th:src="@{/assets2/vendor/datatables/jquery.dataTables.js}"></script>
+<script th:src="@{/assets2/vendor/datatables/dataTables.bootstrap4.js}"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#vouchersTable').DataTable();
+    });
+</script>
+</body>
+</html> 

@@ -7,7 +7,9 @@ import com.example.computershop.entity.Products;
 import com.example.computershop.entity.ProductVariant;
 import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.entity.User;
+import com.example.computershop.entity.Voucher;
 import com.example.computershop.service.ProductVariantService;
+import com.example.computershop.service.VoucherService;
 import com.example.computershop.exception.CartConstants;
 import com.example.computershop.repository.CartRepository;
 import com.example.computershop.repository.ProductRepository;
@@ -37,13 +39,15 @@ public class CartController {
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final ProductVariantService productVariantService;
+    private final VoucherService voucherService;
 
-    public CartController(ProductRepository repo, OrderService orderService, CartRepository cartRepository, UserRepository userRepository, ProductVariantService productVariantService) {
+    public CartController(ProductRepository repo, OrderService orderService, CartRepository cartRepository, UserRepository userRepository, ProductVariantService productVariantService, VoucherService voucherService) {
         this.repo = repo;
         this.orderService = orderService;
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.productVariantService = productVariantService;
+        this.voucherService = voucherService;
     }
 
     // =========================== HELPER METHODS ===========================
@@ -66,26 +70,67 @@ public class CartController {
         return repo.findById(cartItem.getProduct().getProductID()).orElse(null);
     }
 
-    // Display class for template with ProductVariant support
+    // Display class for template with ProductVariant support and voucher info
     public static class CartItemDisplay {
         private Products product;
         private ProductVariant variant;
         private Integer quantity;
+        private String voucherCode;
+        private Long discountAmount;
+        private Long originalPrice;
+        private Long finalPrice;
         
         public CartItemDisplay(Products product, Integer quantity) {
             this.product = product;
             this.quantity = quantity;
+            this.discountAmount = 0L;
+            calculatePrices();
         }
         
         public CartItemDisplay(Products product, ProductVariant variant, Integer quantity) {
             this.product = product;
             this.variant = variant;
             this.quantity = quantity;
+            this.discountAmount = 0L;
+            calculatePrices();
         }
         
+        public CartItemDisplay(Products product, ProductVariant variant, Integer quantity, String voucherCode, Long discountAmount) {
+            this.product = product;
+            this.variant = variant;
+            this.quantity = quantity;
+            this.voucherCode = voucherCode;
+            this.discountAmount = discountAmount != null ? discountAmount : 0L;
+            calculatePrices();
+        }
+        
+        private void calculatePrices() {
+            if (product == null || quantity == null) {
+                this.originalPrice = 0L;
+                this.finalPrice = 0L;
+                return;
+            }
+            
+            Long unitPrice;
+            if (variant != null) {
+                unitPrice = variant.getPrice().longValue();
+            } else {
+                unitPrice = product.getPrice().longValue();
+            }
+            
+            this.originalPrice = unitPrice * quantity;
+            this.finalPrice = this.originalPrice - (this.discountAmount != null ? this.discountAmount : 0L);
+        }
+        
+        // Getters
         public Products getProduct() { return product; }
         public ProductVariant getVariant() { return variant; }
         public Integer getQuantity() { return quantity; }
+        public String getVoucherCode() { return voucherCode; }
+        public Long getDiscountAmount() { return discountAmount != null ? discountAmount : 0L; }
+        public Long getOriginalPrice() { return originalPrice; }
+        public Long getFinalPrice() { return finalPrice; }
+        public boolean hasDiscount() { return discountAmount != null && discountAmount > 0; }
     }
 
     /**
@@ -290,21 +335,42 @@ public class CartController {
         try {
             List<Cart> userCart = getCurrentUserCart(principal);
             List<CartItemDisplay> displayItems = new ArrayList<>();
-            BigDecimal total = BigDecimal.ZERO;
+            Long originalTotal = 0L;
+            Long finalTotal = 0L;
+            Long totalDiscount = 0L;
+            String voucherCode = null;
+            boolean hasVoucher = false;
 
             for (Cart item : userCart) {
                 Products product = loadProduct(item);
                 if (product != null) {
-                    displayItems.add(new CartItemDisplay(product, item.getQuantity()));
-
-                    BigDecimal price = new BigDecimal(product.getPrice().toString());
-                    int quantity = item.getQuantity();
-                    total = total.add(price.multiply(BigDecimal.valueOf(quantity)));
+                    // Create CartItemDisplay with voucher information
+                    CartItemDisplay displayItem = new CartItemDisplay(
+                        product, 
+                        item.getVariant(), 
+                        item.getQuantity(), 
+                        item.getVoucherCode(), 
+                        item.getDiscountAmount()
+                    );
+                    displayItems.add(displayItem);
+                    
+                    originalTotal += item.getOriginalPrice();
+                    finalTotal += item.getFinalPrice();
+                    
+                    if (item.getVoucherCode() != null && !item.getVoucherCode().isEmpty()) {
+                        voucherCode = item.getVoucherCode();
+                        hasVoucher = true;
+                        totalDiscount += (item.getDiscountAmount() != null ? item.getDiscountAmount() : 0L);
+                    }
                 }
             }
 
-            model.addAttribute(CartConstants.CART_ITEMS, displayItems);
-            model.addAttribute(CartConstants.TOTAL, total);
+            model.addAttribute("cartItems", displayItems);
+            model.addAttribute("originalTotal", originalTotal);
+            model.addAttribute("finalTotal", finalTotal);
+            model.addAttribute("totalDiscount", totalDiscount);
+            model.addAttribute("voucherCode", voucherCode);
+            model.addAttribute("hasVoucher", hasVoucher);
 
             return "Cart/cart";
         } catch (Exception e) {
@@ -416,6 +482,226 @@ public class CartController {
         }
     }
 
+    // =========================== VOUCHER OPERATIONS ===========================
+
+    /**
+     * Apply voucher to cart
+     */
+    @PostMapping("/apply-voucher")
+    public String applyVoucher(@RequestParam String voucherCode, 
+                              @RequestParam(defaultValue = "cart") String redirect,
+                              Principal principal, 
+                              RedirectAttributes redirectAttributes) {
+        try {
+            User user = getUserFromPrincipal(principal);
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để sử dụng voucher");
+                return "redirect:/auth/login";
+            }
+
+            List<Cart> userCart = cartRepository.findByUser(user);
+            if (userCart.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống");
+                return "redirect:/cart/view";
+            }
+
+            // Validate voucher
+            Optional<Voucher> voucherOpt = voucherService.getValidVoucherByCode(voucherCode);
+            if (!voucherOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("voucherError", "Mã voucher không hợp lệ hoặc đã hết hạn");
+                return getRedirectPath(redirect);
+            }
+
+            Voucher voucher = voucherOpt.get();
+            System.out.println("DEBUG - Found voucher: " + voucher.getCode() + ", usageCount: " + voucher.getUsageCount());
+
+            // Calculate total original amount
+            Long totalOriginal = calculateCartOriginalTotal(userCart);
+
+            // Calculate discount
+            Long discountAmount = voucherService.calculateDiscountAmount(voucher, totalOriginal);
+            
+            if (discountAmount <= 0) {
+                redirectAttributes.addFlashAttribute("voucherError", "Voucher không áp dụng được cho đơn hàng này");
+                return getRedirectPath(redirect);
+            }
+
+            // Remove existing voucher if any
+            removeVoucherFromCart(userCart);
+
+            // Distribute discount across cart items proportionally
+            distributeDiscountToCartItems(userCart, discountAmount, voucherCode);
+
+            // Update voucher usage tracking (non-blocking)
+            try {
+                updateVoucherUsageTracking(voucher, user);
+            } catch (Exception trackingError) {
+                System.err.println("Warning: Failed to update voucher usage tracking, but voucher was applied successfully: " + trackingError.getMessage());
+                // Continue execution - don't let tracking failure break voucher application
+            }
+
+            redirectAttributes.addFlashAttribute("voucherSuccess", 
+                String.format("Áp dụng voucher %s thành công! Giảm %s VND", 
+                    voucherCode, formatCurrency(discountAmount)));
+
+            return getRedirectPath(redirect);
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("voucherError", "Có lỗi xảy ra khi áp dụng voucher: " + e.getMessage());
+            return getRedirectPath(redirect);
+        }
+    }
+
+    /**
+     * Remove voucher from cart
+     */
+    @GetMapping("/remove-voucher")
+    public String removeVoucher(@RequestParam(defaultValue = "cart") String redirect,
+                               Principal principal, 
+                               RedirectAttributes redirectAttributes) {
+        try {
+            User user = getUserFromPrincipal(principal);
+            if (user == null) {
+                return "redirect:/auth/login";
+            }
+
+            List<Cart> userCart = cartRepository.findByUser(user);
+            removeVoucherFromCart(userCart);
+
+            redirectAttributes.addFlashAttribute("voucherSuccess", "Đã xóa voucher khỏi giỏ hàng");
+            return getRedirectPath(redirect);
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("voucherError", "Có lỗi xảy ra khi xóa voucher");
+            return getRedirectPath(redirect);
+        }
+    }
+
+    // =========================== VOUCHER HELPER METHODS ===========================
+
+    /**
+     * Calculate total original amount of cart
+     */
+    private Long calculateCartOriginalTotal(List<Cart> cartItems) {
+        Long total = 0L;
+        for (Cart item : cartItems) {
+            total += item.getOriginalPrice();
+        }
+        return total;
+    }
+
+    /**
+     * Distribute discount proportionally across cart items
+     */
+    private void distributeDiscountToCartItems(List<Cart> cartItems, Long totalDiscount, String voucherCode) {
+        Long totalOriginal = calculateCartOriginalTotal(cartItems);
+        
+        if (totalOriginal <= 0) return;
+
+        Long distributedDiscount = 0L;
+        
+        for (int i = 0; i < cartItems.size(); i++) {
+            Cart item = cartItems.get(i);
+            Long itemOriginal = item.getOriginalPrice();
+            Long itemDiscount;
+            
+            // For the last item, assign remaining discount to avoid rounding errors
+            if (i == cartItems.size() - 1) {
+                itemDiscount = totalDiscount - distributedDiscount;
+            } else {
+                itemDiscount = (itemOriginal * totalDiscount) / totalOriginal;
+                distributedDiscount += itemDiscount;
+            }
+            
+            item.setVoucherCode(voucherCode);
+            item.setDiscountAmount(itemDiscount);
+            cartRepository.save(item);
+        }
+    }
+
+    /**
+     * Remove voucher from all cart items
+     */
+    private void removeVoucherFromCart(List<Cart> cartItems) {
+        for (Cart item : cartItems) {
+            item.setVoucherCode(null);
+            item.setDiscountAmount(0L);
+            cartRepository.save(item);
+        }
+    }
+
+    /**
+     * Update voucher usage tracking
+     */
+    private void updateVoucherUsageTracking(Voucher voucher, User user) {
+        try {
+            System.out.println("DEBUG - Starting voucher usage tracking update for: " + voucher.getCode());
+            
+            // Reload voucher from database to get fresh data
+            Voucher freshVoucher = voucherService.getVoucherById(voucher.getVoucherId());
+            if (freshVoucher == null) {
+                System.out.println("DEBUG - Could not reload voucher, using original");
+                freshVoucher = voucher;
+            } else {
+                System.out.println("DEBUG - Reloaded voucher, usageCount: " + freshVoucher.getUsageCount());
+            }
+            
+            freshVoucher.setLastUsedBy(user.getUserId());
+            freshVoucher.setLastUsedAt(LocalDateTime.now());
+            
+            // Handle null usageCount case with extra safety
+            Integer currentUsageCount = safeGetUsageCount(freshVoucher);
+            System.out.println("DEBUG - Current usageCount before update: " + currentUsageCount);
+            
+            Integer newUsageCount = currentUsageCount + 1;
+            System.out.println("DEBUG - Setting new usageCount to: " + newUsageCount);
+            freshVoucher.setUsageCount(newUsageCount);
+            
+            System.out.println("DEBUG - About to save voucher with usageCount: " + freshVoucher.getUsageCount());
+            voucherService.updateVoucher(freshVoucher);
+            System.out.println("DEBUG - Voucher usage tracking updated successfully");
+            
+        } catch (Exception e) {
+            // If update fails, just log and continue - don't break voucher application
+            System.err.println("Failed to update voucher usage tracking: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Get redirect path based on redirect parameter
+     */
+    private String getRedirectPath(String redirect) {
+        switch (redirect.toLowerCase()) {
+            case "checkout":
+                return "redirect:/cart/checkout";
+            case "cart":
+            default:
+                return "redirect:/cart/view";
+        }
+    }
+
+    /**
+     * Format currency for display
+     */
+    private String formatCurrency(Long amount) {
+        return String.format("%,d", amount);
+    }
+    
+    /**
+     * Safely get usage count from voucher
+     */
+    private Integer safeGetUsageCount(Voucher voucher) {
+        try {
+            if (voucher == null) return 0;
+            voucher.ensureProperInitialization();
+            return voucher.getUsageCount();
+        } catch (Exception e) {
+            System.err.println("Error getting usage count: " + e.getMessage());
+            return 0;
+        }
+    }
+
     // =========================== CHECKOUT OPERATIONS ===========================
 
     /**
@@ -431,26 +717,49 @@ public class CartController {
             }
 
             List<CartItemDisplay> displayItems = new ArrayList<>();
-            BigDecimal total = BigDecimal.ZERO;
+            Long originalTotal = 0L;
+            Long finalTotal = 0L;
+            Long totalDiscount = 0L;
+            String voucherCode = null;
+            boolean hasVoucher = false;
 
             for (Cart item : userCart) {
                 Products product = loadProduct(item);
                 if (product != null) {
-                    displayItems.add(new CartItemDisplay(product, item.getQuantity()));
-                    BigDecimal price = new BigDecimal(product.getPrice().toString());
-                    int quantity = item.getQuantity();
-                    total = total.add(price.multiply(BigDecimal.valueOf(quantity)));
+                    // Create CartItemDisplay with voucher information
+                    CartItemDisplay displayItem = new CartItemDisplay(
+                        product, 
+                        item.getVariant(), 
+                        item.getQuantity(), 
+                        item.getVoucherCode(), 
+                        item.getDiscountAmount()
+                    );
+                    displayItems.add(displayItem);
+                    
+                    originalTotal += item.getOriginalPrice();
+                    finalTotal += item.getFinalPrice();
+                    
+                    if (item.getVoucherCode() != null && !item.getVoucherCode().isEmpty()) {
+                        voucherCode = item.getVoucherCode();
+                        hasVoucher = true;
+                        totalDiscount += (item.getDiscountAmount() != null ? item.getDiscountAmount() : 0L);
+                    }
                 }
             }
 
-            model.addAttribute(CartConstants.CART_ITEMS, displayItems);
-            model.addAttribute(CartConstants.ORDER, new Order());
-            model.addAttribute(CartConstants.TOTAL, total);
+            model.addAttribute("cartItems", displayItems);
+            model.addAttribute("originalTotal", originalTotal);
+            model.addAttribute("finalTotal", finalTotal);
+            model.addAttribute("totalDiscount", totalDiscount);
+            model.addAttribute("voucherCode", voucherCode);
+            model.addAttribute("hasVoucher", hasVoucher);
+            model.addAttribute("total", finalTotal); // For compatibility
+            model.addAttribute("order", new Order());
 
-            return CartConstants.CART_CHECKOUT_VIEW;
+            return "Cart/Checkout";
         } catch (Exception e) {
-            model.addAttribute(CartConstants.ERROR, e.getMessage());
-            return CartConstants.ERROR;
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
     }
 
@@ -507,8 +816,8 @@ public class CartController {
                 return CartConstants.REDIRECT_CART_VIEW;
             }
 
-            // Create and save order
-            Order order = createOrder(request);
+            // Create and save order with voucher support
+            Order order = createOrderWithVoucher(request, userCart);
             List<OrderDetail> orderDetails = createOrderDetails(userCart, order);
 
             order.setUserId(user.getUserId());
@@ -527,6 +836,66 @@ public class CartController {
             model.addAttribute(CartConstants.ERROR, "Error processing order: " + e.getMessage());
             return CartConstants.CART_CHECKOUT_VIEW;
         }
+    }
+
+    /**
+     * Create Order entity from checkout request with voucher support
+     */
+    private Order createOrderWithVoucher(CheckoutRequest request, List<Cart> cartItems) {
+        Order order = new Order();
+        
+        // Calculate totals with voucher
+        Long originalAmount = calculateCartOriginalTotal(cartItems);
+        Long discountAmount = 0L;
+        String voucherCode = null;
+        String voucherId = null;
+        
+        // Get voucher info from cart
+        for (Cart item : cartItems) {
+            if (item.getVoucherCode() != null && !item.getVoucherCode().isEmpty()) {
+                voucherCode = item.getVoucherCode();
+                discountAmount += (item.getDiscountAmount() != null ? item.getDiscountAmount() : 0L);
+                
+                // Get voucher ID
+                Optional<Voucher> voucher = voucherService.getVoucherByCode(voucherCode);
+                if (voucher.isPresent()) {
+                    voucherId = voucher.get().getVoucherId();
+                }
+                break; // All items should have same voucher
+            }
+        }
+        
+        Long finalAmount = originalAmount - discountAmount;
+        
+        // Set order fields
+        order.setFullName(request.getFullName());
+        order.setEmail(request.getEmail());
+        order.setPhone(request.getPhone());
+        order.setAddress(request.getAddress());
+        order.setPaymentMethod(request.getPaymentMethod());
+        order.setNote(request.getNote());
+        order.setShippingMethod(request.getShippingMethod());
+        order.setShippingFee(request.getShippingFee());
+        order.setDistance(request.getDistance());
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus("PENDING");
+        
+        // Set voucher fields
+        order.setOriginalAmount(originalAmount);
+        order.setDiscountAmount(discountAmount);
+        order.setTotalAmount(finalAmount + (request.getShippingFee() != null ? request.getShippingFee() : 0L));
+        order.setVoucherCode(voucherCode);
+        order.setVoucherId(voucherId);
+        
+        // Set shipping address
+        String fullAddress = String.format("%s, %s, %s, %s", 
+            request.getAddress(), 
+            request.getWard() != null ? request.getWard() : "",
+            request.getDistrict() != null ? request.getDistrict() : "",
+            request.getRegion());
+        order.setShippingAddress(fullAddress.replaceAll(", ,", ",").replaceAll("^,|,$", ""));
+        
+        return order;
     }
 
     /**
@@ -568,7 +937,6 @@ public class CartController {
      */
     private List<OrderDetail> createOrderDetails(List<Cart> userCart, Order order) {
         List<OrderDetail> orderDetails = new ArrayList<>();
-        long subtotal = 0;
 
         for (Cart cartItem : userCart) {
             Products product = loadProduct(cartItem);
@@ -581,14 +949,19 @@ public class CartController {
                 detail.setUnitPrice(price);
 
                 orderDetails.add(detail);
-                subtotal += price * cartItem.getQuantity();
             }
         }
 
-        // Add shipping fee to total amount
-        long shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 0;
-        long totalAmount = subtotal + shippingFee;
-        order.setTotalAmount(totalAmount);
+        // Note: Do NOT set totalAmount here as it may already be calculated with voucher discount
+        // in createOrderWithVoucher method. Only set if not already set.
+        if (order.getTotalAmount() == null || order.getTotalAmount() == 0) {
+            long subtotal = 0;
+            for (OrderDetail detail : orderDetails) {
+                subtotal += detail.getUnitPrice() * detail.getQuantity();
+            }
+            long shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 0;
+            order.setTotalAmount(subtotal + shippingFee);
+        }
         
         return orderDetails;
     }
@@ -655,21 +1028,26 @@ public class CartController {
         try {
             List<Cart> userCart = getCurrentUserCart(principal);
             List<CartItemDisplay> displayItems = new ArrayList<>();
-            BigDecimal total = BigDecimal.ZERO;
+            Long finalTotal = 0L;
 
             for (Cart item : userCart) {
                 Products product = loadProduct(item);
                 if (product != null) {
-                    displayItems.add(new CartItemDisplay(product, item.getQuantity()));
-
-                    BigDecimal price = new BigDecimal(product.getPrice().toString());
-                    int quantity = item.getQuantity();
-                    total = total.add(price.multiply(BigDecimal.valueOf(quantity)));
+                    // Create CartItemDisplay with voucher information
+                    CartItemDisplay displayItem = new CartItemDisplay(
+                        product, 
+                        item.getVariant(), 
+                        item.getQuantity(), 
+                        item.getVoucherCode(), 
+                        item.getDiscountAmount()
+                    );
+                    displayItems.add(displayItem);
+                    finalTotal += item.getFinalPrice();
                 }
             }
 
-            model.addAttribute(CartConstants.CART_ITEMS, displayItems);
-            model.addAttribute(CartConstants.TOTAL, total);
+            model.addAttribute("cartItems", displayItems);
+            model.addAttribute("total", finalTotal);
 
             return "user/fragments/cartreview :: cartreview";
         } catch (Exception e) {
