@@ -1,12 +1,12 @@
 package com.example.computershop.repository;
-import com.example.computershop.dto.ProductSalesDTO;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import com.example.computershop.dto.ProductSalesDTO;
 import com.example.computershop.entity.Products;
 
 public interface ProductRepository extends JpaRepository<Products, String> {
@@ -14,6 +14,15 @@ public interface ProductRepository extends JpaRepository<Products, String> {
     
     @Query("SELECT DISTINCT p.brand FROM Products p WHERE p.brand IS NOT NULL ORDER BY p.brand")
     List<String> findDistinctBrands();
+    
+    // Search products by name (case-insensitive)
+    @Query("SELECT p FROM Products p LEFT JOIN FETCH p.specifications LEFT JOIN FETCH p.categories " +
+           "WHERE p.isActive = true AND LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    List<Products> findActiveProductsByNameContaining(@Param("searchTerm") String searchTerm);
+    
+    // Get product suggestions for autocomplete (limited results)
+    @Query("SELECT p FROM Products p WHERE p.isActive = true AND LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    List<Products> findProductSuggestions(@Param("searchTerm") String searchTerm, Pageable pageable);
     
     // Optimized method to fetch products with specifications in one query
     @Query("SELECT p FROM Products p LEFT JOIN FETCH p.specifications LEFT JOIN FETCH p.categories WHERE p.isActive = true")

@@ -10,7 +10,7 @@
 </head>
 
 
-<body class="sticky-header newsletter-popup-modal">
+<body class="sticky-header">
 
 <!--[if lte IE 9]>
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
@@ -596,7 +596,6 @@
 <div th:replace="~{user/fragments/footer :: footer}"></div>
 
 <!-- Additional fragments -->
-<div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
 
 <!-- Offer Modal Start -->
@@ -615,7 +614,6 @@
         </div>
     </div>
 </div>
-<div class="closeMask"></div>
 <!-- Offer Modal End -->
 
 <!-- Login Required Modal -->
@@ -664,6 +662,7 @@
 <script th:src="@{/assets/js/common-utils.js}"></script>
 <script th:src="@{/assets/js/homepage-handler.js}"></script>
 <script th:src="@{/assets/js/homepage-slider.js}"></script>
+<script th:src="@{/assets/js/shopping-enhancement.js}"></script>
 
 <!-- Product Navigation with Fade Animation -->
 <script>
