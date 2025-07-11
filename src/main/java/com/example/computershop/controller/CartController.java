@@ -71,6 +71,7 @@ public class CartController {
     }
 
     // Display class for template with ProductVariant support and voucher info
+
     public static class CartItemDisplay {
         private Products product;
         private ProductVariant variant;
@@ -121,7 +122,7 @@ public class CartController {
             this.originalPrice = unitPrice * quantity;
             this.finalPrice = this.originalPrice - (this.discountAmount != null ? this.discountAmount : 0L);
         }
-        
+
         // Getters
         public Products getProduct() { return product; }
         public ProductVariant getVariant() { return variant; }

@@ -205,12 +205,12 @@
                                                 <span th:unless="${detail?.unitPrice}" class="text-muted">N/A</span>
                                             </td>
                                             <td class="text-right font-weight-bold text-success">
-                                                <span th:if="${detail?.unitPrice != null && detail?.quantity != null}">
-                                                    <span th:text="${#numbers.formatDecimal(detail.unitPrice * detail.quantity, 0, 'COMMA', 0, 'POINT')}">
+                                                <span th:if="${detail?.calculatedTotalPrice != null}">
+                                                    <span th:text="${#numbers.formatDecimal(detail.calculatedTotalPrice, 0, 'COMMA', 0, 'POINT')}">
                                                         25,000,000
                                                     </span> VNĐ
                                                 </span>
-                                                <span th:unless="${detail?.unitPrice != null && detail?.quantity != null}" class="text-muted">N/A</span>
+                                                <span th:unless="${detail?.calculatedTotalPrice != null}" class="text-muted">N/A</span>
                                             </td>
                                         </tr>
                                     </tbody>

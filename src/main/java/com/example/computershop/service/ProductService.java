@@ -27,6 +27,22 @@ public class ProductService {
         return this.repo.findAll();
     }
     
+    // Search products by name
+    public List<Products> searchProductsByName(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getAllActiveWithSpecifications();
+        }
+        return this.repo.findActiveProductsByNameContaining(searchTerm.trim());
+    }
+    
+    // Get product suggestions for autocomplete
+    public List<Products> getProductSuggestions(String searchTerm, int limit) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return List.of(); // Return empty list for empty search
+        }
+        return this.repo.findProductSuggestions(searchTerm.trim(), PageRequest.of(0, limit));
+    }
+    
     // Optimized method for homepage - no specifications loaded
     @Cacheable(value = "homepageProducts")
     public List<Products> getAllActiveForHomepage() {

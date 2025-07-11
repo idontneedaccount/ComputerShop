@@ -25,30 +25,6 @@
     
     <!-- Order Details Custom CSS -->
     <link rel="stylesheet" th:href="@{/assets/css/order-details.css}">
-    
-    <style>
-        .discount-row {
-            background-color: #f8f9fa;
-            border-left: 4px solid #28a745;
-        }
-        
-        .voucher-info-note {
-            background-color: #e8f5e8;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-top: 10px;
-            border-left: 3px solid #28a745;
-        }
-        
-        .voucher-info-note i {
-            color: #28a745;
-            margin-right: 5px;
-        }
-        
-        .text-success {
-            color: #28a745 !important;
-        }
-    </style>
 </head>
 
 <body class="sticky-header">
@@ -174,7 +150,7 @@
                                                 </td>
                                                 <td class="price-cell" th:text="${#numbers.formatDecimal(orderDetail.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</td>
                                                 <td class="quantity-cell" th:text="${orderDetail.quantity}">1</td>
-                                                <td class="total-cell" th:text="${#numbers.formatDecimal(orderDetail.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</td>
+                                                <td class="total-cell" th:text="${#numbers.formatDecimal(orderDetail.calculatedTotalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</td>
                                             </tr>
                                             
                                             <tr th:if="${order.orderDetails == null || order.orderDetails.isEmpty()}">
@@ -248,7 +224,6 @@
     <div th:replace="~{user/fragments/footer :: footer}"></div>
     
     <!-- Additional fragments -->
-    <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
     <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
 
     <!-- JavaScript -->
@@ -256,21 +231,45 @@
     <script th:src="@{/assets/js/vendor/bootstrap.min.js}"></script>
     <script>
         $(document).ready(function() {
-            // Animate success banner
-            setTimeout(function() {
-                $('.success-banner').addClass('animate-bounce');
-            }, 500);
-
             // Smooth scroll for back to top
             $('#backto-top').click(function(e) {
                 e.preventDefault();
                 $('html, body').animate({scrollTop: 0}, 800);
             });
 
-            // Add fade-in animation to cards
-            $('.order-card').each(function(index) {
-                $(this).delay(index * 200).fadeIn(600);
+            // Add sparkle effect to success banner
+            setTimeout(function() {
+                $('.success-banner').append('<div class="sparkle"></div>');
+            }, 1000);
+
+            // Animate counters for price values
+            $('.total-cell, .price-cell').each(function() {
+                const $this = $(this);
+                const text = $this.text();
+                const number = parseInt(text.replace(/[^\d]/g, ''));
+                if (number > 0) {
+                    $this.prop('Counter', 0).animate({
+                        Counter: number
+                    }, {
+                        duration: 1500,
+                        easing: 'swing',
+                        step: function (now) {
+                            const formatted = new Intl.NumberFormat('vi-VN').format(Math.ceil(now));
+                            $this.text(formatted + ' ₫');
+                        }
+                    });
+                }
             });
+
+            // Add hover effects for interactive elements
+            $('.info-item, .customer-block').hover(
+                function() {
+                    $(this).addClass('shadow-lg');
+                },
+                function() {
+                    $(this).removeClass('shadow-lg');
+                }
+            );
         });
     </script>
 </body>
