@@ -312,6 +312,10 @@ public class UserService {
         return userRepository.getUserByRevenueOrder(pageable);
     }
 
+    public List<Object[]> getMonthlyNewUsers(int year) {
+        return userRepository.countNewUsersByMonth(year);
+    }
+
     /**
      * Cập nhật avatar cho user
      */

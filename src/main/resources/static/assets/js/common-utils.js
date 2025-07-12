@@ -310,6 +310,26 @@ window.ComputerShop = {
     Device: DeviceUtils
 };
 
+// Đảm bảo hàm toggleReportsMenu luôn tồn tại trên mọi trang
+window.toggleReportsMenu = function(event) {
+    const menu = document.getElementById('collapseReports');
+    const link = (event && event.target) ? event.target.closest('.nav-link') : document.querySelector('.nav-link[onclick*="toggleReportsMenu"]');
+    if (!menu || !link) return;
+    if (menu.classList.contains('show')) {
+        menu.classList.remove('show');
+        link.classList.add('collapsed');
+    } else {
+        document.querySelectorAll('.sidebar .collapse.show').forEach(function(openMenu) {
+            openMenu.classList.remove('show');
+        });
+        document.querySelectorAll('.sidebar .nav-link').forEach(function(navLink) {
+            navLink.classList.add('collapsed');
+        });
+        menu.classList.add('show');
+        link.classList.remove('collapsed');
+    }
+};
+
 // Initialize common features
 document.addEventListener('DOMContentLoaded', function() {
     // Add smooth scrolling to all anchor links
