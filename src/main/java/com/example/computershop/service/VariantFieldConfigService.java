@@ -57,10 +57,15 @@ public class VariantFieldConfigService {
     }
     
     @Transactional
-    public boolean delete(String fieldId) {
+    public boolean toggleStatus(String fieldId) {
         try {
-            repository.deleteById(fieldId);
-            return true;
+            VariantFieldConfig field = repository.findById(fieldId).orElse(null);
+            if (field != null) {
+                field.setIsActive(!field.getIsActive());
+                repository.save(field);
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             return false;
         }

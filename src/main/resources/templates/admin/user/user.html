@@ -67,10 +67,12 @@
                                     <a th:href="@{/admin/edit-user/{id}(id=${users.userId})}" class="btn btn-sm btn-primary" title="Chỉnh sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a th:href="@{/admin/delete-user/{id}(id=${users.userId})}" class="btn btn-sm btn-danger" title="Xóa"
-                                       onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?');">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
+                                    <button type="button" class="btn btn-sm btn-info"
+                                            onclick="toggleUserStatus(this)"
+                                            th:data-user-id="${users.userId}"
+                                            title="Bật/Tắt trạng thái">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
                                 </td>
                             </tr>
                             </tbody>
@@ -91,5 +93,30 @@
 
 <!-- Logout Modal-->
 <div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<script>
+// Toggle user status function
+function toggleUserStatus(button) {
+    const userId = button.getAttribute('data-user-id');
+    fetch('/admin/toggle-user-status/' + userId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === 'success') {
+            location.reload();
+        } else {
+            alert('Có lỗi xảy ra!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra!');
+    });
+}
+</script>
 </body>
 </html>

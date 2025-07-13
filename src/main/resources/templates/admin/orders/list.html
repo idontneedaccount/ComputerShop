@@ -55,9 +55,9 @@
 
             <!-- Filter & Search Card -->
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-filter mr-2"></i>Tìm kiếm & Lọc đơn hàng
+                <div class="card-header">
+                    <h6 class="fas fa-table">
+                        <i class="fas fa-filter mr-3"></i>Tìm kiếm & Lọc đơn hàng
                     </h6>
                 </div>
                 <div class="card-body">
@@ -116,9 +116,9 @@
 
             <!-- Orders Table -->
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-list mr-2"></i>Danh sách đơn hàng
+                <div class="card-header ">
+                    <h6 class="fas fa-table">
+                        <i class="fas fa-list mr-3"></i>Danh sách đơn hàng
                     </h6>
                 </div>
                 <div class="card-body">
@@ -136,7 +136,7 @@
                     <!-- Orders Table -->
                     <div th:if="${orders != null and !#lists.isEmpty(orders)}" class="table-responsive">
                         <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
-                            <thead class="thead-light">
+                            <thead class="">
                                 <tr>
                                     <th class="text-center" style="width: 120px;">Mã đơn</th>
                                     <th style="width: 180px;">Thông tin khách hàng</th>

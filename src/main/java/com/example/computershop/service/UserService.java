@@ -166,10 +166,15 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean delete(String userId) {
+    public Boolean toggleStatus(String userId) {
         try {
-            userRepository.deleteById(userId);
-            return true;
+            User user = userRepository.findById(userId).orElse(null);
+            if (user != null) {
+                user.setIsActive(!user.getIsActive());
+                userRepository.save(user);
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             return false;
         }

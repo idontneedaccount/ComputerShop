@@ -82,4 +82,15 @@ public class Products {
     public boolean hasVariants() {
         return variants != null && !variants.isEmpty();
     }
+    
+    // Helper method để lấy tổng quantity từ variants
+    public Integer getTotalQuantity() {
+        if (variants != null && !variants.isEmpty()) {
+            return variants.stream()
+                .filter(v -> v.getIsActive() != null && v.getIsActive())
+                .mapToInt(v -> v.getQuantity() != null ? v.getQuantity() : 0)
+                .sum();
+        }
+        return this.quantity != null ? this.quantity : 0;
+    }
 }

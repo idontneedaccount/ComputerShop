@@ -37,6 +37,7 @@
                 <th>ID</th>
                 <th>Tên danh mục</th>
                 <th>Mô tả</th>
+                <th>Trạng thái</th>
                 <th>Hành động</th>
               </tr>
               </thead>
@@ -45,14 +46,18 @@
                 <td th:text="${category.categoryID}"></td>
                 <td th:text="${category.name}"></td>
                 <td th:text="${category.description}"></td>
+                <td th:if="${category.isActive}"><span class="badge btn-success">Hoạt động</span></td>
+                <td th:if="${!category.isActive}"><span class="badge btn-danger">Ẩn</span></td>
                 <td>
                   <a th:href="@{/admin/edit-categories/{id}(id=${category.categoryID})}" class="btn btn-sm btn-primary">
                     <i class="fas fa-edit"></i>
                   </a>
-                  <a th:href="@{/admin/delete-categories/{id}(id=${category.categoryID})}" class="btn btn-sm btn-danger"
-                     onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
-                    <i class="fas fa-trash-alt"></i>
-                  </a>
+                  <button type="button" class="btn btn-sm btn-info"
+                          onclick="toggleCategoryStatus(this)"
+                          th:data-category-id="${category.categoryID}"
+                          title="Bật/Tắt trạng thái">
+                    <i class="fas fa-toggle-on"></i>
+                  </button>
                 </td>
               </tr>
               </tbody>
@@ -70,6 +75,31 @@
 </a>
 <!-- Logout Modal-->
 <div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<script>
+// Toggle category status function
+function toggleCategoryStatus(button) {
+    const categoryId = button.getAttribute('data-category-id');
+    fetch('/admin/toggle-category-status/' + categoryId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === 'success') {
+            location.reload();
+        } else {
+            alert('Có lỗi xảy ra!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra!');
+    });
+}
+</script>
 
 </body>
 </html>

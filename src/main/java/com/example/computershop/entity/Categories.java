@@ -24,6 +24,10 @@ public class Categories {
     String name;
     @Column(name = "description", columnDefinition = "nvarchar(255)")
     String description;
+    
+    @Column(name = "is_active", columnDefinition = "bit")
+    Boolean isActive = true;
+    
     @OneToMany(mappedBy = "categories")
     @JsonIgnore
     Set<Products> products;
