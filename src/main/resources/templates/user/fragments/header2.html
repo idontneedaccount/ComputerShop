@@ -99,15 +99,24 @@
                 <div class="header-action">
                     <ul class="action-list">
                         <li class="axil-search d-xl-block d-none">
-                            <input type="search" class="placeholder product-search-input" name="search2" id="search2" value="" maxlength="128" placeholder="Bạn đang tìm gì?" autocomplete="off">
-                            <button type="submit" class="icon wooc-btn-search">
-                                <i class="flaticon-magnifying-glass"></i>
-                            </button>
+                            <form th:action="@{/user/shopping-page}" method="get" style="display: flex; align-items: center;" id="header-search-form">
+                                <input type="search" class="placeholder product-search-input" name="search"
+                                       th:value="${searchTerm}" maxlength="128"
+                                       placeholder="Bạn đang tìm gì?" autocomplete="off" required>
+                                <button type="submit" class="icon wooc-btn-search" style="border: none; background: transparent; cursor: pointer;">
+                                    <i class="flaticon-magnifying-glass"></i>
+                                </button>
+                            </form>
                         </li>
                         <li class="axil-search d-xl-none d-block">
-                            <a href="javascript:void(0)" class="header-search-icon" title="Tìm kiếm">
-                                <i class="flaticon-magnifying-glass"></i>
-                            </a>
+                            <form th:action="@{/user/shopping-page}" method="get" style="display: flex; align-items: center;">
+                                <input type="search" class="placeholder product-search-input" name="search" 
+                                       th:value="${searchTerm}" maxlength="128" 
+                                       placeholder="Bạn đang tìm gì?" autocomplete="off" style="width: 150px; margin-right: 5px;">
+                                <button type="submit" class="icon wooc-btn-search">
+                                    <i class="flaticon-magnifying-glass"></i>
+                                </button>
+                            </form>
                         </li>
                         <li class="wishlist" sec:authorize="isAuthenticated()">
                             <a href="wishlist.html">

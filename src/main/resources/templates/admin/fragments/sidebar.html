@@ -57,6 +57,23 @@
         </div>
     </li>
     <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVouchers"
+           aria-expanded="false" aria-controls="collapseVouchers">
+            <i class="fas fa-fw fa-ticket-alt"></i>
+            <span>Quản lí voucher</span>
+        </a>
+        <div id="collapseVouchers" class="collapse" aria-labelledby="headingVouchers" data-parent="#accordionSidebar">
+            <div class="collapse-inner">
+                <a class="collapse-item" th:href="@{/admin/vouchers}">
+                    <i class="fas fa-list mr-2"></i>Danh sách voucher
+                </a>
+                <a class="collapse-item" th:href="@{/admin/vouchers/add}">
+                    <i class="fas fa-plus mr-2"></i>Thêm voucher
+                </a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
         <a th:href="@{/admin/product-variants/field-config}" class="nav-link">
             <i class="fas fa-fw fa-cogs"></i>
             <span>Quản lý trường tùy chỉnh</span>

@@ -139,8 +139,9 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th class="text-center" style="width: 120px;">Mã đơn</th>
-                                    <th style="width: 200px;">Thông tin khách hàng</th>
+                                    <th style="width: 180px;">Thông tin khách hàng</th>
                                     <th class="text-center" style="width: 130px;">Ngày đặt</th>
+                                    <th class="text-center" style="width: 100px;">Voucher</th>
                                     <th class="text-right" style="width: 120px;">Tổng tiền</th>
                                     <th class="text-center" style="width: 100px;">Thao tác</th>
                                 </tr>
@@ -187,6 +188,17 @@
                                             </small>
                                         </div>
                                         <span th:unless="${order.orderDate}" class="text-muted">N/A</span>
+                                    </td>
+                                    
+                                    <!-- Voucher Info -->
+                                    <td class="text-center">
+                                        <div th:if="${order.voucherCode != null}">
+                                            <span class="badge badge-warning" th:text="${order.voucherCode}">VOUCHER20</span>
+                                            <div class="small text-success mt-1" th:if="${order.discountAmount > 0}">
+                                                -<span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')}">100,000</span> VNĐ
+                                            </div>
+                                        </div>
+                                        <span th:unless="${order.voucherCode != null}" class="text-muted small">Không có</span>
                                     </td>
                                     
                                     <!-- Total Amount -->
@@ -290,6 +302,19 @@
 .btn {
     min-height: 38px;
     line-height: 1.4;
+}
+
+/* Voucher styling */
+.badge-warning {
+    background-color: #f6c23e;
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.voucher-discount {
+    font-size: 0.7rem;
+    margin-top: 2px;
 }
 
 </style>

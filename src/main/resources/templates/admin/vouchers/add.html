@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Thêm Voucher</title>
+</head>
+<body id="page-top" class="newsletter-popup-modal">
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper" class="flex-grow-1">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/admin/dashboard">Trang chủ</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/admin/vouchers">Quản lý voucher</a>
+                </li>
+                <li class="breadcrumb-item active">Thêm voucher</li>
+            </ol>
+            
+            <!-- Main body information -->
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Thêm voucher mới</h4>
+                        </div>
+                        <div class="card-body">
+                            <!-- Error message display -->
+                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span th:text="${error}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            
+                            <form th:action="@{/admin/vouchers/add}" method="post">
+                                <div class="form-group mb-3">
+                                    <label for="code">Mã voucher<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="code" name="code" required 
+                                           placeholder="Nhập mã voucher (VD: SUMMER2023)">
+                                    <small class="form-text text-muted">Mã này sẽ được sử dụng bởi khách hàng để áp dụng voucher.</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="discountPercent">Phần trăm giảm giá<span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="discountPercent" name="discountPercent" 
+                                           min="1" max="100" required placeholder="Nhập phần trăm giảm giá (1-100)">
+                                    <small class="form-text text-muted">Phần trăm giảm giá áp dụng cho tổng đơn hàng.</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="maxDiscountAmount">Số tiền giảm tối đa</label>
+                                    <input type="number" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount" 
+                                           min="0" placeholder="Nhập số tiền giảm tối đa (VND)">
+                                    <small class="form-text text-muted">Số tiền giảm tối đa tính bằng VND. Để trống nếu không giới hạn.</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="expirationDate">Ngày hết hạn<span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control" id="expirationDate" name="expirationDate" required>
+                                    <small class="form-text text-muted">Ngày và giờ voucher hết hạn.</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <div>Trạng thái</div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="isActive" name="isActive" checked>
+                                        <label class="form-check-label" for="isActive">
+                                            Voucher đang hoạt động và có thể sử dụng
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-save"></i> Tạo Voucher
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="mt-auto" th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/assets2/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/assets2/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript-->
+<script th:src="@{/assets2/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<script>
+    // Set default expiration date to 1 month from now
+    document.addEventListener('DOMContentLoaded', function() {
+        const now = new Date();
+        now.setMonth(now.getMonth() + 1);
+        
+        // Format date to YYYY-MM-DDThh:mm
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        const defaultExpiration = `${year}-${month}-${day}T${hours}:${minutes}`;
+        document.getElementById('expirationDate').value = defaultExpiration;
+    });
+</script>
+</body>
+</html> 

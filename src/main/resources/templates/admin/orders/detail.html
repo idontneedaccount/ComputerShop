@@ -94,6 +94,24 @@
                                         </span>
                                         <span th:unless="${order?.totalAmount}" class="text-muted">N/A</span>
                                     </p>
+                                    
+                                    <!-- Voucher Information -->
+                                    <div th:if="${order?.voucherCode != null}">
+                                        <p><strong>Mã giảm giá:</strong> 
+                                            <span class="badge badge-warning" th:text="${order.voucherCode}">VOUCHER20</span>
+                                        </p>
+                                        <p><strong>Số tiền giảm:</strong> 
+                                            <span class="text-danger font-weight-bold" th:if="${order?.discountAmount}">
+                                                -<span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')}">100,000</span> VNĐ
+                                            </span>
+                                        </p>
+                                        <p><strong>Giá gốc:</strong> 
+                                            <span class="text-muted" th:if="${order?.originalAmount}">
+                                                <span th:text="${#numbers.formatDecimal(order.originalAmount, 0, 'COMMA', 0, 'POINT')}">1,600,000</span> VNĐ
+                                            </span>
+                                        </p>
+                                    </div>
+                                    
                                     <p><strong>Ghi chú:</strong> 
                                         <span th:text="${order?.note ?: 'Không có ghi chú'}" class="text-muted">
                                             Giao hàng buổi sáng
@@ -187,12 +205,12 @@
                                                 <span th:unless="${detail?.unitPrice}" class="text-muted">N/A</span>
                                             </td>
                                             <td class="text-right font-weight-bold text-success">
-                                                <span th:if="${detail?.unitPrice != null && detail?.quantity != null}">
-                                                    <span th:text="${#numbers.formatDecimal(detail.unitPrice * detail.quantity, 0, 'COMMA', 0, 'POINT')}">
+                                                <span th:if="${detail?.calculatedTotalPrice != null}">
+                                                    <span th:text="${#numbers.formatDecimal(detail.calculatedTotalPrice, 0, 'COMMA', 0, 'POINT')}">
                                                         25,000,000
                                                     </span> VNĐ
                                                 </span>
-                                                <span th:unless="${detail?.unitPrice != null && detail?.quantity != null}" class="text-muted">N/A</span>
+                                                <span th:unless="${detail?.calculatedTotalPrice != null}" class="text-muted">N/A</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -268,6 +286,19 @@
                                     2
                                 </span>
                             </div>
+                            
+                            <!-- Voucher Summary (if applied) -->
+                            <div th:if="${order?.voucherCode != null}" class="mb-2">
+                                <div class="alert alert-info py-2">
+                                    <small>
+                                        <i class="fas fa-tag mr-1"></i>
+                                        <strong>Voucher áp dụng:</strong> <span th:text="${order.voucherCode}">VOUCHER20</span><br>
+                                        <strong>Giá gốc:</strong> <span th:text="${#numbers.formatDecimal(order.originalAmount ?: order.totalAmount, 0, 'COMMA', 0, 'POINT')}">1,600,000</span> VNĐ<br>
+                                        <strong>Giảm giá:</strong> <span class="text-danger">-<span th:text="${#numbers.formatDecimal(order.discountAmount ?: 0, 0, 'COMMA', 0, 'POINT')}">100,000</span> VNĐ</span>
+                                    </small>
+                                </div>
+                            </div>
+                            
                             <hr>
                             <div class="h5 mb-0">
                                 <strong class="text-success">Tổng tiền: 

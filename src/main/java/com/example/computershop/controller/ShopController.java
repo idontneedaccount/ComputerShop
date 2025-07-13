@@ -2,12 +2,17 @@ package com.example.computershop.controller;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.computershop.dto.ProductRatingDTO;
 import com.example.computershop.entity.Categories;
@@ -44,9 +49,10 @@ public class ShopController {
         this.productVariantService = productVariantService;
         this.reviewService = reviewService;
     }
-    
+
     @GetMapping("/shopping-page")
     public String showShoppingPage(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String cpu,
@@ -64,11 +70,12 @@ public class ShopController {
         List<String> brands = productService.getDistinctBrands();
         model.addAttribute("brands", brands);
 
-        List<Products> filteredProducts = filterProducts(category, brand, cpu, ram, ssd, vga, screen, priceMin, priceMax);
+        List<Products> filteredProducts = filterProducts(search, category, brand, cpu, ram, ssd, vga, screen, priceMin, priceMax);
         
         model.addAttribute(PRODUCTS, filteredProducts);
         model.addAttribute(TOTAL_PRODUCTS, filteredProducts.size());
 
+        model.addAttribute("searchTerm", search);
         model.addAttribute("selectedCategory", category);
         model.addAttribute("selectedBrand", brand);
         model.addAttribute("selectedCpu", cpu);
@@ -82,8 +89,16 @@ public class ShopController {
         return "user/shoppingpage";
     }
     
-    private List<Products> filterProducts(String category, String brand, String cpu, String ram, String ssd, String vga, String screen, Long priceMin, Long priceMax) {
-        List<Products> allProducts = productService.getAll();
+    private List<Products> filterProducts(String search, String category, String brand, String cpu, String ram, String ssd, String vga, String screen, Long priceMin, Long priceMax) {
+        List<Products> allProducts;
+        
+        // Nếu có từ khóa tìm kiếm, sử dụng search function
+        if (search != null && !search.trim().isEmpty()) {
+            allProducts = productService.searchProductsByName(search);
+        } else {
+            allProducts = productService.getAllActiveWithSpecifications();
+        }
+        
         return allProducts.stream()
             .filter(product -> {
                 try {
