@@ -1,15 +1,17 @@
 package com.example.computershop.repository;
 
-import com.example.computershop.entity.Order;
-import com.example.computershop.entity.User;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.domain.Pageable;
-import java.math.BigInteger;
+
+import com.example.computershop.entity.Order;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
@@ -45,4 +47,36 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o")
     BigInteger getTotalRevenue();
+
+    // Thống kê theo khoảng thời gian
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    long countOrdersByPeriod(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalRevenueByPeriod(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    // Thống kê đơn hàng theo trạng thái
+    @Query("SELECT o.status, COUNT(o) FROM Order o GROUP BY o.status")
+    List<Object[]> getOrderStatusStatistics();
+
+    // Báo cáo doanh số theo ngày
+    @Query("SELECT DATE(o.orderDate), COUNT(o), COALESCE(SUM(o.totalAmount), 0) " +
+           "FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate " +
+           "GROUP BY DATE(o.orderDate) ORDER BY DATE(o.orderDate)")
+    List<Object[]> getDailySalesReport(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    // Báo cáo doanh số theo tuần
+    @Query("SELECT YEAR(o.orderDate), WEEK(o.orderDate), COUNT(o), COALESCE(SUM(o.totalAmount), 0) " +
+           "FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate " +
+           "GROUP BY YEAR(o.orderDate), WEEK(o.orderDate) ORDER BY YEAR(o.orderDate), WEEK(o.orderDate)")
+    List<Object[]> getWeeklySalesReport(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    // Báo cáo doanh số theo tháng
+    @Query("SELECT YEAR(o.orderDate), MONTH(o.orderDate), COUNT(o), COALESCE(SUM(o.totalAmount), 0) " +
+           "FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate " +
+           "GROUP BY YEAR(o.orderDate), MONTH(o.orderDate) ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)")
+    List<Object[]> getMonthlySalesReport(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT MONTH(o.orderDate), COUNT(o) FROM Order o WHERE YEAR(o.orderDate) = :year GROUP BY MONTH(o.orderDate)")
+    List<Object[]> countOrdersByMonth(@Param("year") int year);
 } 
