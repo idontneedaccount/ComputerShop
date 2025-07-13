@@ -107,4 +107,9 @@ public class OrderServiceImpl implements OrderService {
     public BigInteger getTotalRevenue() {
         return orderRepository.getTotalRevenue();
     }
+
+    @Override
+    public List<Object[]> getMonthlyOrderCount(int year) {
+        return orderRepository.countOrdersByMonth(year);
+    }
 } 

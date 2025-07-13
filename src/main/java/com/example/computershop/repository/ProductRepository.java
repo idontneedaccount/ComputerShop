@@ -47,4 +47,6 @@ public interface ProductRepository extends JpaRepository<Products, String> {
 
     @Query("SELECT COUNT(p) FROM Products p")
     long countProducts();
+
+
 }
