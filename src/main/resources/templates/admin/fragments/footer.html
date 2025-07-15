@@ -203,23 +203,23 @@
     });
 
     // Global functions
-    window.toggleReportsMenu = function() {
+    window.toggleReportsMenu = function(event) {
         const menu = document.getElementById('collapseReports');
-        const link = event.target.closest('.nav-link');
-
+        // Lấy link đúng khi gọi từ onclick hoặc từ sự kiện
+        const link = (event && event.target) ? event.target.closest('.nav-link') : document.querySelector('.nav-link[onclick*="toggleReportsMenu"]');
+        if (!menu || !link) return;
         if (menu.classList.contains('show')) {
             menu.classList.remove('show');
             link.classList.add('collapsed');
         } else {
-            // Close other menus first
+            // Đóng các menu khác trước
             document.querySelectorAll('.sidebar .collapse.show').forEach(function(openMenu) {
                 openMenu.classList.remove('show');
             });
             document.querySelectorAll('.sidebar .nav-link').forEach(function(navLink) {
                 navLink.classList.add('collapsed');
             });
-
-            // Open this menu
+            // Mở menu này
             menu.classList.add('show');
             link.classList.remove('collapsed');
         }
