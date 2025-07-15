@@ -51,8 +51,8 @@
                                 <td th:text="${products.description}"></td>
                                 <td th:text="${products.price}"></td>
                                 <td th:text="${products.totalQuantity}"></td>
-                                <td th:if="${products.isActive}"><span class="badge btn-success">Hoạt động</span></td>
-                                <td th:if="${!products.isActive}"><span class="badge btn-danger">Ẩn</span></td>
+                                <td th:if="${products.isActive == true}"><span class="badge btn-success">Hoạt động</span></td>
+                                <td th:if="${products.isActive != true}"><span class="badge btn-danger">Ẩn</span></td>
                                 <td th:text="${#temporals.format(products.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
                                     <img th:src="@{'/assets/images/product/laptop/'+${products.imageURL}}" alt="Product Image" class="img-fluid"

@@ -48,8 +48,6 @@ public class SecurityConfig {
                                 .requestMatchers("/user/user-profile","/cart/view","/cart/checkout",
                                         "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**")
                                 .permitAll()
-                                .requestMatchers("/admin/product)","admin/categories")
-                                .permitAll()
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)

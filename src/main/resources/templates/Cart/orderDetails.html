@@ -94,22 +94,25 @@
                             <div class="card-body">
                                 <div class="customer-grid">
                                     <div class="customer-block">
-                                        <h5><i class="fas fa-credit-card me-2"></i>Địa chỉ thanh toán</h5>
-                                        <p><strong th:text="${order.fullName}">Nguyễn Văn A</strong></p>
-                                        <p th:text="${order.address}">123 Đường ABC, Quận 1</p>
+                                        <h5><i class="fas fa-credit-card me-2"></i>Thông tin khách hàng</h5>
+                                        <p><strong th:text="${order.customerName}">Nguyễn Văn A</strong></p>
+                                        <p th:text="${order.customerAddress}">123 Đường ABC, Quận 1</p>
                                         <p>
                                             <i class="fas fa-phone me-1"></i>
-                                            <span th:text="${order.phone}">+84 123 456 789</span>
+                                            <span th:text="${order.customerPhone}">+84 123 456 789</span>
                                         </p>
                                         <p>
                                             <i class="fas fa-envelope me-1"></i>
-                                            <span th:text="${order.email}">nguyen@example.com</span>
+                                            <span th:text="${order.customerEmail}">nguyen@example.com</span>
                                         </p>
                                     </div>
                                     <div class="customer-block">
                                         <h5><i class="fas fa-shipping-fast me-2"></i>Địa chỉ giao hàng</h5>
-                                        <p><strong th:text="${order.fullName}">Nguyễn Văn A</strong></p>
-                                        <p th:text="${order.shippingAddress ?: order.address}">123 Đường ABC, Quận 1, TP.HCM</p>
+                                        <p><strong th:text="${order.customerName}">Nguyễn Văn A</strong></p>
+                                        <p th:if="${order.alternativeReceiverName}" class="text-muted small">
+                                            Người nhận: <span th:text="${order.alternativeReceiverName}"></span>
+                                        </p>
+                                        <p th:text="${order.shippingAddress ?: order.customerAddress}">123 Đường ABC, Quận 1, TP.HCM</p>
                                         <div th:if="${order.note}" class="mt-3">
                                             <strong>Ghi chú:</strong>
                                             <p th:text="${order.note}" class="text-muted mt-1">Giao hàng trong giờ hành chính</p>

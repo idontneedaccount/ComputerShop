@@ -46,8 +46,8 @@
                 <td th:text="${category.categoryID}"></td>
                 <td th:text="${category.name}"></td>
                 <td th:text="${category.description}"></td>
-                <td th:if="${category.isActive}"><span class="badge btn-success">Hoạt động</span></td>
-                <td th:if="${!category.isActive}"><span class="badge btn-danger">Ẩn</span></td>
+                <td th:if="${category.isActive == true}"><span class="badge btn-success">Hoạt động</span></td>
+                <td th:if="${category.isActive != true}"><span class="badge btn-danger">Ẩn</span></td>
                 <td>
                   <a th:href="@{/admin/edit-categories/{id}(id=${category.categoryID})}" class="btn btn-sm btn-primary">
                     <i class="fas fa-edit"></i>

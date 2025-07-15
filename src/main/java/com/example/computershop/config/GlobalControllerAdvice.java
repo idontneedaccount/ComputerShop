@@ -1,11 +1,15 @@
 package com.example.computershop.config;
 
+import com.example.computershop.dto.CartItemDisplay;
 import com.example.computershop.entity.Cart;
 import com.example.computershop.entity.User;
 import com.example.computershop.entity.Products;
+import com.example.computershop.entity.ProductVariant;
+import com.example.computershop.entity.Voucher;
 import com.example.computershop.repository.CartRepository;
 import com.example.computershop.repository.UserRepository;
 import com.example.computershop.repository.ProductRepository;
+import com.example.computershop.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -16,6 +20,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 
 @ControllerAdvice
 public class GlobalControllerAdvice {
@@ -29,19 +34,10 @@ public class GlobalControllerAdvice {
     @Autowired
     private ProductRepository productRepository;
     
-    // Display class for cart items
-    public static class CartItemDisplay {
-        private Products product;
-        private Integer quantity;
-        
-        public CartItemDisplay(Products product, Integer quantity) {
-            this.product = product;
-            this.quantity = quantity;
-        }
-        
-        public Products getProduct() { return product; }
-        public Integer getQuantity() { return quantity; }
-    }
+    @Autowired
+    private VoucherService voucherService;
+    
+    // ❌ REMOVED - CartItemDisplay đã được chuyển sang DTO package
 
     /**
      * Get user from principal - handles both OAuth2 and form authentication
@@ -73,32 +69,22 @@ public class GlobalControllerAdvice {
      * Extract email from OAuth2 attributes based on provider
      */
     private String getEmailFromOAuth2Attributes(String provider, Map<String, Object> attributes) {
-        try {
-            if ("google".equals(provider)) {
-                return (String) attributes.get("email");
-            } else if ("github".equals(provider)) {
-                String email = (String) attributes.get("email");
-                if (email == null) {
-                    String username = (String) attributes.get("login");
-                    if (username != null) {
-                        email = username + "@github.com";
-                    }
-                }
-                return email;
-            } else if ("facebook".equals(provider)) {
-                String email = (String) attributes.get("email");
-                if (email == null) {
-                    String facebookId = (String) attributes.get("id");
-                    if (facebookId != null) {
-                        email = "facebook_" + facebookId + "@facebook.com";
-                    }
-                }
-                return email;
-            }
-            return null;
-        } catch (Exception e) {
-            return null;
+        // Google
+        if ("google".equals(provider)) {
+            return (String) attributes.get("email");
         }
+        
+        // Facebook
+        if ("facebook".equals(provider)) {
+            return (String) attributes.get("email");
+        }
+        
+        // GitHub
+        if ("github".equals(provider)) {
+            return (String) attributes.get("email");
+        }
+        
+        return null;
     }
     
     @ModelAttribute("cartCount")
@@ -120,7 +106,9 @@ public class GlobalControllerAdvice {
             for (Cart item : userCart) {
                 Products product = productRepository.findById(item.getProduct().getProductID()).orElse(null);
                 if (product != null) {
-                    displayItems.add(new CartItemDisplay(product, item.getQuantity()));
+                    // Use CartController's CartItemDisplay with voucher info
+                    // Note: This is a simplified version for global use
+                    displayItems.add(new CartItemDisplay(product, item.getVariant(), item.getQuantity()));
                 }
             }
         }
@@ -134,12 +122,61 @@ public class GlobalControllerAdvice {
             List<Cart> userCart = cartRepository.findByUser(user);
             long total = 0;
             for (Cart item : userCart) {
-                Products product = productRepository.findById(item.getProduct().getProductID()).orElse(null);
-                if (product != null) {
-                    total += product.getPrice().longValue() * item.getQuantity();
-                }
+                total += (item.getFinalPrice() != null ? item.getFinalPrice() : 0L);
             }
             return total;
+        }
+        return 0;
+    }
+    
+    @ModelAttribute("cartOriginalTotal")
+    public long cartOriginalTotal(Principal principal) {
+        User user = getUserFromPrincipal(principal);
+        if (user != null) {
+            List<Cart> userCart = cartRepository.findByUser(user);
+            long total = 0;
+            for (Cart item : userCart) {
+                total += (item.getOriginalPrice() != null ? item.getOriginalPrice() : 0L);
+            }
+            return total;
+        }
+        return 0;
+    }
+    
+    @ModelAttribute("cartHasVoucher")
+    public boolean cartHasVoucher(Principal principal) {
+        User user = getUserFromPrincipal(principal);
+        if (user != null) {
+            List<Cart> userCart = cartRepository.findByUser(user);
+            for (Cart item : userCart) {
+                if (item.getVoucherCode() != null && !item.getVoucherCode().isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    @ModelAttribute("cartVoucherCode")
+    public String cartVoucherCode(Principal principal) {
+        User user = getUserFromPrincipal(principal);
+        if (user != null) {
+            List<Cart> userCart = cartRepository.findByUser(user);
+            for (Cart item : userCart) {
+                if (item.getVoucherCode() != null && !item.getVoucherCode().isEmpty()) {
+                    return item.getVoucherCode();
+                }
+            }
+        }
+        return null;
+    }
+    
+    @ModelAttribute("cartItemCount")
+    public int cartItemCount(Principal principal) {
+        User user = getUserFromPrincipal(principal);
+        if (user != null) {
+            List<Cart> userCart = cartRepository.findByUser(user);
+            return userCart.size();
         }
         return 0;
     }

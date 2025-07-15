@@ -2,12 +2,17 @@ package com.example.computershop.dto.request;
 
 /**
  * DTO for checkout parameters to reduce method parameter count
+ * Updated to remove duplicate fields with User entity
  */
 public class CheckoutRequest {
-    private String fullName;
-    private String email;
-    private String phone;
-    private String address;
+    // ❌ REMOVED - Duplicate với User entity
+    // private String fullName;
+    // private String email;
+    // private String phone;
+    // private String address;
+    
+    // ✅ KEPT - Shipping information (có thể khác với user.address)
+    private String shippingAddress;
     private String city;
     private String region;
     private String district;
@@ -17,40 +22,20 @@ public class CheckoutRequest {
     private String shippingMethod;
     private Double distance;
     private Long shippingFee;
+    
+    // ✅ NEW - Alternative receiver information (nếu khác với user)
+    private String alternativeReceiverName;
+    private String alternativeReceiverPhone;
 
     public CheckoutRequest() {}
 
-    // Getters and setters
-    public String getFullName() { 
-        return fullName; 
+    // Getters and setters for shipping address components
+    public String getShippingAddress() { 
+        return shippingAddress; 
     }
     
-    public void setFullName(String fullName) { 
-        this.fullName = fullName; 
-    }
-
-    public String getEmail() { 
-        return email; 
-    }
-    
-    public void setEmail(String email) { 
-        this.email = email; 
-    }
-
-    public String getPhone() { 
-        return phone; 
-    }
-    
-    public void setPhone(String phone) { 
-        this.phone = phone; 
-    }
-
-    public String getAddress() { 
-        return address; 
-    }
-    
-    public void setAddress(String address) { 
-        this.address = address; 
+    public void setShippingAddress(String shippingAddress) { 
+        this.shippingAddress = shippingAddress; 
     }
 
     public String getCity() { 
@@ -67,6 +52,22 @@ public class CheckoutRequest {
     
     public void setRegion(String region) { 
         this.region = region; 
+    }
+
+    public String getDistrict() { 
+        return district; 
+    }
+    
+    public void setDistrict(String district) { 
+        this.district = district; 
+    }
+
+    public String getWard() { 
+        return ward; 
+    }
+    
+    public void setWard(String ward) { 
+        this.ward = ward; 
     }
 
     public String getNote() { 
@@ -109,19 +110,45 @@ public class CheckoutRequest {
         this.shippingFee = shippingFee; 
     }
 
-    public String getDistrict() { 
-        return district; 
+    // Alternative receiver getters and setters
+    public String getAlternativeReceiverName() { 
+        return alternativeReceiverName; 
     }
     
-    public void setDistrict(String district) { 
-        this.district = district; 
+    public void setAlternativeReceiverName(String alternativeReceiverName) { 
+        this.alternativeReceiverName = alternativeReceiverName; 
     }
 
-    public String getWard() { 
-        return ward; 
+    public String getAlternativeReceiverPhone() { 
+        return alternativeReceiverPhone; 
     }
     
-    public void setWard(String ward) { 
-        this.ward = ward; 
+    public void setAlternativeReceiverPhone(String alternativeReceiverPhone) { 
+        this.alternativeReceiverPhone = alternativeReceiverPhone; 
+    }
+
+    // Helper method để build complete shipping address
+    public String getCompleteShippingAddress() {
+        StringBuilder address = new StringBuilder();
+        if (shippingAddress != null && !shippingAddress.trim().isEmpty()) {
+            address.append(shippingAddress);
+        }
+        if (ward != null && !ward.trim().isEmpty()) {
+            if (address.length() > 0) address.append(", ");
+            address.append(ward);
+        }
+        if (district != null && !district.trim().isEmpty()) {
+            if (address.length() > 0) address.append(", ");
+            address.append(district);
+        }
+        if (city != null && !city.trim().isEmpty()) {
+            if (address.length() > 0) address.append(", ");
+            address.append(city);
+        }
+        if (region != null && !region.trim().isEmpty()) {
+            if (address.length() > 0) address.append(", ");
+            address.append(region);
+        }
+        return address.toString();
     }
 } 

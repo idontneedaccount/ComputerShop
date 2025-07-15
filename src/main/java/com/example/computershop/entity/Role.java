@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum Role {
     Admin("Quản trị viên"),
+    ADMIN("Quản trị viên"), // Backward compatibility
     Customer("Người dùng"),
     Shipper("Nhân viên vận chuyển"),
     Sales("Nhân viên bán hàng");
