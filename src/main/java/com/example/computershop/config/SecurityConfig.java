@@ -44,7 +44,9 @@ public class SecurityConfig {
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page","/",
                                         "/cart/add/**", "/cart/count", "/cart/add-variant")
                                 .permitAll()
-                                .requestMatchers("/admin/**").permitAll()
+                                .requestMatchers("/admin/dashboard","/admin/orders/**").hasAnyRole("Admin","Sales")
+                                .requestMatchers("/admin/**").hasAnyRole("Admin")
+                                .requestMatchers("/shipper/**").hasAnyRole("Shipper","Admin")
                                 .requestMatchers("/user/user-profile","/cart/view","/cart/checkout",
                                         "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**")
                                 .permitAll()

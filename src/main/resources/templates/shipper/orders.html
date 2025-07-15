@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Quản Lý Đơn Hàng - Shipper</title>
+</head>
+
+<body id="page-top" class="sidebar-toggled">
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="~{shipper/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <div class="container-fluid">
+                <!-- Page Heading -->
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-list text-primary mr-2"></i>
+                        Danh Sách Đơn Hàng
+                    </h1>
+                </div>
+
+                <!-- Breadcrumbs -->
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/shipper/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active">Danh sách đơn hàng</li>
+                </ol>
+
+                <!-- Error/Success Messages -->
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span th:text="${success}"></span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <!-- Filter and Search -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-filter mr-2"></i>
+                            Lọc và Tìm Kiếm
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form method="get" th:action="@{/shipper/orders}">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="status">Lọc theo trạng thái:</label>
+                                        <select class="form-control" id="status" name="status">
+                                            <option value="">-- Tất cả trạng thái --</option>
+                                            <option value="PROCESSING" th:selected="${selectedStatus == 'PROCESSING'}">
+                                                🔄 Đang xử lý
+                                            </option>
+                                            <option value="SHIPPED" th:selected="${selectedStatus == 'SHIPPED'}">
+                                                🚚 Đang giao hàng
+                                            </option>
+                                            <option value="DELIVERED" th:selected="${selectedStatus == 'DELIVERED'}">
+                                                📦 Đã giao hàng
+                                            </option>
+                                            <option value="CANCELLED" th:selected="${selectedStatus == 'CANCELLED'}">
+                                                ❌ Đã hủy
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="search">Tìm kiếm:</label>
+                                        <input type="text" class="form-control" id="search" name="search" 
+                                               th:value="${searchTerm}" 
+                                               placeholder="Tìm theo ID đơn hàng, tên, email, số điện thoại...">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <div>
+                                            <button type="submit" class="btn btn-primary btn-block">
+                                                <i class="fas fa-search mr-1"></i>Lọc
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-table mr-2"></i>
+                            Danh Sách Đơn Hàng
+                            <span class="badge badge-secondary ml-2" th:text="${totalOrders}">0</span>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="ordersTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID Đơn Hàng</th>
+                                        <th>Khách Hàng</th>
+                                        <th>Liên Hệ</th>
+                                        <th>Địa Chỉ Giao Hàng</th>
+                                        <th>Ngày Đặt</th>
+                                        <th>Tổng Tiền</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(orders)}">
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                            Không có đơn hàng nào được tìm thấy.
+                                        </td>
+                                    </tr>
+                                    <tr th:each="order : ${orders}">
+                                        <td>
+                                            <code th:text="${order.id}">ORDER-001</code>
+                                        </td>
+                                        <td>
+                                            <strong th:text="${order.fullName}">Tên khách hàng</strong>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <i class="fas fa-envelope text-muted mr-1"></i>
+                                                <span th:text="${order.email}">email@example.com</span>
+                                            </div>
+                                            <div th:if="${order.phone}">
+                                                <i class="fas fa-phone text-muted mr-1"></i>
+                                                <span th:text="${order.phone}">0123456789</span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${order.shippingAddress}">Địa chỉ giao hàng</td>
+                                        <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">
+                                            01/01/2024 10:00
+                                        </td>
+                                        <td>
+                                            <strong class="text-success" 
+                                                    th:text="${#numbers.formatCurrency(order.totalAmount)}">
+                                                1,000,000₫
+                                            </strong>
+                                        </td>
+                                        <td>
+                                            <span th:switch="${order.status}" class="badge badge-pill p-2">
+                                                <span th:case="'PROCESSING'" class="badge badge-warning">
+                                                    🔄 Đang xử lý
+                                                </span>
+                                                <span th:case="'SHIPPED'" class="badge badge-info">
+                                                    🚚 Đang giao hàng
+                                                </span>
+                                                <span th:case="'DELIVERED'" class="badge badge-success">
+                                                    📦 Đã giao hàng
+                                                </span>
+                                                <span th:case="'CANCELLED'" class="badge badge-danger">
+                                                    ❌ Đã hủy
+                                                </span>
+                                                <span th:case="*" class="badge badge-secondary">
+                                                    ❓ Không xác định
+                                                </span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a th:href="@{/shipper/orders/{id}(id=${order.id})}" 
+                                                   class="btn btn-info btn-sm" title="Xem chi tiết">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-warning btn-sm dropdown-toggle" 
+                                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                            th:if="${order.status == 'PROCESSING' or order.status == 'SHIPPED'}"
+                                                            title="Cập nhật trạng thái">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <h6 class="dropdown-header">Cập nhật trạng thái:</h6>
+                                                        <form th:action="@{/shipper/orders/update-status}" method="post" class="d-inline">
+                                                            <input type="hidden" name="orderId" th:value="${order.id}">
+                                                            <button type="submit" name="newStatus" value="SHIPPED" 
+                                                                    class="dropdown-item"
+                                                                    th:if="${order.status == 'PROCESSING'}"
+                                                                    onclick="return confirm('Xác nhận chuyển sang trạng thái Đang giao hàng?')">
+                                                                <i class="fas fa-shipping-fast text-info mr-2"></i>Đang giao hàng
+                                                            </button>
+                                                            <button type="submit" name="newStatus" value="DELIVERED" 
+                                                                    class="dropdown-item"
+                                                                    th:if="${order.status == 'SHIPPED'}"
+                                                                    onclick="return confirm('Xác nhận đã giao hàng thành công?')">
+                                                                <i class="fas fa-check-circle text-success mr-2"></i>Đã giao hàng
+                                                            </button>
+                                                            <div class="dropdown-divider" 
+                                                                 th:if="${order.status != 'DELIVERED' and order.status != 'CANCELLED'}"></div>
+                                                            <button type="submit" name="newStatus" value="CANCELLED" 
+                                                                    class="dropdown-item text-danger"
+                                                                    th:if="${order.status != 'DELIVERED' and order.status != 'CANCELLED'}"
+                                                                    onclick="return confirm('Xác nhận hủy đơn hàng này?')">
+                                                                <i class="fas fa-times-circle mr-2"></i>Hủy đơn hàng
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Statistics -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-chart-bar mr-2"></i>
+                                    Thống Kê Nhanh
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="border-left-warning p-3">
+                                            <h4 class="text-warning" 
+                                                th:text="${#lists.size(orders.?[status == 'PROCESSING'])}">0</h4>
+                                            <small class="text-muted">Đang xử lý</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="border-left-info p-3">
+                                            <h4 class="text-info" 
+                                                th:text="${#lists.size(orders.?[status == 'SHIPPED'])}">0</h4>
+                                            <small class="text-muted">Đang giao hàng</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="border-left-success p-3">
+                                            <h4 class="text-success" 
+                                                th:text="${#lists.size(orders.?[status == 'DELIVERED'])}">0</h4>
+                                            <small class="text-muted">Đã giao hàng</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="border-left-danger p-3">
+                                            <h4 class="text-danger" 
+                                                th:text="${#lists.size(orders.?[status == 'CANCELLED'])}">0</h4>
+                                            <small class="text-muted">Đã hủy</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white" th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<!-- Custom JavaScript -->
+<script th:inline="none">
+/*<![CDATA[*/
+$(document).ready(function() {
+    // Check if DataTable is already initialized
+    if ($.fn.DataTable.isDataTable('#ordersTable')) {
+        $('#ordersTable').DataTable().destroy();
+    }
+    
+    $('#ordersTable').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+        },
+        "pageLength": 25,
+        "order": [[ 4, "desc" ]], // Sort by date column descending
+        "columnDefs": [
+            { "orderable": false, "targets": [7] } // Disable sorting on action column
+        ]
+    });
+});
+/*]]>*/
+</script>
+
+</body>
+</html> 

@@ -1,11 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<p sec:authentication="principal.authorities"></p>
 <ul class="sidebar navbar-nav" id="accordionSidebar" th:fragment="sidebar" lang="vi">
-    <li class="nav-item active">
+    <li class="nav-item active" sec:authorize="hasAnyRole('Admin', 'Sales')">
         <a class="nav-link" th:href="@{/admin/dashboard}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Trang Chủ</span>
         </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item active" sec:authorize="hasRole('Shipper')">
+        <a class="nav-link" th:href="@{/shipper/dashboard}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Trang Chủ</span>
+        </a>
+    </li>
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin','Sales')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCategories"
            aria-expanded="false" aria-controls="collapseCategories">
             <i class="fas fa-fw fa-tags"></i>
@@ -22,7 +32,7 @@
             </div>
         </div>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProducts"
            aria-expanded="false" aria-controls="collapseProducts">
             <i class="fas fa-fw fa-box"></i>
@@ -39,7 +49,7 @@
             </div>
         </div>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers"
            aria-expanded="false" aria-controls="collapseUsers">
             <i class="fas fa-fw fa-users"></i>
@@ -56,7 +66,7 @@
             </div>
         </div>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVouchers"
            aria-expanded="false" aria-controls="collapseVouchers">
             <i class="fas fa-fw fa-ticket-alt"></i>
@@ -73,19 +83,49 @@
             </div>
         </div>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
         <a th:href="@{/admin/product-variants/field-config}" class="nav-link">
             <i class="fas fa-fw fa-cogs"></i>
             <span>Quản lý trường tùy chỉnh</span>
         </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
         <a class="nav-link" th:href="@{/admin/orders}">
             <i class="fas fa-fw fa-shopping-cart"></i>
             <span>Quản lí đơn hàng</span>
         </a>
     </li>
-    <li class="nav-item">
+    <!-- Shipper specific menu items -->
+    <li class="nav-item" sec:authorize="hasRole('Shipper')">
+        <a class="nav-link" th:href="@{/shipper/dashboard}">
+            <i class="fas fa-fw fa-truck"></i>
+            <span>Dashboard Giao Hàng</span>
+        </a>
+    </li>
+    <li class="nav-item" sec:authorize="hasRole('Shipper')">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseShipperOrders"
+           aria-expanded="false" aria-controls="collapseShipperOrders">
+            <i class="fas fa-fw fa-shipping-fast"></i>
+            <span>Quản lí giao hàng</span>
+        </a>
+        <div id="collapseShipperOrders" class="collapse" aria-labelledby="headingShipperOrders" data-parent="#accordionSidebar">
+            <div class="collapse-inner">
+                <a class="collapse-item" th:href="@{/shipper/orders}">
+                    <i class="fas fa-list mr-2"></i>Tất cả đơn hàng
+                </a>
+                <a class="collapse-item" th:href="@{/shipper/orders?status=PROCESSING}">
+                    <i class="fas fa-clock text-warning mr-2"></i>Đang xử lý
+                </a>
+                <a class="collapse-item" th:href="@{/shipper/orders?status=SHIPPED}">
+                    <i class="fas fa-shipping-fast text-info mr-2"></i>Đang giao hàng
+                </a>
+                <a class="collapse-item" th:href="@{/shipper/orders?status=DELIVERED}">
+                    <i class="fas fa-check-circle text-success mr-2"></i>Đã giao hàng
+                </a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseWarehouse" aria-expanded="false" aria-controls="collapseWarehouse">
             <i class="fas fa-warehouse"></i>
             <span>Quản lý kho</span>
@@ -110,7 +150,7 @@
     </li>
 
     <!-- Báo cáo - Dropdown menu -->
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
         <a class="nav-link collapsed" href="#" onclick="toggleReportsMenu(event); return false;">
             <i class="fas fa-fw fa-chart-line"></i>
             <span>Báo cáo</span>
@@ -125,3 +165,4 @@
         </div>
     </li>
 </ul>
+</html>

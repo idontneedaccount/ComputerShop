@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="admin/fragments/head :: head">
+    <title>Quản lý người dùng</title>
 </head>
 
 <body id="page-top">
@@ -127,7 +128,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="usersTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered" id="usersTable">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -145,13 +146,13 @@
                                             <td th:text="${user.username}">admin</td>
                                             <td th:text="${user.email}">admin@example.com</td>
                                             <td>
-                                                <span th:if="${user.role == T(com.example.computershop.entity.Role).Admin}" 
+                                                <span th:if="${user.role == T(com.example.computershop.enums.Role).Admin}"
                                                       class="badge badge-warning">Quản trị viên</span>
-                                                <span th:if="${user.role == T(com.example.computershop.entity.Role).Customer}" 
+                                                <span th:if="${user.role == T(com.example.computershop.enums.Role).Customer}" 
                                                       class="badge badge-info">Khách hàng</span>
-                                                <span th:if="${user.role == T(com.example.computershop.entity.Role).Sales}" 
+                                                <span th:if="${user.role == T(com.example.computershop.enums.Role).Sales}" 
                                                       class="badge badge-success">Nhân viên bán hàng</span>
-                                                <span th:if="${user.role == T(com.example.computershop.entity.Role).Shipper}" 
+                                                <span th:if="${user.role == T(com.example.computershop.enums.Role).Shipper}" 
                                                       class="badge badge-primary">Nhân viên vận chuyển</span>
                                             </td>
                                             <td>

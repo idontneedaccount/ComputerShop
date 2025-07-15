@@ -1,7 +1,5 @@
 package com.example.computershop.entity;
 
-import com.example.computershop.entity.PurchaseOrder;
-import com.example.computershop.entity.Products;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

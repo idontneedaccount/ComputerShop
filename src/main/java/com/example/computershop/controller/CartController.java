@@ -5,7 +5,7 @@ import com.example.computershop.entity.Cart;
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.ProductVariant;
 import com.example.computershop.entity.User;
-import com.example.computershop.entity.Role;
+import com.example.computershop.enums.Role;
 import com.example.computershop.service.CartService;
 import com.example.computershop.service.CheckoutService;
 import com.example.computershop.service.ProductVariantService;
@@ -210,13 +210,10 @@ public class CartController {
      * Get redirect path based on redirect parameter
      */
     private String getRedirectPath(String redirect) {
-        switch (redirect.toLowerCase()) {
-            case "checkout":
-                return "redirect:/cart/checkout";
-            case "cart":
-            default:
-                return "redirect:/cart/view";
-        }
+        return switch (redirect.toLowerCase()) {
+            case "checkout" -> "redirect:/cart/checkout";
+            default -> "redirect:/cart/view";
+        };
     }
 
     /**
@@ -250,7 +247,7 @@ public class CartController {
                 return "error";
             }
 
-            return "Cart/Checkout";
+            return "Cart/checkout";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "error";
@@ -262,7 +259,6 @@ public class CartController {
      */
     @PostMapping("/checkout")
     public String processCheckout(@RequestParam("fullName") String fullName,
-                                  @RequestParam("email") String email,
                                   @RequestParam("phone") String phone,
                                   @RequestParam("address") String address,
                                   @RequestParam("city") String city,
@@ -389,9 +385,9 @@ public class CartController {
             Map<String, Object> reviewData = cartService.prepareCartReviewData(principal);
             model.addAllAttributes(reviewData);
 
-            return "user/fragments/cartreview :: cartreview";
+            return "user/fragments/cartreview";
         } catch (Exception e) {
-            return "user/fragments/cartreview :: cartreview";
+            return "user/fragments/cartreview";
         }
     }
 
@@ -402,8 +398,7 @@ public class CartController {
      */
     @PostMapping("/add-variant")
     @ResponseBody
-    public ResponseEntity<?> addVariant(@RequestParam String productId,
-                                       @RequestParam String variantId,
+    public ResponseEntity<?> addVariant(@RequestParam String variantId,
                                        @RequestParam(defaultValue = "1") int quantity,
                                        Principal principal) {
         

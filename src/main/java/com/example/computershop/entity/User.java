@@ -1,5 +1,6 @@
 package com.example.computershop.entity;
 
+import com.example.computershop.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -62,18 +63,8 @@ public class User implements UserDetails, OAuth2User {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
     public boolean isAccountNonLocked() {
         return isAccountLocked == null || !isAccountLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.example.computershop.entity;
 
-import com.example.computershop.entity.ExportOrder;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
-import com.example.computershop.entity.PurchaseOrderDetail;
 
 @Getter
 @Setter

@@ -1,6 +1,6 @@
 package com.example.computershop;
 
-import com.example.computershop.entity.Role;
+import com.example.computershop.enums.Role;
 import com.example.computershop.entity.User;
 import com.example.computershop.repository.UserRepository;
 import com.example.computershop.service.StorageService;
@@ -25,7 +25,7 @@ public class ComputerShopApplication {
             storageService.init();
 
             // Tạo tài khoản admin mặc định nếu chưa có
-            if (!userRepository.findByUsername("admin").isPresent()) {
+            if (userRepository.findByUsername("admin").isEmpty()) {
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 String encodedPassword = encoder.encode("Admin123!");
 

@@ -49,8 +49,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 return;
             }
             if ("ROLE_Shipper".equals(authority)) {
-                log.info("Redirecting shipper {} to dashboard", username);
-                response.sendRedirect("/admin/dashboard");
+                log.info("Redirecting shipper {} to shipper dashboard", username);
+                response.sendRedirect("/shipper/dashboard");
                 return;
             }
         }

@@ -1,6 +1,6 @@
 package com.example.computershop.dto.request;
 
-import com.example.computershop.entity.Role;
+import com.example.computershop.enums.Role;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

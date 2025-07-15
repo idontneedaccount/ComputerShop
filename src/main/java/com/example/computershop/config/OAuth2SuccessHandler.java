@@ -1,6 +1,6 @@
 package com.example.computershop.config;
 
-import com.example.computershop.entity.Role;
+import com.example.computershop.enums.Role;
 import com.example.computershop.entity.User;
 import com.example.computershop.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -153,7 +153,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         } catch (Exception e) {
             System.err.println("OAuth2 Authentication Error: " + e.getMessage());
-            e.printStackTrace();
             redirectWithError(request, response, "oauth2_error");
         }
     }
@@ -264,19 +263,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     
     private String determineRedirectUrl(User user) {
         Role userRole = user.getRole();
-        
-        switch (userRole) {
-            case Admin:
-                return "/admin/dashboard";
-            case Customer:
-                return "/";
-            case Shipper:
-                return "/admin/dashboard";
-            case Sales:
-                return "/admin/dashboard";
-            default:
-                return "/user/shopping-page";
-        }
+
+        return switch (userRole) {
+            case Admin,Sales -> "/admin/dashboard";
+            case Customer -> "/";
+            case Shipper -> "/shipper/dashboard";
+            default -> "/user/shopping-page";
+        };
     }
 
     private String downloadAndSaveOAuth2Avatar(String avatarUrl, String userId, String provider) {
@@ -311,7 +304,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             
         } catch (Exception e) {
             System.err.println("Error downloading OAuth2 avatar: " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }
@@ -326,21 +318,21 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                         return "email";
                     }
                     return "sub"; // Google ID
-                    
+
                 case "github":
                     // GitHub có thể không có email public
                     if (attributes.containsKey("email") && attributes.get("email") != null) {
                         return "email";
                     }
                     return "login"; // GitHub username
-                    
+
                 case "facebook":
                     // Facebook thường có "id" và có thể có "email"
                     if (attributes.containsKey("email") && attributes.get("email") != null) {
                         return "email";
                     }
                     return "id"; // Facebook ID
-                    
+
                 default:
                     // Fallback: tìm attribute không null
                     for (String key : new String[]{"email", "sub", "id", "login", "name"}) {

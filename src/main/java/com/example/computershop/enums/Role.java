@@ -1,4 +1,4 @@
-package com.example.computershop.entity;
+package com.example.computershop.enums;
 
 import lombok.Getter;
 

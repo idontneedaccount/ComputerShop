@@ -7,7 +7,7 @@ import com.example.computershop.dto.request.UserInfoUpdateRequest;
 import com.example.computershop.dto.request.PasswordChangeRequest;
 import com.example.computershop.entity.User;
 import com.example.computershop.repository.UserRepository;
-import com.example.computershop.entity.Role;
+import com.example.computershop.enums.Role;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,7 +170,7 @@ public class UserService {
         try {
             User user = userRepository.findById(userId).orElse(null);
             if (user != null) {
-                user.setIsActive(!user.getIsActive());
+                user.setIsAccountLocked(!user.getIsAccountLocked());
                 userRepository.save(user);
                 return true;
             }
@@ -348,8 +348,6 @@ public class UserService {
         // Priority: Custom upload > OAuth2 > Default
         if (user.getImage() != null && !user.getImage().isEmpty()) {
             return "/uploads/avatars/" + user.getImage();
-        } else if (user.getImage() != null && !user.getImage().isEmpty()) {
-            return user.getImage();
         } else {
             return "/assets/images/product/author1.png";
         }
@@ -358,8 +356,6 @@ public class UserService {
     public String getAvatarSource(User user) {
         if (user.getImage() != null && !user.getImage().isEmpty()) {
             return "custom";
-        } else if (user.getImage() != null && !user.getImage().isEmpty()) {
-            return "oauth2";
         } else {
             return "default";
         }
