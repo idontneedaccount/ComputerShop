@@ -160,16 +160,16 @@
                                     <td>
                                         <div class="d-flex flex-column">
                                             <strong class="text-dark mb-1" 
-                                                    th:text="${order.fullName ?: (order.user?.username ?: 'N/A')}">
+                                                    th:text="${order.customerName ?: 'N/A'}">
                                                 Tên khách hàng
                                             </strong>
                                             <small class="text-muted mb-1" 
-                                                   th:text="${order.email ?: (order.user?.email ?: 'N/A')}">
+                                                   th:text="${order.customerEmail ?: 'N/A'}">
                                                 email@example.com
                                             </small>
                                             <small class="text-info" 
-                                                   th:if="${order.phone}" 
-                                                   th:text="'📞 ' + ${order.phone}">
+                                                   th:if="${order.customerPhone}" 
+                                                   th:text="'📞 ' + ${order.customerPhone}">
                                                 📞 0123456789
                                             </small>
                                         </div>

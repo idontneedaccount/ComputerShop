@@ -133,25 +133,37 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <p><strong>Họ tên:</strong> 
-                                        <span th:text="${order?.fullName ?: (order?.user?.username ?: 'N/A')}">
+                                        <span th:text="${order?.customerName ?: 'N/A'}">
                                             Nguyễn Văn A
                                         </span>
+                                        <small th:if="${order?.alternativeReceiverName}" class="text-muted d-block">
+                                            (Người nhận: <span th:text="${order.alternativeReceiverName}"></span>)
+                                        </small>
                                     </p>
                                     <p><strong>Email:</strong> 
-                                        <span th:text="${order?.email ?: (order?.user?.email ?: 'N/A')}" class="text-primary">
+                                        <span th:text="${order?.customerEmail ?: 'N/A'}" class="text-primary">
                                             nguyenvana@email.com
                                         </span>
                                     </p>
                                 </div>
                                 <div class="col-md-6">
                                     <p><strong>Số điện thoại:</strong> 
-                                        <span th:text="${order?.phone ?: 'N/A'}" class="text-info">
+                                        <span th:text="${order?.customerPhone ?: 'N/A'}" class="text-info">
                                             0123456789
                                         </span>
+                                        <small th:if="${order?.alternativeReceiverPhone}" class="text-muted d-block">
+                                            (SĐT người nhận: <span th:text="${order.alternativeReceiverPhone}"></span>)
+                                        </small>
                                     </p>
-                                    <p><strong>Địa chỉ giao hàng:</strong> 
-                                        <span th:text="${order?.shippingAddress ?: order?.address ?: 'N/A'}" class="text-muted">
+                                    <p><strong>Địa chỉ khách hàng:</strong> 
+                                        <span th:text="${order?.customerAddress ?: 'N/A'}" class="text-muted">
                                             123 Đường ABC, Quận XYZ, TP.HCM
+                                        </span>
+                                    </p>
+                                    <p th:if="${order?.shippingAddress}" class="mt-2">
+                                        <strong>Địa chỉ giao hàng:</strong> 
+                                        <span th:text="${order.shippingAddress}" class="text-success">
+                                            456 Đường DEF, Quận GHI, TP.HCM
                                         </span>
                                     </p>
                                 </div>

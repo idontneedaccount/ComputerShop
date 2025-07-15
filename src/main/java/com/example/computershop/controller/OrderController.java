@@ -184,16 +184,24 @@ public class OrderController {
                 if (order.getId() != null && order.getId().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // Search in customer name
-                if (order.getFullName() != null && order.getFullName().toLowerCase().contains(searchTerm)) {
+                // ✅ FIXED - Search in customer name using helper method
+                if (order.getCustomerName() != null && order.getCustomerName().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // Search in email
-                if (order.getEmail() != null && order.getEmail().toLowerCase().contains(searchTerm)) {
+                // ✅ FIXED - Search in email using helper method
+                if (order.getCustomerEmail() != null && order.getCustomerEmail().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // Search in phone
-                if (order.getPhone() != null && order.getPhone().contains(searchTerm)) {
+                // ✅ FIXED - Search in phone using helper method
+                if (order.getCustomerPhone() != null && order.getCustomerPhone().contains(searchTerm)) {
+                    return true;
+                }
+                // ✅ NEW - Search in alternative receiver name
+                if (order.getAlternativeReceiverName() != null && order.getAlternativeReceiverName().toLowerCase().contains(searchTerm)) {
+                    return true;
+                }
+                // ✅ NEW - Search in alternative receiver phone
+                if (order.getAlternativeReceiverPhone() != null && order.getAlternativeReceiverPhone().contains(searchTerm)) {
                     return true;
                 }
                 return false;

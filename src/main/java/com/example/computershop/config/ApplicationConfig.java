@@ -3,7 +3,6 @@ package com.example.computershop.config;
 import com.example.computershop.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -11,10 +10,14 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-
-public class ApplicationConfig {
+@ControllerAdvice
+public class ApplicationConfig implements WebMvcConfigurer {
     private final UserRepository userRepository;
 
     public ApplicationConfig(UserRepository userRepository) {
@@ -46,5 +49,10 @@ public class ApplicationConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
+    }
+
+    @ModelAttribute("voucherCode")
+    public String getVoucherCode(HttpServletRequest request) {
+        return request.getParameter("voucherCode");
     }
 }
