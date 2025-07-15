@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Chi tiết phiếu xuất kho</title>
+</head>
+<body>
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin/dashboard">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/admin/export-orders">Quản lý phiếu xuất kho</a></li>
+                <li class="breadcrumb-item active">Chi tiết phiếu xuất kho</li>
+            </ol>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i> Thông tin phiếu xuất kho
+                </div>
+                <div class="card-body">
+                    <div><b>Mã phiếu:</b> <span th:text="${order.id}"></span></div>
+                    <div><b>Ngày xuất:</b> <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></span></div>
+                    <div><b>Ghi chú:</b> <span th:text="${order.note}"></span></div>
+                    <div><b>Trạng thái:</b> <span th:text="${order.status}"></span></div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-list"></i> Danh sách sản phẩm xuất kho
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Giá xuất</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="detail : ${order.details}">
+                                <td th:text="${detail.product.name}"></td>
+                                <td th:text="${detail.quantity}"></td>
+                                <td th:text="${detail.exportPrice}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+</div>
+</body>
+</html> 

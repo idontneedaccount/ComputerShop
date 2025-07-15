@@ -68,6 +68,22 @@
             <span>Quản lí đơn hàng</span>
         </a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseWarehouse" aria-expanded="false" aria-controls="collapseWarehouse">
+            <i class="fas fa-warehouse"></i>
+            <span>Quản lý kho</span>
+        </a>
+        <div id="collapseWarehouse" class="collapse" aria-labelledby="headingWarehouse" data-parent="#accordionSidebar">
+            <div class="collapse-inner">
+                <a class="collapse-item" th:href="@{/admin/purchase-orders}">
+                    <i class="fas fa-arrow-down mr-2"></i>Nhập kho
+                </a>
+                <a class="collapse-item" th:href="@{/admin/export-orders}">
+                    <i class="fas fa-arrow-up mr-2"></i>Xuất kho
+                </a>
+            </div>
+        </div>
+    </li>
     <!-- Thống kê - Toggle statistics -->
     <li class="nav-item">
         <a class="nav-link" href="#" onclick="toggleStatistics(); return false;" id="statisticsToggle">

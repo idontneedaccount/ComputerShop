@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Thêm sản phẩm vào phiếu nhập kho</title>
+</head>
+<body>
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin/dashboard">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{'/admin/purchase-orders/' + ${order.id}}">Chi tiết phiếu nhập kho</a></li>
+                <li class="breadcrumb-item active">Thêm sản phẩm</li>
+            </ol>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-plus"></i> Thêm sản phẩm vào phiếu nhập kho
+                </div>
+                <div class="card-body">
+                    <form th:action="@{'/admin/purchase-orders/' + ${order.id} + '/add-detail'}" th:object="${detail}" method="post">
+                        <div class="form-group">
+                            <label>Sản phẩm</label>
+                            <select th:field="*{product}" class="form-control" required>
+                                <option th:each="p : ${products}" th:value="${p.productID}" th:text="${p.name}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Số lượng</label>
+                            <input type="number" th:field="*{quantity}" class="form-control" min="1" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Giá nhập</label>
+                            <input type="number" th:field="*{importPrice}" class="form-control" min="0" required />
+                        </div>
+                        <button type="submit" class="btn btn-success">Thêm sản phẩm</button>
+                        <a th:href="@{'/admin/purchase-orders/' + ${order.id}}" class="btn btn-secondary">Quay lại</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+</div>
+</body>
+</html> 
