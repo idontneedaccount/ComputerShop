@@ -92,8 +92,14 @@
                         </div>
                         <div class="col-12" th:if="${#lists.isEmpty(products)}">
                             <div class="text-center py-5">
-                                <h4>Không có sản phẩm nào được tìm thấy</h4>
-                                <p>Vui lòng thử lại sau hoặc liên hệ với chúng tôi để được hỗ trợ.</p>
+                                <h4 th:if="${searchTerm != null and !#strings.isEmpty(searchTerm)}">
+                                    Không tìm thấy sản phẩm nào cho từ khóa "<span class="text-primary" th:text="${searchTerm}"></span>"
+                                </h4>
+                                <h4 th:unless="${searchTerm != null and !#strings.isEmpty(searchTerm)}">
+                                    Không có sản phẩm nào được tìm thấy
+                                </h4>
+                                <p>Vui lòng thử lại với từ khóa khác hoặc liên hệ với chúng tôi để được hỗ trợ.</p>
+                                <a th:href="@{/user/shopping-page}" class="btn btn-primary">Xem tất cả sản phẩm</a>
                             </div>
                         </div>
                     </div>
@@ -104,8 +110,6 @@
 </main>
 
 <div th:replace="~{user/fragments/footer :: footer}"></div>
-
-<div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
 
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
 <!-- Custom Pagination Script -->

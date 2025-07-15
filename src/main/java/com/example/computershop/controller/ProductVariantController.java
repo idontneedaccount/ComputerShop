@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
@@ -210,31 +211,7 @@ public class ProductVariantController {
         return PRODUCT;
     }
     
-    @GetMapping("/delete/{variantId}")
-    public String deleteVariant(@PathVariable String variantId,
-                               RedirectAttributes redirectAttributes) {
-        try {
-            ProductVariant variant = productVariantService.findById(variantId);
-            if (variant == null) {
-                redirectAttributes.addFlashAttribute(ERROR, "Cấu hình không tồn tại!");
-                return PRODUCT;
-            }
-            
-            String productId = variant.getProduct().getProductID();
-            
-            if (productVariantService.delete(variantId)) {
-                redirectAttributes.addFlashAttribute(SUCCCESS, "Xóa cấu hình thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute(ERROR, "Không thể xóa cấu hình!");
-            }
-            
-            return PRODUCT_VARIANTS + productId;
-            
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(ERROR, LOI + e.getMessage());
-            return PRODUCT;
-        }
-    }
+
     
     @PostMapping("/toggle-status/{variantId}")
     @ResponseBody
@@ -314,18 +291,16 @@ public class ProductVariantController {
 
     // Toggle functionality removed as per user request
 
-    @GetMapping("/field-config/delete/{fieldId}")
-    public String deleteField(@PathVariable String fieldId,
-                             RedirectAttributes redirectAttributes) {
+    @PostMapping("/toggle-field-status/{fieldId}")
+    @ResponseBody
+    public String toggleFieldStatus(@PathVariable String fieldId) {
         try {
-            if (fieldConfigService.delete(fieldId)) {
-                redirectAttributes.addFlashAttribute(SUCCCESS, "Xóa trường thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute(ERROR, "Không thể xóa trường!");
+            if (fieldConfigService.toggleStatus(fieldId)) {
+                return "success";
             }
+            return "error";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(ERROR, LOI + e.getMessage());
+            return "error";
         }
-        return "redirect:/admin/product-variants/field-config";
     }
 } 

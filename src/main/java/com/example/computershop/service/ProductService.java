@@ -8,7 +8,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.example.computershop.dto.ProductRatingDTO;
 import com.example.computershop.dto.ProductSalesDTO;
 import com.example.computershop.entity.Products;
 import com.example.computershop.repository.ProductRepository;
@@ -27,6 +26,14 @@ public class ProductService {
         return this.repo.findAll();
     }
     
+    // Search products by name
+    public List<Products> searchProductsByName(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getAllActiveWithSpecifications();
+        }
+        return this.repo.findActiveProductsByNameContaining(searchTerm.trim());
+    }
+    
     // Optimized method for homepage - no specifications loaded
     @Cacheable(value = "homepageProducts")
     public List<Products> getAllActiveForHomepage() {
@@ -37,12 +44,6 @@ public class ProductService {
     @Cacheable(value = "activeProducts")
     public List<Products> getAllActiveWithSpecifications() {
         return this.repo.findAllActiveWithSpecifications();
-    }
-    
-    // Optimized method for admin - all products with specifications
-    @Cacheable(value = "products")
-    public List<Products> getAllWithSpecifications() {
-        return this.repo.findAllWithSpecifications();
     }
 
     @CacheEvict(value = {"products", "activeProducts", "homepageProducts", "brands"}, allEntries = true)
@@ -60,26 +61,6 @@ public class ProductService {
         return this.repo.findById(productID).orElse(null);
     }
 
-    @CacheEvict(value = {"products", "activeProducts", "homepageProducts", "brands"}, allEntries = true)
-    public Boolean update(Products product) {
-        try {
-            this.repo.save(product);
-            return true;
-        } catch (Exception e) {
-            logger.error(ERROR, e.getMessage(), e);
-        }
-        return false;
-    }
-    public Boolean delete(String productID) {
-        try {
-            this.repo.deleteById(productID);
-            return true;
-        } catch (Exception e) {
-            logger.error(ERROR, e.getMessage(), e);
-        }
-        return false;
-    }
-
     public boolean existsByName(String name) {
         return repo.existsByName(name);
     }
@@ -88,32 +69,32 @@ public class ProductService {
     public List<String> getDistinctBrands() {
         return repo.findDistinctBrands();
     }
+    
     public List<Products> findTop5ProductsByStock() {
         return repo.findTop5ProductsByStock(PageRequest.of(0,5));
     }
+    
     public List<ProductSalesDTO> findTop5BestSellingProducts() {
         return repo.findTop5BestSellingProducts(PageRequest.of(0,5));
     }
+    
     public long countProducts() {
         return repo.countProducts();
     }
     
-    /**
-     * Lấy thông tin rating của sản phẩm
-     */
-    public ProductRatingDTO getProductRating(String productId) {
-        return reviewService.getProductRating(productId);
-    }
-    
-    /**
-     * Lấy sản phẩm kèm thông tin rating
-     */
-    public Products findByIdWithRating(String productID) {
-        Products product = findById(productID);
-        if (product != null) {
-            // Rating sẽ được lấy riêng trong controller để tránh N+1 problem
+    @CacheEvict(value = "products", allEntries = true)
+    public Boolean toggleStatus(String productID) {
+        try {
+            Products product = this.repo.findById(productID).orElse(null);
+            if (product != null) {
+                product.setIsActive(!product.getIsActive());
+                this.repo.save(product);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error(ERROR, e.getMessage(), e);
         }
-        return product;
+        return false;
     }
-
 }

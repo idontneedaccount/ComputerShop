@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -82,12 +83,16 @@ public class CategoriesController {
         }
     }
 
-    @GetMapping("/delete-categories/{categoryID}")
-    public String deleteCategories(@PathVariable("categoryID") String categoryID) {
-        if (Boolean.TRUE.equals(this.service.delete(categoryID))) {
-            return CATEGORIES2;
-        } else {
-            return CATEGORIES_VIEW;
+    @PostMapping("/toggle-category-status/{categoryID}")
+    @ResponseBody
+    public String toggleCategoryStatus(@PathVariable("categoryID") String categoryID) {
+        try {
+            if (Boolean.TRUE.equals(this.service.toggleStatus(categoryID))) {
+                return "success";
+            }
+            return "error";
+        } catch (Exception e) {
+            return "error";
         }
     }
 }

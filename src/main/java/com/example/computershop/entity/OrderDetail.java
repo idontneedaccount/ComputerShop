@@ -40,6 +40,18 @@ public class OrderDetail {
     @Column(name = "TotalPrice", insertable = false, updatable = false)
      Long totalPrice;
     
+    // Computed method to calculate total price when database computed column is null
+    @Transient
+    public Long getCalculatedTotalPrice() {
+        if (totalPrice != null) {
+            return totalPrice;
+        }
+        if (unitPrice != null && quantity != null) {
+            return unitPrice * quantity;
+        }
+        return 0L;
+    }
+    
     @Override
     public int hashCode() {
         return orderDetailID != null ? orderDetailID.hashCode() : 0;

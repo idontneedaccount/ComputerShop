@@ -50,22 +50,24 @@
                                 <td th:text="${products.brand}"></td>
                                 <td th:text="${products.description}"></td>
                                 <td th:text="${products.price}"></td>
-                                <td th:text="${products.quantity}"></td>
+                                <td th:text="${products.totalQuantity}"></td>
                                 <td th:if="${products.isActive}"><span class="badge btn-success">Hoạt động</span></td>
                                 <td th:if="${!products.isActive}"><span class="badge btn-danger">Ẩn</span></td>
                                 <td th:text="${#temporals.format(products.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
-                                    <img th:src="@{'/assets/images/product/laptop/'+${products.name}+'.jpg'}" alt="Product Image" class="img-fluid"
+                                    <img th:src="@{'/assets/images/product/laptop/'+${products.imageURL}}" alt="Product Image" class="img-fluid"
                                          style="max-width: 100px; max-height: 100px;">
                                 </td>
                                 <td>
                                     <a th:href="@{/admin/edit-product/{id}(id=${products.productID})}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a th:href="@{/admin/delete-product/{id}(id=${products.productID})}" class="btn btn-sm btn-danger"
-                                       onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
+                                    <button type="button" class="btn btn-sm btn-info"
+                                            onclick="toggleProductStatus(this)"
+                                            th:data-product-id="${products.productID}"
+                                            title="Bật/Tắt trạng thái">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
                                 </td>
                                 <td>
                                     <a th:href="@{/admin/product/{id}/specification(id=${products.productID})}" class="btn btn-sm btn-info">
@@ -92,17 +94,29 @@
     <i class="fas fa-angle-up"></i>
 </a>
 
-<!-- Logout Modal-->
-<div th:replace="~{admin/fragments/logout :: logout}"></div>
-
-<!-- Statistics Panel -->
-<div th:replace="~{admin/fragments/statistics-panel :: statistics-panel}"></div>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Statistics Script -->
-<div th:replace="~{admin/fragments/statistics-script :: statistics-script}"></div>
-
+<script>
+// Toggle product status function
+function toggleProductStatus(button) {
+    const productId = button.getAttribute('data-product-id');
+    fetch('/admin/toggle-product-status/' + productId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === 'success') {
+            location.reload();
+        } else {
+            alert('Có lỗi xảy ra!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra!');
+    });
+}
+</script>
 </body>
 </html>

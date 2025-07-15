@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Controller
@@ -105,16 +106,16 @@ public class UserController {
         }
     }
 
-    @GetMapping("/delete-user/{userId}")
-    public String deleteUser(@PathVariable("userId") String userId, Model model) {
+    @PostMapping("/toggle-user-status/{userId}")
+    @ResponseBody
+    public String toggleUserStatus(@PathVariable("userId") String userId) {
         try {
-            if (Boolean.TRUE.equals(this.userService.delete(userId))) {
-                model.addAttribute(MESSAGE, "Xóa người dùng thành công!");
-                return USER2;
+            if (Boolean.TRUE.equals(this.userService.toggleStatus(userId))) {
+                return "success";
             }
-        } catch (IllegalArgumentException e) {
-            model.addAttribute(ERROR, e.getMessage());
+            return "error";
+        } catch (Exception e) {
+            return "error";
         }
-        return USER_VIEW;
     }
 }

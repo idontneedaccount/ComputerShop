@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigInteger;
@@ -139,19 +140,16 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/delete-product/{productID}")
-    public String deleteProduct(@PathVariable("productID") String productID) {
-        Products product = this.productService.findById(productID);
-        if (product!= null){
-            String imageURL = product.getImageURL();
-            if (imageURL != null && !imageURL.isEmpty()) {
-                this.storageService.delete(imageURL);
+    @PostMapping("/toggle-product-status/{productID}")
+    @ResponseBody
+    public String toggleProductStatus(@PathVariable("productID") String productID) {
+        try {
+            if (Boolean.TRUE.equals(this.productService.toggleStatus(productID))) {
+                return "success";
             }
-        }
-        if (Boolean.TRUE.equals(this.productService.delete(productID))) {
-            return PRODUCT_VIEW2;
-        } else {
-            return PRODUCT_VIEW;
+            return "error";
+        } catch (Exception e) {
+            return "error";
         }
     }
 }

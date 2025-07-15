@@ -328,11 +328,7 @@
                                        class="btn btn-sm btn-warning" title="Sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a th:href="@{'/admin/product-variants/delete/' + ${variant.variantId}}"
-                                       class="btn btn-sm btn-danger ml-1"
-                                       onclick="return confirm('Bạn có chắc muốn xóa cấu hình này?')" title="Xóa">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+
                                     <button class="btn btn-sm btn-info ml-1"
                                             onclick="toggleStatus(this)"
                                             th:data-variant-id="${variant.variantId}"

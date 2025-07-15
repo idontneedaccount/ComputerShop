@@ -55,9 +55,9 @@
 
             <!-- Filter & Search Card -->
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-filter mr-2"></i>Tìm kiếm & Lọc đơn hàng
+                <div class="card-header">
+                    <h6 class="fas fa-table">
+                        <i class="fas fa-filter mr-3"></i>Tìm kiếm & Lọc đơn hàng
                     </h6>
                 </div>
                 <div class="card-body">
@@ -116,9 +116,9 @@
 
             <!-- Orders Table -->
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-list mr-2"></i>Danh sách đơn hàng
+                <div class="card-header ">
+                    <h6 class="fas fa-table">
+                        <i class="fas fa-list mr-3"></i>Danh sách đơn hàng
                     </h6>
                 </div>
                 <div class="card-body">
@@ -136,11 +136,12 @@
                     <!-- Orders Table -->
                     <div th:if="${orders != null and !#lists.isEmpty(orders)}" class="table-responsive">
                         <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
-                            <thead class="thead-light">
+                            <thead class="">
                                 <tr>
                                     <th class="text-center" style="width: 120px;">Mã đơn</th>
-                                    <th style="width: 200px;">Thông tin khách hàng</th>
+                                    <th style="width: 180px;">Thông tin khách hàng</th>
                                     <th class="text-center" style="width: 130px;">Ngày đặt</th>
+                                    <th class="text-center" style="width: 100px;">Voucher</th>
                                     <th class="text-right" style="width: 120px;">Tổng tiền</th>
                                     <th class="text-center" style="width: 100px;">Thao tác</th>
                                 </tr>
@@ -187,6 +188,17 @@
                                             </small>
                                         </div>
                                         <span th:unless="${order.orderDate}" class="text-muted">N/A</span>
+                                    </td>
+                                    
+                                    <!-- Voucher Info -->
+                                    <td class="text-center">
+                                        <div th:if="${order.voucherCode != null}">
+                                            <span class="badge badge-warning" th:text="${order.voucherCode}">VOUCHER20</span>
+                                            <div class="small text-success mt-1" th:if="${order.discountAmount > 0}">
+                                                -<span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')}">100,000</span> VNĐ
+                                            </div>
+                                        </div>
+                                        <span th:unless="${order.voucherCode != null}" class="text-muted small">Không có</span>
                                     </td>
                                     
                                     <!-- Total Amount -->
@@ -292,6 +304,19 @@
     line-height: 1.4;
 }
 
+/* Voucher styling */
+.badge-warning {
+    background-color: #f6c23e;
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.voucher-discount {
+    font-size: 0.7rem;
+    margin-top: 2px;
+}
+
 </style>
 
 <!-- Page level custom scripts -->
@@ -318,15 +343,6 @@ $(document).ready(function() {
     });
 });
 </script>
-
-<!-- Statistics Panel -->
-<div th:replace="~{admin/fragments/statistics-panel :: statistics-panel}"></div>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Statistics Script -->
-<div th:replace="~{admin/fragments/statistics-script :: statistics-script}"></div>
 
 </body>
 

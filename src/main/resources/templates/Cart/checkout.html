@@ -222,6 +222,37 @@
                             <div class="col-lg-6">
                                 <div class="axil-order-summery order-checkout-summery">
                                     <h5 class="title mb--20">Your Order</h5>
+                                    
+                                    <!-- Voucher Section -->
+                                    <div class="voucher-section mb-3">
+                                        <div th:if="${hasVoucher}" class="applied-voucher">
+                                            <div class="alert alert-success">
+                                                <strong>✓ Voucher Applied: </strong>
+                                                <span th:text="${voucherCode}">VOUCHER20</span>
+                                                <span class="text-success ms-2">(-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> VND)</span>
+                                                <a th:href="@{/cart/remove-voucher?redirect=checkout}" class="btn btn-sm btn-outline-danger ms-2">Remove</a>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="voucher-form">
+                                            <form th:action="@{/cart/apply-voucher}" method="post">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" name="voucherCode" th:value="${voucherCode}" placeholder="Enter voucher code" class="form-control">
+                                                    <input type="hidden" name="redirect" value="checkout">
+                                                    <button type="submit" class="btn btn-outline-primary">Apply</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        
+                                        <!-- Voucher Messages -->
+                                        <div th:if="${voucherError}" class="alert alert-danger alert-sm">
+                                            <span th:text="${voucherError}">Error message</span>
+                                        </div>
+                                        <div th:if="${voucherSuccess}" class="alert alert-success alert-sm">
+                                            <span th:text="${voucherSuccess}">Success message</span>
+                                        </div>
+                                    </div>
+                                    
                                     <div class="summery-table-wrap">
                                         <table class="table summery-table mb--30">
                                             <thead>
@@ -239,14 +270,23 @@
                                                         <span th:text="${item.quantity}">1</span>
                                                     </td>
                                                     <td>
-                                                        <span th:text="${item.product.price}">0</span> ₫
+                                                        <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span> ₫
                                                     </td>
                                                 </tr>
                                                 
                                                 <!-- Subtotal -->
                                                 <tr class="order-subtotal">
                                                     <td>Subtotal</td>
-                                                    <td><span id="subtotal-display" th:text="${total}">0</span> ₫</td>
+                                                    <td><span th:text="${#numbers.formatDecimal(originalTotal, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</td>
+                                                </tr>
+                                                
+                                                <!-- Voucher Discount Row -->
+                                                <tr th:if="${hasVoucher and totalDiscount > 0}" class="order-discount">
+                                                    <td>
+                                                        <span>Discount</span>
+                                                        <small th:if="${voucherCode}" class="text-muted">(<span th:text="${voucherCode}"></span>)</small>
+                                                    </td>
+                                                    <td class="text-success">-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</td>
                                                 </tr>
                                                 
                                                 <!-- Shipping method -->
@@ -269,7 +309,7 @@
                                                 <tr class="order-total">
                                                     <td><strong>Tổng cộng</strong></td>
                                                     <td class="order-total-amount">
-                                                        <strong><span id="final-total" th:text="${total}">0</span> ₫</strong>
+                                                        <strong><span th:text="${#numbers.formatDecimal(finalTotal, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</strong>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -303,7 +343,6 @@
     <div th:replace="~{user/fragments/footer :: footer}"></div>
     
     <!-- Additional fragments -->
-    <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
     <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
     
     <!-- Shipping Calculator JavaScript -->

@@ -39,9 +39,42 @@ public class Cart implements Serializable {
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // Voucher fields
+    @Column(name = "voucher_code", columnDefinition = "NVARCHAR(100)")
+    private String voucherCode;
+
+    @Column(name = "discount_amount")
+    private Long discountAmount = 0L;
+
     public Cart(Products product, Integer quantity) {
         this.product = product;
         this.quantity = quantity;
+    }
+
+    // Helper method to calculate final price after discount
+    @Transient
+    public Long getFinalPrice() {
+        if (product == null) return 0L;
+        
+        Long originalPrice;
+        if (variant != null) {
+            originalPrice = variant.getPrice().longValue() * quantity;
+        } else {
+            originalPrice = product.getPrice().longValue() * quantity;
+        }
+        
+        return originalPrice - (discountAmount != null ? discountAmount : 0L);
+    }
+
+    @Transient
+    public Long getOriginalPrice() {
+        if (product == null) return 0L;
+        
+        if (variant != null) {
+            return variant.getPrice().longValue() * quantity;
+        } else {
+            return product.getPrice().longValue() * quantity;
+        }
     }
 
     // getters, setters, constructors

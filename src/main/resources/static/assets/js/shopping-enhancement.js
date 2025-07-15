@@ -167,4 +167,46 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Export for global access
-window.ShoppingEnhancements = ShoppingEnhancements; 
+window.ShoppingEnhancements = ShoppingEnhancements;
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('header-search-form') || document.querySelector('form[action*="shopping-page"]');
+    const searchInput = document.querySelector('input[name="search"]');
+
+    if (searchForm && searchInput) {
+    // Handle Enter key
+    searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+    e.preventDefault();
+    if (this.value.trim()) {
+    window.location.href = '/user/shopping-page?search=' + encodeURIComponent(this.value.trim());
+} else {
+    this.focus();
+}
+}
+});
+
+    // Handle form submit
+    searchForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (searchInput.value.trim()) {
+    window.location.href = '/user/shopping-page?search=' + encodeURIComponent(searchInput.value.trim());
+} else {
+    searchInput.focus();
+}
+});
+
+    // Handle button click
+    const searchButton = searchForm.querySelector('.wooc-btn-search');
+    if (searchButton) {
+    searchButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (searchInput.value.trim()) {
+    window.location.href = '/user/shopping-page?search=' + encodeURIComponent(searchInput.value.trim());
+} else {
+    searchInput.focus();
+}
+});
+}
+}
+});

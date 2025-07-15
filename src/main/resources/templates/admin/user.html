@@ -167,9 +167,11 @@
                                                        class="btn btn-primary btn-sm">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-danger btn-sm"
-                                                            th:onclick="'deleteUser(' + ${user.id} + ')'">
-                                                        <i class="fas fa-trash"></i>
+                                                    <button type="button" class="btn btn-info btn-sm"
+                                                            onclick="toggleUserStatus(this)"
+                                                            th:data-user-id="${user.id}"
+                                                            title="Bật/Tắt trạng thái">
+                                                        <i class="fas fa-toggle-on"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -213,27 +215,27 @@
             });
         });
 
-        // Delete user function
-        function deleteUser(userId) {
-            if (confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
-                fetch(`/admin/delete-user/${userId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        location.reload();
-                    } else {
-                        alert('Có lỗi xảy ra khi xóa người dùng');
-                    }
-                })
-                .catch(error => {
+        // Toggle user status function
+        function toggleUserStatus(button) {
+            const userId = button.getAttribute('data-user-id');
+            fetch('/admin/toggle-user-status/' + userId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    location.reload();
+                } else {
                     alert('Có lỗi xảy ra!');
-                    alert('Có lỗi xảy ra khi xóa người dùng');
-                });
-            }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra!');
+            });
         }
 
         // Export to Excel function

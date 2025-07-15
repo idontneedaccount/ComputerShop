@@ -38,10 +38,15 @@ public class CategoriesService {
     }
 
     @CacheEvict(value = "categories", allEntries = true)
-    public Boolean delete(String categoryID) {
+    public Boolean toggleStatus(String categoryID) {
         try {
-            this.repo.deleteById(categoryID);
-            return true;
+            Categories category = this.repo.findById(categoryID).orElse(null);
+            if (category != null) {
+                category.setIsActive(!category.getIsActive());
+                this.repo.save(category);
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             logger.error(ERROR, e.getMessage(), e);
         }

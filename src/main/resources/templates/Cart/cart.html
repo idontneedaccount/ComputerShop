@@ -98,7 +98,19 @@
                                     </td>
                                     <td class="product-subtotal">
                                         <div class="subtotal-wrapper">
-                                            <span class="subtotal-amount" th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span><span class="currency-symbol"> VND</span>
+                                            <!-- Show original price crossed out if discount applied -->
+                                            <div th:if="${item.hasDiscount}" class="price-display">
+                                                <span class="original-price text-muted" style="text-decoration: line-through;">
+                                                    <span th:text="${#numbers.formatDecimal(item.originalPrice, 0, 'COMMA', 0, 'POINT')}">0</span> VND
+                                                </span><br>
+                                                <span class="final-price text-success font-weight-bold">
+                                                    <span th:text="${#numbers.formatDecimal(item.finalPrice, 0, 'COMMA', 0, 'POINT')}">0</span> VND
+                                                </span>
+                                            </div>
+                                            <!-- Show normal price if no discount -->
+                                            <div th:unless="${item.hasDiscount}">
+                                                <span class="subtotal-amount" th:text="${#numbers.formatDecimal(item.originalPrice, 0, 'COMMA', 0, 'POINT')}">0</span><span class="currency-symbol"> VND</span>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -111,16 +123,58 @@
                         <div class="col-xl-5 col-lg-7 offset-xl-7 offset-lg-5">
                             <div class="axil-order-summery order-checkout-summery">
                                 <h5 class="title mb--20">Order Summary</h5>
+                                
+                                <!-- Voucher Section -->
+                                <div class="voucher-section mb-3">
+                                    <div th:if="${hasVoucher}" class="applied-voucher">
+                                        <div class="alert alert-success">
+                                            <strong>✓ Voucher Applied: </strong>
+                                            <span th:text="${voucherCode}">VOUCHER20</span>
+                                            <a th:href="@{/cart/remove-voucher}" class="btn btn-sm btn-outline-danger ms-2">Remove</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div th:unless="${hasVoucher}" class="voucher-form">
+                                        <form th:action="@{/cart/apply-voucher}" method="post">
+                                            <div class="input-group mb-2">
+                                                <input type="text" name="voucherCode" placeholder="Enter voucher code" class="form-control" required>
+                                                <input type="hidden" name="redirect" value="cart">
+                                                <button type="submit" class="btn btn-outline-primary">Apply</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                    <!-- Voucher Messages -->
+                                    <div th:if="${voucherError}" class="alert alert-danger alert-sm">
+                                        <span th:text="${voucherError}">Error message</span>
+                                    </div>
+                                    <div th:if="${voucherSuccess}" class="alert alert-success alert-sm">
+                                        <span th:text="${voucherSuccess}">Success message</span>
+                                    </div>
+                                </div>
+
                                 <div class="summery-table-wrap">
                                     <table class="table summery-table mb--30">
-                                            <tr class="order-subtotal">
-                                                <td>Subtotal</td>
-                                                <td th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
-                                            </tr>
-                                            <tr class="order-total">
-                                                <td>Total</td>
-                                                <td class="order-total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
-                                            </tr>
+                                        <tr class="order-subtotal">
+                                            <td>Subtotal</td>
+                                            <td th:text="${#numbers.formatDecimal(originalTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</td>
+                                        </tr>
+                                        
+                                        <!-- Discount Row -->
+                                        <tr th:if="${hasVoucher and totalDiscount > 0}" class="order-discount">
+                                            <td>
+                                                <span>Discount</span>
+                                                <small th:if="${voucherCode}" class="text-muted">(<span th:text="${voucherCode}"></span>)</small>
+                                            </td>
+                                            <td class="text-success">-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> VND</td>
+                                        </tr>
+                                        
+                                        <tr class="order-total">
+                                            <td><strong>Total</strong></td>
+                                            <td class="order-total-amount">
+                                                <strong th:text="${#numbers.formatDecimal(finalTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</strong>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </div>
                                 <a th:href="@{/cart/checkout}" class="axil-btn btn-bg-primary checkout-btn w-100">Proceed to Checkout</a>
@@ -137,7 +191,6 @@
     <div th:replace="~{user/fragments/footer :: footer}"></div>
     
     <!-- Additional fragments -->
-    <div th:replace="~{user/fragments/headersearch :: headersearch}"></div>
     <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
     
     <!-- Cart Page Scripts -->
