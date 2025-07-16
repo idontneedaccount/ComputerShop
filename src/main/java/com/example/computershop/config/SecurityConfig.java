@@ -1,15 +1,15 @@
 package com.example.computershop.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -42,15 +42,15 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**", "/home", "/css/**",
                                         "/js/**", "/images/**", "/assets/**","/error/**","/assets2/**","/uploads/**",
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page","/",
-                                        "/cart/add/**", "/cart/count", "/cart/add-variant",
-                                        "/api/reviews/product/**")
+                                        "/cart/add/**", "/cart/count", "/cart/add-variant","/user/single-product/**")
                                 .permitAll()
                                 .requestMatchers("/admin/dashboard","/admin/orders/**").hasAnyRole("Admin","Sales")
                                 .requestMatchers("/admin/**").hasAnyRole("Admin")
                                 .requestMatchers("/shipper/**").hasAnyRole("Shipper","Admin")
                                 .requestMatchers("/user/user-profile","/cart/view","/cart/checkout",
-                                        "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**")
-                                .permitAll()
+                                        "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**",
+                                        "/api/reviews/product/**")
+                                .hasAnyRole("Admin","Sales","Shipper","User")
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)

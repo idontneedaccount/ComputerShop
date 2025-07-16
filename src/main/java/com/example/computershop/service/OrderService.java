@@ -20,6 +20,6 @@ public interface OrderService {
     List<Integer> getDistinctYears();
     long countOrders();
     BigInteger getTotalRevenue();
-    public List<Object[]> getMonthlyOrderCount(int year);
+    List<Object[]> getMonthlyOrderCount(int year);
 
 }

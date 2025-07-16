@@ -9,12 +9,6 @@
             <span>Trang Chủ</span>
         </a>
     </li>
-    <li class="nav-item active" sec:authorize="hasRole('Shipper')">
-        <a class="nav-link" th:href="@{/shipper/dashboard}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Trang Chủ</span>
-        </a>
-    </li>
     <li class="nav-item" sec:authorize="hasAnyRole('Admin','Sales')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCategories"
            aria-expanded="false" aria-controls="collapseCategories">
@@ -23,16 +17,16 @@
         </a>
         <div id="collapseCategories" class="collapse" aria-labelledby="headingCategories" data-parent="#accordionSidebar">
             <div class="collapse-inner">
-                <a class="collapse-item" th:href="@{/admin/categories}">
+                <a class="collapse-item" th:href="@{/admin/categories}" sec:authorize="hasAnyRole('Admin','Sales')">
                     <i class="fas fa-list mr-2"></i>Danh sách danh mục
                 </a>
-                <a class="collapse-item" th:href="@{add-categories}">
+                <a class="collapse-item" th:href="@{add-categories}" sec:authorize="hasAnyRole('Admin')">
                     <i class="fas fa-plus mr-2"></i>Thêm danh mục
                 </a>
             </div>
         </div>
     </li>
-    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin','Sales')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProducts"
            aria-expanded="false" aria-controls="collapseProducts">
             <i class="fas fa-fw fa-box"></i>
@@ -40,10 +34,10 @@
         </a>
         <div id="collapseProducts" class="collapse" aria-labelledby="headingProducts" data-parent="#accordionSidebar">
             <div class="collapse-inner">
-                <a class="collapse-item" th:href="@{/admin/product}">
+                <a class="collapse-item" th:href="@{/admin/product}" sec:authorize="hasAnyRole('Admin','Sales')">
                     <i class="fas fa-list mr-2"></i>Danh sách sản phẩm
                 </a>
-                <a class="collapse-item" th:href="@{/admin/add-product}">
+                <a class="collapse-item" th:href="@{/admin/add-product}" sec:authorize="hasAnyRole('Admin')">
                     <i class="fas fa-plus mr-2"></i>Thêm sản phẩm
                 </a>
             </div>
@@ -66,7 +60,7 @@
             </div>
         </div>
     </li>
-    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin','Sales')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVouchers"
            aria-expanded="false" aria-controls="collapseVouchers">
             <i class="fas fa-fw fa-ticket-alt"></i>
@@ -74,10 +68,10 @@
         </a>
         <div id="collapseVouchers" class="collapse" aria-labelledby="headingVouchers" data-parent="#accordionSidebar">
             <div class="collapse-inner">
-                <a class="collapse-item" th:href="@{/admin/vouchers}">
+                <a class="collapse-item" th:href="@{/admin/vouchers}" sec:authorize="hasAnyRole('Admin','Sales')">
                     <i class="fas fa-list mr-2"></i>Danh sách voucher
                 </a>
-                <a class="collapse-item" th:href="@{/admin/vouchers/add}">
+                <a class="collapse-item" th:href="@{/admin/vouchers/add}" sec:authorize="hasAnyRole('Admin')">
                     <i class="fas fa-plus mr-2"></i>Thêm voucher
                 </a>
             </div>
@@ -96,13 +90,13 @@
         </a>
     </li>
     <!-- Shipper specific menu items -->
-    <li class="nav-item" sec:authorize="hasRole('Shipper')">
+    <li class="nav-item" sec:authorize="hasRole('Admin')">
         <a class="nav-link" th:href="@{/shipper/dashboard}">
             <i class="fas fa-fw fa-truck"></i>
             <span>Dashboard Giao Hàng</span>
         </a>
     </li>
-    <li class="nav-item" sec:authorize="hasRole('Shipper')">
+    <li class="nav-item" sec:authorize="hasRole('Admin')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseShipperOrders"
            aria-expanded="false" aria-controls="collapseShipperOrders">
             <i class="fas fa-fw fa-shipping-fast"></i>
@@ -142,8 +136,8 @@
         </div>
     </li>
     <!-- Thống kê - Toggle statistics -->
-    <li class="nav-item">
-        <a class="nav-link" href="#" onclick="toggleStatistics(); return false;" id="statisticsToggle">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
+        <a class="nav-link" href="/admin/dashboard" onclick="toggleStatistics(); return false;" id="statisticsToggle">
             <i class="fas fa-fw fa-chart-pie"></i>
             <span>Thống kê</span>
         </a>

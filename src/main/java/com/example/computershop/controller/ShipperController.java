@@ -254,11 +254,11 @@ public class ShipperController {
         
         UserProfileData userProfileData = userService.getCurrentUser();
         User user = userProfileData.getUser();
-        
-        if (user.getRole() != Role.Shipper) {
-            throw new IllegalStateException("Chỉ có nhân viên vận chuyển mới có thể truy cập trang này");
+
+        if (user.getRole() == Role.Shipper || user.getRole() == Role.Admin) {
+            return user;
+        }else{
+            throw new IllegalStateException("Quản trị viên hoặc Nhân viên vận chuyển mới có thể truy cập trang này");
         }
-        
-        return user;
     }
 } 

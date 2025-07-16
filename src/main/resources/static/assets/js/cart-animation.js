@@ -57,8 +57,25 @@ function addToCartAjax(productId, button, originalText) {
         },
         body: 'sl=1'
     })
-    .then(response => response.json())
+    .then(response => {
+        // Handle authentication required
+        if (response.status === 401) {
+            // User not logged in, show login modal
+            button.classList.remove('loading');
+            button.textContent = originalText;
+            showLoginRequiredModal();
+            return null;
+        }
+        
+        // Only parse JSON for successful responses
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Có lỗi xảy ra khi thêm vào giỏ hàng!');
+        }
+    })
     .then(data => {
+        if (!data) return; // Skip if authentication required
         if (data.success) {
             // Update cart count
             if (data.cartCount !== undefined) {
@@ -229,6 +246,29 @@ function showErrorMessage(message) {
         messageEl.classList.remove('show');
         setTimeout(() => messageEl.remove(), 300);
     }, 3000);
+}
+
+function showLoginRequiredModal() {
+    // Try to use Bootstrap modal if available
+    const modal = document.getElementById('loginRequiredModal');
+    if (modal) {
+        // Use Bootstrap 5 modal
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        } 
+        // Use Bootstrap 4 modal (jQuery)
+        else if (typeof $ !== 'undefined' && $.fn.modal) {
+            $(modal).modal('show');
+        }
+        // Fallback to simple alert
+        else {
+            alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!');
+        }
+    } else {
+        // Fallback if modal not found
+        alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!');
+    }
 }
 
 function initializeCartReview() {
