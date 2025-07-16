@@ -35,7 +35,7 @@
                         <i class="fas fa-chart-area"></i> Doanh Thu
                         <div>
                             <form method="get" action="/admin/dashboard">
-                                <select name="year" class="form-select form-control" onchange="this.form.submit()" style="width: 150px;">
+                                <select name="year" class="form-select form-control" onchange="this.form.submit()" style="width: 150px; padding: 7.5px">
                                 <option th:each="y : ${years}"
                                         th:value="${y}"
                                         th:text="'Năm ' + ${y}"

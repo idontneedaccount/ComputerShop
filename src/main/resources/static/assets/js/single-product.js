@@ -226,14 +226,21 @@
 });
 
     // === REVIEW FUNCTIONALITY ===
-    const productId = /*[[${product.productID}]]*/ '';
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
+    const productId = addToCartBtn ? addToCartBtn.getAttribute('data-product-id') : '';
+    console.log('Product ID from data attribute:', productId);
     let currentPage = 0;
     const pageSize = 10;
 
     // Load reviews when tab is clicked
     document.getElementById('reviews-tab').addEventListener('click', function() {
-    loadReviews();
-});
+        loadReviews();
+    });
+
+    // Auto-load reviews when page loads
+    if (productId && productId.trim() !== '') {
+        loadReviews();
+    }
 
     // Load more reviews button
     const loadMoreBtn = document.getElementById('load-more-reviews');
@@ -245,40 +252,54 @@
 }
 
     function loadReviews(clearExisting = true) {
-    const url = `/api/reviews/product/${productId}?page=${currentPage}&size=${pageSize}`;
+        if (!productId || productId.trim() === '') {
+            console.error('ProductId is empty, cannot load reviews');
+            return;
+        }
 
-    fetch(url)
-    .then(response => response.json())
-    .then(data => {
-    const reviewsList = document.getElementById('reviews-list');
+        const url = `/api/reviews/product/${productId}?page=${currentPage}&size=${pageSize}`;
+        console.log('Loading reviews from:', url);
 
-    if (clearExisting) {
-    reviewsList.innerHTML = '';
-    currentPage = 0;
-}
+        fetch(url)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Reviews data received:', data);
+                const reviewsList = document.getElementById('reviews-list');
 
-    if (data.content && data.content.length > 0) {
-    data.content.forEach(review => {
-    reviewsList.appendChild(createReviewElement(review));
-});
+                if (clearExisting) {
+                    reviewsList.innerHTML = '';
+                    currentPage = 0;
+                }
 
-    // Show/hide load more button
-    const loadMoreBtn = document.getElementById('load-more-reviews');
-    if (data.last) {
-    loadMoreBtn.style.display = 'none';
-} else {
-    loadMoreBtn.style.display = 'block';
-}
-} else if (clearExisting) {
-    reviewsList.innerHTML = '<li class="text-center py-4"><p></p></li>';
-}
-})
-    .catch(error => {
-    console.error('Error loading reviews:', error);
-    document.getElementById('reviews-list').innerHTML =
-    '<li class="text-center py-4"><p class="text-danger">Có lỗi khi tải đánh giá.</p></li>';
-});
-}
+                if (data.content && data.content.length > 0) {
+                    data.content.forEach(review => {
+                        reviewsList.appendChild(createReviewElement(review));
+                    });
+
+                    // Show/hide load more button
+                    const loadMoreBtn = document.getElementById('load-more-reviews');
+                    if (data.last) {
+                        loadMoreBtn.style.display = 'none';
+                    } else {
+                        loadMoreBtn.style.display = 'block';
+                    }
+                } else if (clearExisting) {
+                    console.log('No reviews found');
+                    reviewsList.innerHTML = '<li class="text-center py-4"><p>Chưa có đánh giá nào cho sản phẩm này.</p></li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading reviews:', error);
+                document.getElementById('reviews-list').innerHTML =
+                    `<li class="text-center py-4"><p class="text-danger">Có lỗi khi tải đánh giá: ${error.message}</p></li>`;
+            });
+    }
 
     function createReviewElement(review) {
     const reviewLi = document.createElement('li');

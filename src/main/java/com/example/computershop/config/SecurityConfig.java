@@ -1,15 +1,15 @@
 package com.example.computershop.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -42,7 +42,8 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**", "/home", "/css/**",
                                         "/js/**", "/images/**", "/assets/**","/error/**","/assets2/**","/uploads/**",
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page","/",
-                                        "/cart/add/**", "/cart/count", "/cart/add-variant")
+                                        "/cart/add/**", "/cart/count", "/cart/add-variant",
+                                        "/api/reviews/product/**")
                                 .permitAll()
                                 .requestMatchers("/admin/dashboard","/admin/orders/**").hasAnyRole("Admin","Sales")
                                 .requestMatchers("/admin/**").hasAnyRole("Admin")
