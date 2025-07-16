@@ -22,14 +22,21 @@
                     <li class="cart-item" th:each="item : ${cartItems}">
                         <div class="item-img">
                             <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}">
-                                <img th:if="${item.product.imageURL != null}" 
+                                <!-- Show variant image if available, otherwise product image -->
+                                <img th:if="${item.hasVariant() and item.variant.variantImageUrl != null}" 
+                                     th:src="@{'/assets/images/product/laptop/' + ${item.variant.variantImageUrl}}" 
+                                     th:alt="${item.product.name}">
+                                <img th:unless="${item.hasVariant() and item.variant.variantImageUrl != null}" 
+                                     th:if="${item.product.imageURL != null}"
                                      th:src="@{'/assets/images/product/laptop/' + ${item.product.imageURL}}" 
                                      th:alt="${item.product.name}">
                                 <img th:unless="${item.product.imageURL != null}" 
                                      th:src="@{/assets/images/product/laptop/default.jpg}" 
                                      alt="Product Image">
                             </a>
-                            <button class="close-btn" th:data-product-id="${item.product.productID}">
+                            <button class="close-btn" 
+                                    th:data-product-id="${item.product.productID}"
+                                    th:data-variant-id="${item.hasVariant() ? item.variant.variantId : ''}">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -38,8 +45,22 @@
                                 <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}" 
                                    th:text="${item.product.name}">Product Name</a>
                             </h3>
+                            
+                            <!-- Variant Information -->
+                            <div th:if="${item.hasVariant()}" class="variant-info-compact">
+                                <small class="variant-specs-compact">
+                                    <span th:if="${item.variant.cpu != null}" th:text="${item.variant.cpu}">CPU</span>
+                                    <span th:if="${item.variant.ram != null}"> • <span th:text="${item.variant.ram}">RAM</span></span>
+                                    <span th:if="${item.variant.storage != null}"> • <span th:text="${item.variant.storage}">Storage</span></span>
+                                </small>
+                            </div>
+                            
                             <div class="item-price">
-                                <span th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                <!-- Show variant price if available, otherwise product price -->
+                                <span th:if="${item.hasVariant()}" 
+                                      th:text="${#numbers.formatDecimal(item.variant.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                <span th:unless="${item.hasVariant()}" 
+                                      th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
                                 <span class="currency-symbol"> VND</span>
                             </div>
                             <div class="pro-qty item-quantity">
@@ -48,7 +69,11 @@
                             </div>
                             <div class="item-total">
                                 <span class="total-label">Total: </span>
-                                <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                <!-- Calculate total using correct price -->
+                                <span th:if="${item.hasVariant()}" 
+                                      th:text="${#numbers.formatDecimal(item.variant.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                <span th:unless="${item.hasVariant()}" 
+                                      th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span>
                                 <span class="currency-symbol"> VND</span>
                             </div>
                         </div>

@@ -52,7 +52,15 @@
                                 <!-- Cart Items -->
                                 <tr th:each="item : ${cartItems}" th:if="${item != null && item.product != null}" class="cart-item-row">
                                     <td class="product-remove">
-                                        <a th:href="@{/cart/remove/{id}(id=${item.product.productID})}" class="remove-btn">
+                                        <!-- Remove link with variant support -->
+                                        <a th:if="${item.hasVariant()}" 
+                                           th:href="@{/cart/remove/{productId}(productId=${item.product.productID}) + '?variantId=' + ${item.variant.variantId}}" 
+                                           class="remove-btn">
+                                            <i class="fal fa-times"></i>
+                                        </a>
+                                        <a th:unless="${item.hasVariant()}" 
+                                           th:href="@{/cart/remove/{id}(id=${item.product.productID})}" 
+                                           class="remove-btn">
                                             <i class="fal fa-times"></i>
                                         </a>
                                     </td>
@@ -60,7 +68,12 @@
                                         <div class="product-info-wrapper">
                                             <div class="product-thumbnail">
                                                 <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}">
-                                                    <img th:if="${item.product.imageURL != null}" 
+                                                    <!-- Show variant image if available, otherwise product image -->
+                                                    <img th:if="${item.hasVariant() and item.variant.variantImageUrl != null}" 
+                                                         th:src="@{'/assets/images/product/laptop/' + ${item.variant.variantImageUrl}}" 
+                                                         alt="Product Variant Image">
+                                                    <img th:unless="${item.hasVariant() and item.variant.variantImageUrl != null}" 
+                                                         th:if="${item.product.imageURL != null}"
                                                          th:src="@{'/assets/images/product/laptop/' + ${item.product.imageURL}}" 
                                                          alt="Product Image">
                                                     <img th:unless="${item.product.imageURL != null}" 
@@ -76,17 +89,59 @@
                                                 <div class="product-brand" th:if="${item.product.brand != null}">
                                                     <small th:text="${item.product.brand}">Brand</small>
                                                 </div>
+                                                
+                                                <!-- Variant Information -->
+                                                <div th:if="${item.hasVariant()}" class="variant-info mt-2">
+                                                    <div class="variant-specs">
+                                                        <small class="variant-detail d-block" th:if="${item.variant.cpu != null}">
+                                                            <strong>CPU:</strong> <span th:text="${item.variant.cpu}">CPU</span>
+                                                        </small>
+                                                        <small class="variant-detail d-block" th:if="${item.variant.ram != null}">
+                                                            <strong>RAM:</strong> <span th:text="${item.variant.ram}">RAM</span>
+                                                        </small>
+                                                        <small class="variant-detail d-block" th:if="${item.variant.storage != null}">
+                                                            <strong>Lưu trữ:</strong> <span th:text="${item.variant.storage}">Storage</span>
+                                                        </small>
+                                                        <small class="variant-detail d-block" th:if="${item.variant.gpu != null}">
+                                                            <strong>GPU:</strong> <span th:text="${item.variant.gpu}">GPU</span>
+                                                        </small>
+                                                        <!-- Custom attributes like color -->
+                                                        <small th:if="${item.variant.customAttributesMap != null and item.variant.customAttributesMap.get('color') != null}" 
+                                                               class="variant-detail d-block">
+                                                            <strong>Màu:</strong> <span th:text="${item.variant.customAttributesMap.get('color')}">Color</span>
+                                                        </small>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="product-price">
                                         <div class="price-wrapper">
-                                            <span class="price-amount" th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')}">0</span><span class="currency-symbol"> VND</span>
+                                            <!-- Show variant price if available, otherwise product price -->
+                                            <span th:if="${item.hasVariant()}" class="price-amount" 
+                                                  th:text="${#numbers.formatDecimal(item.variant.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                            <span th:unless="${item.hasVariant()}" class="price-amount" 
+                                                  th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                            <span class="currency-symbol"> VND</span>
                                         </div>
                                     </td>
                                     <td class="product-quantity">
                                         <div class="quantity-wrapper">
-                                            <form th:action="@{/cart/update/{id}(id=${item.product.productID})}" method="post" class="quantity-form">
+                                            <!-- Update form with variant support -->
+                                            <form th:if="${item.hasVariant()}"
+                                                  th:action="@{/cart/update/{productId}(productId=${item.product.productID})}" 
+                                                  method="post" class="quantity-form">
+                                                <input type="hidden" name="variantId" th:value="${item.variant.variantId}">
+                                                <div class="quantity-control">
+                                                    <button type="button" class="qty-btn minus">-</button>
+                                                    <input type="number" name="sl" th:value="${item.quantity}" min="1" class="quantity-input">
+                                                    <button type="button" class="qty-btn plus">+</button>
+                                                </div>
+                                                <button type="submit" class="update-btn" style="display: none;">Update</button>
+                                            </form>
+                                            <form th:unless="${item.hasVariant()}"
+                                                  th:action="@{/cart/update/{id}(id=${item.product.productID})}" 
+                                                  method="post" class="quantity-form">
                                                 <div class="quantity-control">
                                                     <button type="button" class="qty-btn minus">-</button>
                                                     <input type="number" name="sl" th:value="${item.quantity}" min="1" class="quantity-input">

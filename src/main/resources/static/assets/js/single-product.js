@@ -198,21 +198,40 @@
     body: `productId=${productId}&variantId=${variantId}&quantity=${quantity}`
 })
     .then(response => response.json())
-    .then(data => {
-    if (data.success) {
-    // Show success notification
-    alert(data.message);
-    // Update cart count if available
-    if (data.cartCount !== undefined) {
-    const cartCountElement = document.querySelector('.cart-count');
-    if (cartCountElement) {
-    cartCountElement.textContent = data.cartCount;
-}
-}
-} else {
-    alert(data.message || 'Có lỗi xảy ra!');
-}
-})
+                .then(data => {
+                if (data.success) {
+                    // Show success notification
+                    alert(data.message);
+                    
+                    // Update cart count if available
+                    if (data.cartCount !== undefined) {
+                        const cartCountElement = document.querySelector('.cart-count');
+                        if (cartCountElement) {
+                            cartCountElement.textContent = data.cartCount;
+                        }
+                    }
+                    
+                    // Update cart review dropdown using shared function from cart-animation.js
+                    if (typeof updateCartReviewContent === 'function') {
+                        updateCartReviewContent();
+                    }
+                    
+                    // Show cart dropdown briefly using shared function
+                    setTimeout(() => {
+                        if (typeof showCartReview === 'function') {
+                            showCartReview();
+                            // Hide after 3 seconds
+                            setTimeout(() => {
+                                if (typeof hideCartReview === 'function') {
+                                    hideCartReview();
+                                }
+                            }, 3000);
+                        }
+                    }, 300);
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra!');
+                }
+            })
     .catch(error => {
 
     alert('Có lỗi xảy ra khi thêm vào giỏ hàng!');

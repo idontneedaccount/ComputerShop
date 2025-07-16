@@ -111,12 +111,25 @@ public class CartController {
     }
 
     /**
-     * Update cart item quantity - ✅ REFACTORED to use CartService
+     * Update cart item quantity - ✅ REFACTORED to use CartService (now supports variants)
      */
     @PostMapping("/update/{id}")
     public String update(@PathVariable String id, @RequestParam int sl,
+                         @RequestParam(required = false) String variantId,
                          Principal principal, RedirectAttributes redirectAttributes) {
-        String result = cartService.updateCartQuantity(id, sl, principal);
+        String result;
+        if (variantId != null && !variantId.trim().isEmpty()) {
+            // Use CartService AJAX method for variant support
+            ResponseEntity<Map<String, Object>> response = cartService.updateCartItem(id, variantId, sl, principal);
+            if (response.getBody() != null && (Boolean) response.getBody().getOrDefault("success", false)) {
+                result = "success";
+            } else {
+                String message = (String) response.getBody().getOrDefault("message", "Có lỗi xảy ra");
+                result = "error:" + message;
+            }
+        } else {
+            result = cartService.updateCartQuantity(id, sl, principal);
+        }
         
         if (result.startsWith("error:")) {
             redirectAttributes.addFlashAttribute(CartConstants.ERROR, result.substring(6));
@@ -126,11 +139,25 @@ public class CartController {
     }
 
     /**
-     * Remove item from cart - ✅ REFACTORED to use CartService
+     * Remove item from cart - ✅ REFACTORED to use CartService (now supports variants)
      */
     @GetMapping("/remove/{id}")
-    public String remove(@PathVariable String id, Principal principal) {
-        String result = cartService.removeCartItem(id, principal);
+    public String remove(@PathVariable String id, 
+                        @RequestParam(required = false) String variantId,
+                        Principal principal) {
+        String result;
+        if (variantId != null && !variantId.trim().isEmpty()) {
+            // Use CartService AJAX method for variant support
+            ResponseEntity<Map<String, Object>> response = cartService.removeFromCart(id, variantId, principal);
+            if (response.getBody() != null && (Boolean) response.getBody().getOrDefault("success", false)) {
+                result = "success";
+            } else {
+                String message = (String) response.getBody().getOrDefault("message", "Có lỗi xảy ra");
+                result = "error:" + message;
+            }
+        } else {
+            result = cartService.removeCartItem(id, principal);
+        }
         
         if (result.startsWith("error:")) {
             return CartConstants.REDIRECT_ERROR;

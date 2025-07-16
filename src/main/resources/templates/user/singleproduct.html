@@ -4,8 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${product != null ? product.name + ' - Chi tiết sản phẩm' : 'Chi tiết sản phẩm'}">Chi tiết sản phẩm</title>
-    <!-- Custom Pagination CSS -->
-    <link th:href="@{/assets/css/pagination.css}" rel="stylesheet">
+<!-- Custom Pagination CSS -->
+<link th:href="@{/assets/css/pagination.css}" rel="stylesheet">
+<!-- Cart Animation CSS -->
+<link th:href="@{/assets/css/cart-animation.css}" rel="stylesheet">
 </head>
 <body class="sticky-header">
 
@@ -403,10 +405,10 @@
 
 <div th:replace="~{user/fragments/footer :: footer}"></div>
 
-
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
 
 <script th:src="@{/assets/js/single-product.js}"></script>
+<script th:src="@{/assets/js/cart-animation.js}"></script>
 
 <link rel="stylesheet" th:href="@{/assets/css/single-product.css}">
 
