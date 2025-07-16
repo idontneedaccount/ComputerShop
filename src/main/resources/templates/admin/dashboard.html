@@ -47,7 +47,7 @@
                     </div>
 
                     <div class="card-body">
-                        <canvas id="myAreaChart" width="100%" height="30"></canvas>
+                        <canvas id="myAreaChart" width="100%" height="500"></canvas>
                     </div>
                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                 </div>
@@ -377,244 +377,49 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-
     <!-- Statistics Functions -->
-    <script>
-        // Toggle statistics section
-        function toggleStatistics() {
-            const mainDashboard = document.querySelector('.container-fluid');
-            const statsSection = document.getElementById('statisticsSection');
+     <!-- Script vẽ biểu đồ doanh thu cho myAreaChart -->
+    <script th:inline="javascript">
+        // Lấy dữ liệu doanh thu từ Thymeleaf
+        var monthlyRevenue = /*[[${monthlyRevenue}]]*/ [];
+        var months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
 
-            if (statsSection && statsSection.style.display === 'none') {
-                // Hide main dashboard, show statistics
-                mainDashboard.style.display = 'none';
-                statsSection.style.display = 'block';
-                loadDetailedStatistics();
-
-                // Update sidebar active state
-                document.getElementById('statisticsToggle').classList.add('active');
-            } else {
-                // Show main dashboard, hide statistics
-                mainDashboard.style.display = 'block';
-                if (statsSection) {
-                    statsSection.style.display = 'none';
-                }
-                document.getElementById('statisticsToggle').classList.remove('active');
-            }
-        }
-
-        // Hide statistics and return to dashboard
-        function hideStatistics() {
-            const mainDashboard = document.querySelector('.container-fluid');
-            const statsSection = document.getElementById('statisticsSection');
-
-            mainDashboard.style.display = 'block';
-            if (statsSection) {
-                statsSection.style.display = 'none';
-            }
-            document.getElementById('statisticsToggle').classList.remove('active');
-        }
-
-        // Load detailed statistics data
-        function loadDetailedStatistics() {
-            loadStatistics(); // Use the main loadStatistics function
-        }
-
-
-
-
-
-
-
-
-
-        function updateTopProductsLegend(products, colors) {
-            const legend = document.getElementById('topProductsLegend');
-            if (!legend) return;
-
-            let html = '';
-            products.forEach((product, index) => {
-                html += `
-                    <span class="mr-3 mb-1 d-inline-block">
-                        <i class="fas fa-circle" style="color: ${colors[index]}"></i>
-                        <span class="small">${product.name} (${product.totalSold})</span>
-                    </span>
-                `;
-            });
-            legend.innerHTML = html;
-        }
-
-        function updateDetailedTopProducts(products) {
-            const container = document.getElementById('detailedTopProducts');
-            if (products.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500">Không có dữ liệu sản phẩm</p>';
-                return;
-            }
-
-            let html = '';
-            products.forEach((product, index) => {
-                const colors = ['primary', 'success', 'info', 'warning', 'danger'];
-                const color = colors[index] || 'secondary';
-                html += `
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="mr-3">
-                            <div class="icon-circle bg-${color}">
-                                <span class="text-white font-weight-bold">${index + 1}</span>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="small font-weight-bold">${product.name}</div>
-                            <div class="text-gray-500 small">${product.totalSold} đã bán</div>
-                        </div>
-                        <div class="text-${color} font-weight-bold">
-                            ${product.totalSold}
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        // Format currency helper
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('vi-VN', {
-                style: 'currency',
-                currency: 'VND'
-            }).format(amount);
-        }
-
-        function showDetailedError() {
-            document.getElementById('statsUserCount').textContent = 'Lỗi';
-            document.getElementById('statsProductCount').textContent = 'Lỗi';
-            document.getElementById('statsOrderCount').textContent = 'Lỗi';
-            document.getElementById('statsRevenue').textContent = 'Lỗi';
-            document.getElementById('statsAvgOrderValue').textContent = 'Lỗi';
-            document.getElementById('statsTotalCustomers').textContent = 'Lỗi';
-            document.getElementById('statsConversionRate').textContent = 'Lỗi';
-            document.getElementById('detailedTopProducts').innerHTML = '<p class="text-center text-danger">Không thể tải dữ liệu</p>';
-        }
-
-        // Vẽ 3 biểu đồ: Doanh thu, Đơn hàng, User mới
-        function createDetailedChart(monthlyRevenue, orderCountByMonth, newUsersByMonth) {
-            console.log('Creating charts with data:', {
-                monthlyRevenue,
-                orderCountByMonth,
-                newUsersByMonth
-            });
-
-            const months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
-
-            // --- Biểu đồ Doanh thu ---
-            const ctxRevenue = document.getElementById('detailedRevenueChart');
-            if (!ctxRevenue) {
-                console.error('Revenue chart canvas not found');
-                return;
-            }
-            if (window.detailedChart) window.detailedChart.destroy();
-            window.detailedChart = new Chart(ctxRevenue.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'Doanh thu (VNĐ)',
-                        data: monthlyRevenue,
-                        borderColor: '#4e73df',
-                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#4e73df',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { callback: value => formatCurrency(value), color: '#858796' },
-                            grid: { color: 'rgba(0,0,0,0.1)' }
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('myAreaChart');
+            if (ctx && monthlyRevenue.length === 12) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Doanh thu (VNĐ)',
+                            data: monthlyRevenue,
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
                         },
-                        x: { ticks: { color: '#858796' }, grid: { display: false } }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('vi-VN') + ' ₫';
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
-            });
-
-            // --- Biểu đồ Đơn hàng ---
-            const ctxOrder = document.getElementById('orderCountChart');
-            if (!ctxOrder) {
-                console.error('Orders chart canvas not found');
-                return;
+                });
             }
-            if (window.orderCountChart) window.orderCountChart.destroy();
-            window.orderCountChart = new Chart(ctxOrder.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'Số đơn hàng',
-                        data: orderCountByMonth,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#858796' },
-                            grid: { color: 'rgba(0,0,0,0.1)' }
-                        },
-                        x: { ticks: { color: '#858796' }, grid: { display: false } }
-                    }
-                }
-            });
-
-            // --- Biểu đồ User mới ---
-            const ctxUser = document.getElementById('newUsersChart');
-            if (!ctxUser) {
-                console.error('New users chart canvas not found');
-                return;
-            }
-            if (window.newUsersChart) window.newUsersChart.destroy();
-            window.newUsersChart = new Chart(ctxUser.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'Khách hàng mới',
-                        data: newUsersByMonth,
-                        backgroundColor: 'rgba(40, 167, 69, 0.5)',
-                        borderColor: 'rgba(40, 167, 69, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#858796' },
-                            grid: { color: 'rgba(0,0,0,0.1)' }
-                        },
-                        x: { ticks: { color: '#858796' }, grid: { display: false } }
-                    }
-                }
-            });
-        }
+        });
     </script>
 
     <style>
