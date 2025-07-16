@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 .requestMatchers("/user/user-profile","/cart/view","/cart/checkout",
                                         "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**",
                                         "/api/reviews/product/**")
-                                .hasAnyRole("Admin","Sales","Shipper","User")
+                                .hasAnyRole("Admin","Sales","Shipper","Customer")
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)
