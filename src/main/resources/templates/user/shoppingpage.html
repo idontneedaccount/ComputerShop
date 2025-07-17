@@ -4,9 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shopping Page</title>
-<!-- Custom Pagination CSS -->
-<link th:href="@{/assets/css/pagination.css}" rel="stylesheet">
-<link th:href="@{/assets/css/cart-animation.css}" rel="stylesheet">
 </head>
 <body class="sticky-header">
 
@@ -112,11 +109,6 @@
 <div th:replace="~{user/fragments/footer :: footer}"></div>
 
 <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
-<!-- Custom Pagination Script -->
-<script th:src="@{/assets/js/pagination.js}"></script>
-<!-- Shopping Enhancements Script -->
-<script th:src="@{/assets/js/shopping-enhancement.js}"></script>
-<script th:src="@{/assets/js/cart-animation.js}"></script>
 
 </body>
 </html>
