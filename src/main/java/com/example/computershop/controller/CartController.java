@@ -525,4 +525,28 @@ public class CartController {
         }
     }
 
+    /**
+     * Test endpoint để kiểm tra payment methods
+     */
+    @GetMapping("/checkout/test")
+    @ResponseBody
+    public Map<String, Object> testCheckoutPaymentMethods() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", "OK");
+        result.put("timestamp", new Date());
+        result.put("available_payment_methods", Arrays.asList("COD", "VNPAY"));
+        result.put("vnpay_config", Map.of(
+            "enabled", true,
+            "supports", Arrays.asList("QR Code", "Internet Banking", "ATM Card", "E-Wallet")
+        ));
+        result.put("message", "Checkout page should display both COD and VNPay options");
+        result.put("troubleshooting", Arrays.asList(
+            "Try hard refresh (Ctrl+F5)",
+            "Clear browser cache", 
+            "Check Developer Tools (F12) console",
+            "Look for debug info in top-right corner"
+        ));
+        return result;
+    }
+
 }

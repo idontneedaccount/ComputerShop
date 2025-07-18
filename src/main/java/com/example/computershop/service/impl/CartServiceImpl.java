@@ -947,4 +947,28 @@ public class CartServiceImpl implements CartService {
         
         return reviewData;
     }
+    
+    // ===== ADDITIONAL USER AND CART OPERATIONS =====
+    
+    @Override
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId.toString()).orElse(null);
+    }
+    
+    @Override
+    public List<Cart> getCurrentUserCartByUserId(UUID userId) {
+        User user = getUserById(userId);
+        if (user != null) {
+            return cartRepository.findByUser(user);
+        }
+        return new ArrayList<>();
+    }
+    
+    @Override
+    public void clearCartByUserId(UUID userId) {
+        User user = getUserById(userId);
+        if (user != null) {
+            clearCart(user);
+        }
+    }
 } 

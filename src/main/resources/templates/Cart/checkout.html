@@ -25,330 +25,515 @@
     <link rel="stylesheet" th:href="@{/assets/css/shipping-calculator.css}">
 </head>
 <body class="sticky-header">
-    <!-- Back to top start -->
-    <a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
-    <!-- Back to top end -->
-    
-    <!-- Header -->
-    <header class="header axil-header header-style-5">
-        <div th:replace="~{user/fragments/header2 :: header}"></div>
-    </header>
-    
-    <main class="main-wrapper">
-        <!-- Start Checkout Area  -->
-        <div class="axil-checkout-area axil-section-gap">
-            <div class="container">
-                <!-- If cart is empty -->
-                <div th:if="${cartItems == null || cartItems.isEmpty()}" class="row">
-                    <div class="col-12">
-                        <div class="empty-cart-message text-center">
-                            <h4>Your cart is empty</h4>
-                            <p>You need to add some items to your cart before you can checkout.</p>
-                            <a th:href="@{/cart/view}" class="axil-btn btn-bg-primary">Go to Cart</a>
-                        </div>
+<!-- Back to top anchor -->
+<div id="top"></div>
+
+<!-- Back to top start -->
+<a href="#top" class="back-to-top" id="backto-top"><i class="fal fa-arrow-up"></i></a>
+<!-- Back to top end -->
+
+<!-- Header -->
+<header class="header axil-header header-style-5">
+    <div th:replace="~{user/fragments/header2 :: header}"></div>
+</header>
+
+<main class="main-wrapper">
+    <!-- Start Checkout Area  -->
+    <div class="axil-checkout-area axil-section-gap">
+        <div class="container">
+            <!-- If cart is empty -->
+            <div th:if="${cartItems == null || cartItems.isEmpty()}" class="row">
+                <div class="col-12">
+                    <div class="empty-cart-message text-center">
+                        <h4>Your cart is empty</h4>
+                        <p>You need to add some items to your cart before you can checkout.</p>
+                        <a th:href="@{/cart/view}" class="axil-btn btn-bg-primary">Go to Cart</a>
                     </div>
-                </div>
-
-                <!-- If cart has items -->
-                <div th:if="${cartItems != null && !cartItems.isEmpty()}">
-                    <!-- Customer Info Section -->
-                    <div class="checkout-customer-section">
-                        <div class="checkout-method-wrap">
-                            <div class="single-method">
-                                <i class="fal fa-user"></i>
-                                Returning customer? <a href="#" class="checkout-method-switcher">Click here to login</a>
-                            </div>
-                            <div class="single-method">
-                                <i class="fal fa-tag"></i>
-                                Have a coupon? <a href="#" class="checkout-method-switcher">Click here to enter your code</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <form th:action="@{/cart/checkout}" method="post">
-                        <div class="row">
-                            <!-- Billing Details -->
-                            <div class="col-lg-6">
-                                <div class="axil-checkout-billing">
-                                    <h4 class="title mb--40">Billing details</h4>
-                                    
-                                    <!-- Full Name -->
-                                    <div class="form-group">
-                                        <label>Full Name <span>*</span></label>
-                                        <input type="text" name="fullName" placeholder="Adam John" required>
-                                    </div>
-
-                                    <!-- Province/City -->
-                                    <div class="form-group">
-                                        <label>Tỉnh/Thành phố <span>*</span></label>
-                                        <select name="region" id="province" required>
-                                            <option value="">Chọn tỉnh/thành phố</option>
-                                            <option value="Hà Nội">Hà Nội</option>
-                                            <option value="Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
-                                            <option value="Đà Nẵng">Đà Nẵng</option>
-                                            <option value="Hải Phòng">Hải Phòng</option>
-                                            <option value="Cần Thơ">Cần Thơ</option>
-                                            <option value="An Giang">An Giang</option>
-                                            <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
-                                            <option value="Bắc Giang">Bắc Giang</option>
-                                            <option value="Bắc Kạn">Bắc Kạn</option>
-                                            <option value="Bạc Liêu">Bạc Liêu</option>
-                                            <option value="Bắc Ninh">Bắc Ninh</option>
-                                            <option value="Bến Tre">Bến Tre</option>
-                                            <option value="Bình Định">Bình Định</option>
-                                            <option value="Bình Dương">Bình Dương</option>
-                                            <option value="Bình Phước">Bình Phước</option>
-                                            <option value="Bình Thuận">Bình Thuận</option>
-                                            <option value="Cà Mau">Cà Mau</option>
-                                            <option value="Cao Bằng">Cao Bằng</option>
-                                            <option value="Đắk Lắk">Đắk Lắk</option>
-                                            <option value="Đắk Nông">Đắk Nông</option>
-                                            <option value="Điện Biên">Điện Biên</option>
-                                            <option value="Đồng Nai">Đồng Nai</option>
-                                            <option value="Đồng Tháp">Đồng Tháp</option>
-                                            <option value="Gia Lai">Gia Lai</option>
-                                            <option value="Hà Giang">Hà Giang</option>
-                                            <option value="Hà Nam">Hà Nam</option>
-                                            <option value="Hà Tĩnh">Hà Tĩnh</option>
-                                            <option value="Hải Dương">Hải Dương</option>
-                                            <option value="Hậu Giang">Hậu Giang</option>
-                                            <option value="Hòa Bình">Hòa Bình</option>
-                                            <option value="Hưng Yên">Hưng Yên</option>
-                                            <option value="Khánh Hòa">Khánh Hòa</option>
-                                            <option value="Kiên Giang">Kiên Giang</option>
-                                            <option value="Kon Tum">Kon Tum</option>
-                                            <option value="Lai Châu">Lai Châu</option>
-                                            <option value="Lâm Đồng">Lâm Đồng</option>
-                                            <option value="Lạng Sơn">Lạng Sơn</option>
-                                            <option value="Lào Cai">Lào Cai</option>
-                                            <option value="Long An">Long An</option>
-                                            <option value="Nam Định">Nam Định</option>
-                                            <option value="Nghệ An">Nghệ An</option>
-                                            <option value="Ninh Bình">Ninh Bình</option>
-                                            <option value="Ninh Thuận">Ninh Thuận</option>
-                                            <option value="Phú Thọ">Phú Thọ</option>
-                                            <option value="Phú Yên">Phú Yên</option>
-                                            <option value="Quảng Bình">Quảng Bình</option>
-                                            <option value="Quảng Nam">Quảng Nam</option>
-                                            <option value="Quảng Ngãi">Quảng Ngãi</option>
-                                            <option value="Quảng Ninh">Quảng Ninh</option>
-                                            <option value="Quảng Trị">Quảng Trị</option>
-                                            <option value="Sóc Trăng">Sóc Trăng</option>
-                                            <option value="Sơn La">Sơn La</option>
-                                            <option value="Tây Ninh">Tây Ninh</option>
-                                            <option value="Thái Bình">Thái Bình</option>
-                                            <option value="Thái Nguyên">Thái Nguyên</option>
-                                            <option value="Thanh Hóa">Thanh Hóa</option>
-                                            <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
-                                            <option value="Tiền Giang">Tiền Giang</option>
-                                            <option value="Trà Vinh">Trà Vinh</option>
-                                            <option value="Tuyên Quang">Tuyên Quang</option>
-                                            <option value="Vĩnh Long">Vĩnh Long</option>
-                                            <option value="Vĩnh Phúc">Vĩnh Phúc</option>
-                                            <option value="Yên Bái">Yên Bái</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- District -->
-                                    <div class="form-group">
-                                        <label>Quận/Huyện <span>*</span></label>
-                                        <input type="text" name="district" id="district" placeholder="Quận/Huyện" required>
-                                    </div>
-
-                                    <!-- Ward -->
-                                    <div class="form-group">
-                                        <label>Phường/Xã</label>
-                                        <input type="text" name="ward" id="ward" placeholder="Phường/Xã">
-                                    </div>
-
-                                    <!-- Street Address -->
-                                    <div class="form-group">
-                                        <label>Số nhà, tên đường <span>*</span></label>
-                                        <input type="text" name="address" id="address" placeholder="Số nhà, tên đường" required>
-                                    </div>
-
-                                    <input type="hidden" name="city" id="city">
-                                    
-                                    <!-- Distance and Shipping Info -->
-                                    <div class="form-group" id="shipping-info" style="display: none;">
-                                        <div class="alert alert-info">
-                                            <h6><i class="fas fa-route"></i> Thông tin giao hàng</h6>
-                                            <p><strong>Khoảng cách:</strong> <span id="distance-display">-</span> km</p>
-                                            <p><strong>Thời gian giao hàng dự kiến:</strong> <span id="delivery-time">-</span></p>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Hidden fields for shipping calculation -->
-                                    <input type="hidden" name="distance" id="distance-value">
-                                    <input type="hidden" name="shippingFee" id="shipping-fee-value">
-
-                                    <!-- Phone -->
-                                    <div class="form-group">
-                                        <label>Phone <span>*</span></label>
-                                        <input type="tel" name="phone" placeholder="+84 123 456 789" required>
-                                    </div>
-
-                                    <!-- Email Address -->
-                                    <div class="form-group">
-                                        <label>Email Address <span>*</span></label>
-                                        <input type="email" name="email" placeholder="example@domain.com" required>
-                                    </div>
-
-                                    <!-- Create Account Checkbox -->
-                                    <div class="form-group">
-                                        <div class="checkout-box">
-                                            <input type="checkbox" class="checkbox-primary" id="create-account">
-                                            <label for="create-account">Create an account?</label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Ship to Different Address -->
-                                    <div class="different-address">
-                                        <div class="checkout-box">
-                                            <input type="checkbox" class="checkbox-primary" id="different-address">
-                                            <label for="different-address">Ship to a different address?</label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Order Notes -->
-                                    <div class="form-group">
-                                        <label>Order Notes (optional)</label>
-                                        <textarea name="note" rows="3" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Order Summary -->
-                            <div class="col-lg-6">
-                                <div class="axil-order-summery order-checkout-summery">
-                                    <h5 class="title mb--20">Your Order</h5>
-                                    
-                                    <!-- Voucher Section -->
-                                    <div class="voucher-section mb-3">
-                                        <div th:if="${hasVoucher}" class="applied-voucher">
-                                            <div class="alert alert-success">
-                                                <strong>✓ Voucher Applied: </strong>
-                                                <span th:text="${voucherCode}">VOUCHER20</span>
-                                                <span class="text-success ms-2">(-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> VND)</span>
-                                                <a th:href="@{/cart/remove-voucher?redirect=checkout}" class="btn btn-sm btn-outline-danger ms-2">Remove</a>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="voucher-form">
-                                            <form th:action="@{/cart/apply-voucher}" method="post">
-                                                <div class="input-group mb-2">
-                                                    <input type="text" name="voucherCode" th:value="${voucherCode}" placeholder="Enter voucher code" class="form-control">
-                                                    <input type="hidden" name="redirect" value="checkout">
-                                                    <div class="input-group-append" style=" position: absolute; margin-top: 15px; margin-left: 500px;">
-                                                        <button type="submit" class="btn btn-outline-primary btn-sm px-3">Apply</button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        
-                                        <!-- Voucher Messages -->
-                                        <div th:if="${voucherError}" class="alert alert-danger alert-sm">
-                                            <span th:text="${voucherError}">Error message</span>
-                                        </div>
-                                        <div th:if="${voucherSuccess}" class="alert alert-success alert-sm">
-                                            <span th:text="${voucherSuccess}">Success message</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="summery-table-wrap">
-                                        <table class="table summery-table mb--30">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product</th>
-                                                    <th>Subtotal</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- Product Items -->
-                                                <tr th:each="item : ${cartItems}">
-                                                    <td>
-                                                        <span th:text="${item.product.name}">Product Name</span>
-                                                        <i class="fas fa-times"></i>
-                                                        <span th:text="${item.quantity}">1</span>
-                                                    </td>
-                                                    <td>
-                                                        <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span> ₫
-                                                    </td>
-                                                </tr>
-                                                
-                                                <!-- Subtotal -->
-                                                <tr class="order-subtotal">
-                                                    <td>Subtotal</td>
-                                                    <td><span th:text="${#numbers.formatDecimal(originalTotal, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</td>
-                                                </tr>
-                                                
-                                                <!-- Voucher Discount Row -->
-                                                <tr th:if="${hasVoucher and totalDiscount > 0}" class="order-discount">
-                                                    <td>
-                                                        <span>Discount</span>
-                                                        <small th:if="${voucherCode}" class="text-muted">(<span th:text="${voucherCode}"></span>)</small>
-                                                    </td>
-                                                    <td class="text-success">-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</td>
-                                                </tr>
-                                                
-                                                <!-- Shipping method -->
-                                                <tr class="order-shipping">
-                                                    <td>Phương thức giao hàng</td>
-                                                    <td>
-                                                        <strong>Giao hàng tiêu chuẩn (2-8 ngày)</strong>
-                                                        <br><small class="text-muted" id="standard-fee">- Tính phí khi có địa chỉ</small>
-                                                        <input type="hidden" name="shippingMethod" value="standard">
-                                                    </td>
-                                                </tr>
-                                                
-                                                <!-- Shipping Fee Row -->
-                                                <tr class="order-shipping-fee" id="shipping-fee-row" style="display: none;">
-                                                    <td>Phí giao hàng</td>
-                                                    <td><span id="current-shipping-fee">0</span> ₫</td>
-                                                </tr>
-                                                
-                                                <!-- Total -->
-                                                <tr class="order-total">
-                                                    <td><strong>Tổng cộng</strong></td>
-                                                    <td class="order-total-amount">
-                                                        <strong><span th:text="${#numbers.formatDecimal(finalTotal, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</strong>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    
-                                    <!-- Payment Methods - Only Cash on Delivery -->
-                                    <div class="order-payment-method">
-                                        <div class="single-payment">
-                                            <div class="input-group">
-                                                <input type="radio" id="radio-cod" name="paymentMethod" value="COD" required checked>
-                                                <label for="radio-cod">Cash on delivery</label>
-                                            </div>
-                                            <p>Pay with cash upon delivery.</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Place Order Button -->
-                                    <button type="submit" class="axil-btn btn-bg-primary checkout-btn w-100">Checkout</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
+
+            <!-- If cart has items -->
+            <div th:if="${cartItems != null && !cartItems.isEmpty()}">
+                <!-- Customer Info Section -->
+                <div class="checkout-customer-section">
+                    <div class="checkout-method-wrap">
+                        <div class="single-method">
+                            <i class="fal fa-user"></i>
+                            Returning customer? <a href="#" class="checkout-method-switcher">Click here to login</a>
+                        </div>
+                        <div class="single-method">
+                            <i class="fal fa-tag"></i>
+                            Have a coupon? <a href="#" class="checkout-method-switcher">Click here to enter your code</a>
+                        </div>
+                    </div>
+                </div>
+
+                <form th:action="@{/cart/checkout}" method="post">
+                    <div class="row">
+                        <!-- Billing Details -->
+                        <div class="col-lg-6">
+                            <div class="axil-checkout-billing">
+                                <h4 class="title mb--40">Billing details</h4>
+
+                                <!-- Full Name -->
+                                <div class="form-group">
+                                    <label for="fullName">Full Name <span>*</span></label>
+                                    <input type="text" id="fullName" name="fullName" placeholder="Adam John" required>
+                                </div>
+
+                                <!-- Province/City -->
+                                <div class="form-group">
+                                    <label for="province">Tỉnh/Thành phố <span>*</span></label>
+                                    <select name="region" id="province" required>
+                                        <option value="">Chọn tỉnh/thành phố</option>
+                                        <option value="Hà Nội">Hà Nội</option>
+                                        <option value="Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
+                                        <option value="Đà Nẵng">Đà Nẵng</option>
+                                        <option value="Hải Phòng">Hải Phòng</option>
+                                        <option value="Cần Thơ">Cần Thơ</option>
+                                        <option value="An Giang">An Giang</option>
+                                        <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+                                        <option value="Bắc Giang">Bắc Giang</option>
+                                        <option value="Bắc Kạn">Bắc Kạn</option>
+                                        <option value="Bạc Liêu">Bạc Liêu</option>
+                                        <option value="Bắc Ninh">Bắc Ninh</option>
+                                        <option value="Bến Tre">Bến Tre</option>
+                                        <option value="Bình Định">Bình Định</option>
+                                        <option value="Bình Dương">Bình Dương</option>
+                                        <option value="Bình Phước">Bình Phước</option>
+                                        <option value="Bình Thuận">Bình Thuận</option>
+                                        <option value="Cà Mau">Cà Mau</option>
+                                        <option value="Cao Bằng">Cao Bằng</option>
+                                        <option value="Đắk Lắk">Đắk Lắk</option>
+                                        <option value="Đắk Nông">Đắk Nông</option>
+                                        <option value="Điện Biên">Điện Biên</option>
+                                        <option value="Đồng Nai">Đồng Nai</option>
+                                        <option value="Đồng Tháp">Đồng Tháp</option>
+                                        <option value="Gia Lai">Gia Lai</option>
+                                        <option value="Hà Giang">Hà Giang</option>
+                                        <option value="Hà Nam">Hà Nam</option>
+                                        <option value="Hà Tĩnh">Hà Tĩnh</option>
+                                        <option value="Hải Dương">Hải Dương</option>
+                                        <option value="Hậu Giang">Hậu Giang</option>
+                                        <option value="Hòa Bình">Hòa Bình</option>
+                                        <option value="Hưng Yên">Hưng Yên</option>
+                                        <option value="Khánh Hòa">Khánh Hòa</option>
+                                        <option value="Kiên Giang">Kiên Giang</option>
+                                        <option value="Kon Tum">Kon Tum</option>
+                                        <option value="Lai Châu">Lai Châu</option>
+                                        <option value="Lâm Đồng">Lâm Đồng</option>
+                                        <option value="Lạng Sơn">Lạng Sơn</option>
+                                        <option value="Lào Cai">Lào Cai</option>
+                                        <option value="Long An">Long An</option>
+                                        <option value="Nam Định">Nam Định</option>
+                                        <option value="Nghệ An">Nghệ An</option>
+                                        <option value="Ninh Bình">Ninh Bình</option>
+                                        <option value="Ninh Thuận">Ninh Thuận</option>
+                                        <option value="Phú Thọ">Phú Thọ</option>
+                                        <option value="Phú Yên">Phú Yên</option>
+                                        <option value="Quảng Bình">Quảng Bình</option>
+                                        <option value="Quảng Nam">Quảng Nam</option>
+                                        <option value="Quảng Ngãi">Quảng Ngãi</option>
+                                        <option value="Quảng Ninh">Quảng Ninh</option>
+                                        <option value="Quảng Trị">Quảng Trị</option>
+                                        <option value="Sóc Trăng">Sóc Trăng</option>
+                                        <option value="Sơn La">Sơn La</option>
+                                        <option value="Tây Ninh">Tây Ninh</option>
+                                        <option value="Thái Bình">Thái Bình</option>
+                                        <option value="Thái Nguyên">Thái Nguyên</option>
+                                        <option value="Thanh Hóa">Thanh Hóa</option>
+                                        <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+                                        <option value="Tiền Giang">Tiền Giang</option>
+                                        <option value="Trà Vinh">Trà Vinh</option>
+                                        <option value="Tuyên Quang">Tuyên Quang</option>
+                                        <option value="Vĩnh Long">Vĩnh Long</option>
+                                        <option value="Vĩnh Phúc">Vĩnh Phúc</option>
+                                        <option value="Yên Bái">Yên Bái</option>
+                                    </select>
+                                </div>
+
+                                <!-- District -->
+                                <div class="form-group">
+                                    <label for="district">Quận/Huyện <span>*</span></label>
+                                    <input type="text" name="district" id="district" placeholder="Quận/Huyện" required>
+                                </div>
+
+                                <!-- Ward -->
+                                <div class="form-group">
+                                    <label for="ward">Phường/Xã</label>
+                                    <input type="text" name="ward" id="ward" placeholder="Phường/Xã">
+                                </div>
+
+                                <!-- Street Address -->
+                                <div class="form-group">
+                                    <label for="address">Số nhà, tên đường <span>*</span></label>
+                                    <input type="text" name="address" id="address" placeholder="Số nhà, tên đường" required>
+                                </div>
+
+                                <input type="hidden" name="city" id="city">
+
+                                <!-- Distance and Shipping Info -->
+                                <div class="form-group" id="shipping-info" style="display: none;">
+                                    <div class="alert alert-info">
+                                        <h6><i class="fas fa-route"></i> Thông tin giao hàng</h6>
+                                        <p><strong>Khoảng cách:</strong> <span id="distance-display">-</span> km</p>
+                                        <p><strong>Thời gian giao hàng dự kiến:</strong> <span id="delivery-time">-</span></p>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden fields for shipping calculation -->
+                                <input type="hidden" name="distance" id="distance-value">
+                                <input type="hidden" name="shippingFee" id="shipping-fee-value">
+
+                                <!-- Phone -->
+                                <div class="form-group">
+                                    <label for="phone">Phone <span>*</span></label>
+                                    <input type="tel" id="phone" name="phone" placeholder="+84 123 456 789" required>
+                                </div>
+
+                                <!-- Email Address -->
+                                <div class="form-group">
+                                    <label for="email">Email Address <span>*</span></label>
+                                    <input type="email" id="email" name="email" placeholder="example@domain.com" required>
+                                </div>
+
+                                <!-- Create Account Checkbox -->
+                                <div class="form-group">
+                                    <div class="checkout-box">
+                                        <input type="checkbox" class="checkbox-primary" id="create-account">
+                                        <label for="create-account">Create an account?</label>
+                                    </div>
+                                </div>
+
+                                <!-- Ship to Different Address -->
+                                <div class="different-address">
+                                    <div class="checkout-box">
+                                        <input type="checkbox" class="checkbox-primary" id="different-address">
+                                        <label for="different-address">Ship to a different address?</label>
+                                    </div>
+                                </div>
+
+                                <!-- Order Notes -->
+                                <div class="form-group">
+                                    <label for="order-notes">Order Notes (optional)</label>
+                                    <textarea id="order-notes" name="note" rows="3" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="col-lg-6">
+                            <div class="axil-order-summery order-checkout-summery">
+                                <h5 class="title mb--20">Your Order</h5>
+
+                                <!-- Voucher Section -->
+                                <div class="voucher-section mb-3">
+                                    <div th:if="${hasVoucher}" class="applied-voucher">
+                                        <div class="alert alert-success">
+                                            <strong>✓ Voucher Applied: </strong>
+                                            <span th:text="${voucherCode}">VOUCHER20</span>
+                                            <span class="text-success ms-2">(-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> VND)</span>
+                                            <a th:href="@{/cart/remove-voucher(redirect='checkout')}" class="btn btn-sm btn-outline-danger ms-2">Remove</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="voucher-form">
+                                        <form th:action="@{/cart/apply-voucher}" method="post">
+                                            <div class="input-group mb-2">
+                                                <label for="voucher-code" class="sr-only">Voucher Code</label>
+                                                <input type="text" id="voucher-code" name="voucherCode" th:value="${voucherCode}" placeholder="Enter voucher code" class="form-control">
+                                                <input type="hidden" name="redirect" value="checkout">
+                                                <button type="submit" class="btn btn-outline-primary">Apply</button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!-- Voucher Messages -->
+                                    <div th:if="${voucherError}" class="alert alert-danger alert-sm">
+                                        <span th:text="${voucherError}">Error message</span>
+                                    </div>
+                                    <div th:if="${voucherSuccess}" class="alert alert-success alert-sm">
+                                        <span th:text="${voucherSuccess}">Success message</span>
+                                    </div>
+                                </div>
+
+                                <div class="summery-table-wrap">
+                                    <table class="table summery-table mb--30">
+                                        <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <!-- Product Items -->
+                                        <tr th:each="item : ${cartItems}">
+                                            <td>
+                                                <span th:text="${item.product.name}">Product Name</span>
+                                                <i class="fas fa-times"></i>
+                                                <span th:text="${item.quantity}">1</span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span> ₫
+                                            </td>
+                                        </tr>
+
+                                        <!-- Subtotal -->
+                                        <tr class="order-subtotal">
+                                            <td>Subtotal</td>
+                                            <td><span th:text="${#numbers.formatDecimal(originalTotal, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</td>
+                                        </tr>
+
+                                        <!-- Voucher Discount Row -->
+                                        <tr th:if="${hasVoucher and totalDiscount > 0}" class="order-discount">
+                                            <td>
+                                                <span>Discount</span>
+                                                <small th:if="${voucherCode}" class="text-muted">(<span th:text="${voucherCode}"></span>)</small>
+                                            </td>
+                                            <td class="text-success">-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</td>
+                                        </tr>
+
+                                        <!-- Shipping method -->
+                                        <tr class="order-shipping">
+                                            <td>Phương thức giao hàng</td>
+                                            <td>
+                                                <strong>Giao hàng tiêu chuẩn (2-8 ngày)</strong>
+                                                <br><small class="text-muted" id="standard-fee-main">- Tính phí khi có địa chỉ</small>
+                                                <input type="hidden" name="shippingMethod" value="standard">
+                                            </td>
+                                        </tr>
+
+                                        <!-- Shipping Fee Row -->
+                                        <tr class="order-shipping-fee" id="shipping-fee-row-main" style="display: none;">
+                                            <td>Phí giao hàng</td>
+                                            <td><span id="current-shipping-fee-main">0</span> ₫</td>
+                                        </tr>
+
+                                        <!-- Total -->
+                                        <tr class="order-total">
+                                            <td><strong>Tổng cộng</strong></td>
+                                            <td class="order-total-amount">
+                                                <strong><span th:text="${#numbers.formatDecimal(finalTotal, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</strong>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Payment Methods -->
+                                <div class="order-payment-method" style="border: 3px solid #ff6b35; padding: 25px; margin: 25px 0; background: #fff8f5; border-radius: 10px;">
+                                    <h4 style="margin-bottom: 25px; color: #ff6b35; text-align: center; font-size: 20px;">CHỌN PHƯƠNG THỨC THANH TOÁN</h4>
+
+                                    <!-- Cash on Delivery -->
+                                    <div class="single-payment cod-payment" style="margin-bottom: 20px; padding: 20px; border: 2px solid #28a745; background: #f8fff8; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                        <div class="input-group" style="display: flex; align-items: center;">
+                                            <input type="radio" id="radio-cod" name="paymentMethod" value="COD" required checked style="margin-right: 15px; transform: scale(1.5);">
+                                            <label for="radio-cod" style="margin: 0; font-weight: 700; font-size: 16px; color: #28a745; cursor: pointer;">THANH TOÁN KHI NHẬN HÀNG (COD)</label>
+                                        </div>
+                                        <p style="margin: 15px 0 0 40px; color: #666; font-size: 14px;">Thanh toán bằng tiền mặt khi nhận hàng tại nhà.</p>
+                                    </div>
+
+                                    <!-- VNPay Payment - Made VERY PROMINENT -->
+                                    <div class="single-payment vnpay-payment" style="margin-bottom: 20px; padding: 20px; border: 3px solid #007bff; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 8px rgba(0,123,255,0.2);">
+                                        <div class="input-group" style="display: flex; align-items: center;">
+                                            <input type="radio" id="radio-vnpay" name="paymentMethod" value="VNPAY" required style="margin-right: 15px; transform: scale(1.5);">
+                                            <label for="radio-vnpay" style="margin: 0; font-weight: 700; font-size: 18px; color: #007bff; cursor: pointer;">THANH TOÁN QUA VNPAY (ATM/BANKING/QR)</label>
+                                        </div>
+                                        <div style="margin: 15px 0 0 40px;">
+                                            <p style="color: #333; font-size: 15px; margin: 5px 0; font-weight: 600;">THANH TOÁN NHANH - AN TOÀN - TIỆN LỢI:</p>
+                                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                                                <span style="color: #007bff; font-weight: 500;">Quét mã QR</span>
+                                                <span style="color: #007bff; font-weight: 500;">Internet Banking</span>
+                                                <span style="color: #007bff; font-weight: 500;">Thẻ ATM nội địa</span>
+                                                <span style="color: #007bff; font-weight: 500;">Ví điện tử</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Place Order Button -->
+                                <button type="submit" class="axil-btn btn-bg-primary checkout-btn w-100">Checkout</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <!-- End Checkout Area  -->
-    </main>
-    
-    <!-- Footer -->
-    <div th:replace="~{user/fragments/footer :: footer}"></div>
-    
-    <!-- Additional fragments -->
-    <div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
-    
-    <!-- Shipping Calculator JavaScript -->
-    <script th:src="@{/assets/js/shipping-calculator.js}"></script>
-    
+    </div>
+    <!-- End Checkout Area  -->
+</main>
+
+<!-- Footer -->
+<div th:replace="~{user/fragments/footer :: footer}"></div>
+
+<!-- Additional fragments -->
+<div th:replace="~{user/fragments/cartreview :: cartreview}"></div>
+
+<!-- Shipping Calculator JavaScript -->
+<script th:src="@{/assets/js/shipping-calculator.js}"></script>
+
+<!-- Payment Method JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Page loaded - Initializing payment script...');
+
+        const checkoutForm = document.querySelector('form[action*="/cart/checkout"]');
+        const checkoutBtn = document.querySelector('.checkout-btn');
+        const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+        const regionSelect = document.getElementById('province');
+        const cityField = document.getElementById('city');
+
+        console.log('🔍 Elements found:');
+        console.log('- Form:', checkoutForm);
+        console.log('- Button:', checkoutBtn);
+        console.log('- Payment methods:', paymentMethods.length);
+
+        // Set city value from region selection
+        if (regionSelect && cityField) {
+            regionSelect.addEventListener('change', function() {
+                cityField.value = this.value;
+                console.log('🏙️ City set to:', this.value);
+            });
+            // Set initial value
+            if (regionSelect.value) {
+                cityField.value = regionSelect.value;
+                console.log('🏙️ Initial city set to:', regionSelect.value);
+            }
+        }
+
+        if (checkoutForm && checkoutBtn) {
+            console.log('✅ Adding form submit event listener...');
+
+            checkoutForm.addEventListener('submit', function(e) {
+                console.log('📝 Form submitted!');
+
+                const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+                console.log('💳 Selected payment method:', selectedPaymentMethod ? selectedPaymentMethod.value : 'NONE');
+
+                if (selectedPaymentMethod && selectedPaymentMethod.value === 'VNPAY') {
+                    console.log('🔵 VNPay selected - PREVENTING DEFAULT SUBMIT');
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Validate required fields
+                    const fullName = checkoutForm.querySelector('[name="fullName"]').value;
+                    const phone = checkoutForm.querySelector('[name="phone"]').value;
+                    const address = checkoutForm.querySelector('[name="address"]').value;
+                    const region = checkoutForm.querySelector('[name="region"]').value;
+                    const city = checkoutForm.querySelector('[name="city"]').value;
+                    const paymentMethod = checkoutForm.querySelector('[name="paymentMethod"]:checked').value;
+
+                    console.log('🔍 Form validation:');
+                    console.log('- Full Name:', fullName);
+                    console.log('- Phone:', phone);
+                    console.log('- Address:', address);
+                    console.log('- Region:', region);
+                    console.log('- City:', city);
+                    console.log('- Payment Method:', paymentMethod);
+
+                    if (!fullName || !phone || !address || !region || !paymentMethod) {
+                        console.log('❌ Validation failed!');
+                        alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                        return;
+                    }
+
+                    // Set city if empty
+                    if (!city) {
+                        checkoutForm.querySelector('[name="city"]').value = region;
+                        console.log('🏙️ City was empty, set to region:', region);
+                    }
+
+                    // Disable button and show loading
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý VNPay...';
+                    console.log('⏳ Button disabled, processing VNPay...');
+
+                    // Get form data
+                    const formData = new FormData(checkoutForm);
+
+                    // Debug: Log form data
+                    console.log('📋 Form data being sent to VNPay:');
+                    for (let [key, value] of formData.entries()) {
+                        console.log('  ' + key + ':', value);
+                    }
+
+                    // Redirect to VNPay QR page
+                    const params = new URLSearchParams();
+                    for (let [key, value] of formData.entries()) {
+                        params.append(key, value);
+                    }
+
+                    const redirectUrl = '/payment/vnpay/qr?' + params.toString();
+                    console.log('🔄 Redirecting to:', redirectUrl);
+
+                    // Add small delay to see the loading
+                    setTimeout(function() {
+                        window.location.href = redirectUrl;
+                    }, 500);
+
+                } else if (selectedPaymentMethod && selectedPaymentMethod.value === 'COD') {
+                    console.log('🟢 COD selected - ALLOWING NORMAL SUBMIT');
+                    checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý đơn hàng...';
+                    // Let form submit normally for COD
+                } else {
+                    console.log('❌ No payment method selected');
+                    e.preventDefault();
+                    alert('Vui lòng chọn phương thức thanh toán!');
+                }
+            });
+
+            // Add click handlers for payment method selection
+            paymentMethods.forEach((method, index) => {
+                console.log(`➕ Adding change listener for payment method ${index + 1}:`, method.value);
+
+                method.addEventListener('change', function() {
+                    console.log('🔄 Payment method changed to:', this.value);
+
+                    // Update button text based on selection
+                    if (this.value === 'VNPAY') {
+                        checkoutBtn.innerHTML = 'Thanh toán VNPay';
+                        checkoutBtn.style.background = '#007bff';
+                        console.log('🔵 Button updated for VNPay');
+                    } else if (this.value === 'COD') {
+                        checkoutBtn.innerHTML = 'Đặt hàng COD';
+                        checkoutBtn.style.background = '#28a745';
+                        console.log('🟢 Button updated for COD');
+                    }
+
+                    // Visual feedback
+                    paymentMethods.forEach(m => {
+                        const parent = m.closest('.single-payment');
+                        if (parent) {
+                            if (m.checked) {
+                                parent.style.background = '#e7f3ff';
+                                parent.style.borderColor = '#007bff';
+                            } else {
+                                parent.style.background = 'white';
+                                parent.style.borderColor = '#ccc';
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Initial setup
+            const initialSelected = document.querySelector('input[name="paymentMethod"]:checked');
+            if (initialSelected) {
+                console.log('🎯 Initial payment method:', initialSelected.value);
+                initialSelected.dispatchEvent(new Event('change'));
+            } else {
+                console.log('⚠️ No payment method initially selected');
+            }
+
+            console.log('✅ Payment script initialization complete!');
+        } else {
+            console.log('❌ Form or button not found!');
+            console.log('- Form:', checkoutForm);
+            console.log('- Button:', checkoutBtn);
+        }
+    });
+</script>
+
 </body>
 </html> 
