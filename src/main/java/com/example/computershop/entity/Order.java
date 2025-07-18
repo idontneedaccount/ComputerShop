@@ -52,12 +52,14 @@ public class Order {
     @Column(name = "voucher_code", columnDefinition = "NVARCHAR(100)")
     private String voucherCode;
 
+
     @Column(name = "PaymentMethod", columnDefinition = "NVARCHAR(50)")
     private String paymentMethod;
     
     @Column(name = "Note", columnDefinition = "NVARCHAR(500)")
     private String note;
 
+    // ✅ KEPT - Shipping information (có thể khác với user.address)
     @Column(name = "ShippingAddress", columnDefinition = "NVARCHAR(500)")
     private String shippingAddress;
 
@@ -105,6 +107,19 @@ public class Order {
         return user != null ? user.getAddress() : null;
     }
     
+    @Transient
+    public String getPaymentStatus() {
+        // TODO: Implement payment status lookup from Payment entity
+        // This would require injecting PaymentRepository or adding a relationship
+        // For now, return a default based on paymentMethod
+        if ("VNPAY".equals(paymentMethod)) {
+            return "PENDING"; // Will be updated by VNPay IPN
+        } else if ("COD".equals(paymentMethod)) {
+            return "COD"; // COD doesn't have online payment status
+        }
+        return "UNKNOWN";
+    }
+
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;

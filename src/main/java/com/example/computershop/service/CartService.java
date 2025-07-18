@@ -154,4 +154,21 @@ public interface CartService {
      * Prepare cart review data for AJAX updates
      */
     Map<String, Object> prepareCartReviewData(Principal principal);
+    
+    // ===== ADDITIONAL USER AND CART OPERATIONS =====
+    
+    /**
+     * Get user by UUID (used for payment processing)
+     */
+    User getUserById(java.util.UUID userId);
+    
+    /**
+     * Get cart items by user ID (used for payment processing)
+     */
+    List<Cart> getCurrentUserCartByUserId(java.util.UUID userId);
+    
+    /**
+     * Clear cart by user ID (used for payment processing)
+     */
+    void clearCartByUserId(java.util.UUID userId);
 } 

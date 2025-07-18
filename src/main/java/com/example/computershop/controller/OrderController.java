@@ -1,6 +1,8 @@
 package com.example.computershop.controller;
 
 import com.example.computershop.entity.Order;
+import com.example.computershop.entity.Payment;
+import com.example.computershop.repository.PaymentRepository;
 import com.example.computershop.service.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
@@ -18,6 +22,7 @@ import java.util.stream.Collectors;
 public class OrderController {
 
     private OrderService orderService;
+    private PaymentRepository paymentRepository;
     
     // Constants - theo pattern ProductController
     private static final String ORDER = "order";
@@ -52,8 +57,12 @@ public class OrderController {
             // Lấy danh sách đơn hàng
             List<Order> orderList = getAllFilteredAndSortedOrders(status, search, sort);
             
+            // Lookup payment status cho mỗi order
+            Map<String, String> paymentStatusMap = getPaymentStatusMap(orderList);
+            
             // Set model attributes
             model.addAttribute(ORDERS, orderList);
+            model.addAttribute("paymentStatusMap", paymentStatusMap);
             model.addAttribute(STATUS_OPTIONS, ALL_STATUSES);
             model.addAttribute(SELECTED_STATUS, status != null ? status : "");
             model.addAttribute(SELECTED_SORT, sort);
@@ -264,6 +273,38 @@ public class OrderController {
         }
     }
 
+    /**
+     * Lấy payment status map cho danh sách orders
+     */
+    private Map<String, String> getPaymentStatusMap(List<Order> orders) {
+        Map<String, String> paymentStatusMap = new java.util.HashMap<>();
+        
+        for (Order order : orders) {
+            try {
+                // Try to find payment by orderId
+                Payment payment = paymentRepository.findByOrderId(UUID.fromString(order.getId()));
+                
+                if (payment != null) {
+                    paymentStatusMap.put(order.getId(), payment.getPaymentStatus());
+                } else {
+                    // No payment record found, determine status by payment method
+                    if ("VNPAY".equals(order.getPaymentMethod())) {
+                        paymentStatusMap.put(order.getId(), "PENDING");
+                    } else if ("COD".equals(order.getPaymentMethod())) {
+                        paymentStatusMap.put(order.getId(), "COD");
+                    } else {
+                        paymentStatusMap.put(order.getId(), "UNKNOWN");
+                    }
+                }
+            } catch (Exception e) {
+                // Handle UUID parsing error or other exceptions
+                paymentStatusMap.put(order.getId(), "ERROR");
+            }
+        }
+        
+        return paymentStatusMap;
+    }
+    
     /**
      * Chuyển đổi status code thành tên hiển thị tiếng Việt
      */

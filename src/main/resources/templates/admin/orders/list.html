@@ -141,6 +141,7 @@
                                     <th class="text-center" style="width: 120px;">Mã đơn</th>
                                     <th style="width: 180px;">Thông tin khách hàng</th>
                                     <th class="text-center" style="width: 130px;">Ngày đặt</th>
+                                    <th class="text-center" style="width: 120px;">Thanh toán</th>
                                     <th class="text-center" style="width: 100px;">Voucher</th>
                                     <th class="text-right" style="width: 120px;">Tổng tiền</th>
                                     <th class="text-center" style="width: 100px;">Thao tác</th>
@@ -188,6 +189,41 @@
                                             </small>
                                         </div>
                                         <span th:unless="${order.orderDate}" class="text-muted">N/A</span>
+                                    </td>
+                                    
+                                    <!-- Payment Status -->
+                                    <td class="text-center">
+                                        <div th:if="${order.paymentMethod == 'VNPAY'}">
+                                            <div th:with="paymentStatus=${paymentStatusMap[order.id]}">
+                                                <div th:if="${paymentStatus == 'PAID'}">
+                                                    <span class="badge badge-success">✅ Đã thanh toán</span>
+                                                    <small class="text-muted d-block">VNPay</small>
+                                                </div>
+                                                <div th:if="${paymentStatus == 'PENDING'}">
+                                                    <span class="badge badge-warning">⏳ Chờ thanh toán</span>
+                                                    <small class="text-muted d-block">VNPay</small>
+                                                </div>
+                                                <div th:if="${paymentStatus == 'FAILED'}">
+                                                    <span class="badge badge-danger">❌ Thất bại</span>
+                                                    <small class="text-muted d-block">VNPay</small>
+                                                </div>
+                                                <div th:if="${paymentStatus == 'ERROR'}">
+                                                    <span class="badge badge-danger">⚠️ Lỗi</span>
+                                                    <small class="text-muted d-block">VNPay</small>
+                                                </div>
+                                                <div th:unless="${paymentStatus != null}">
+                                                    <span class="badge badge-secondary">❓ Không xác định</span>
+                                                    <small class="text-muted d-block">VNPay</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div th:if="${order.paymentMethod == 'COD'}">
+                                            <span class="badge badge-info">💵 Thu hộ</span>
+                                            <small class="text-muted d-block">COD</small>
+                                        </div>
+                                        <div th:unless="${order.paymentMethod != null}">
+                                            <span class="text-muted small">N/A</span>
+                                        </div>
                                     </td>
                                     
                                     <!-- Voucher Info -->
