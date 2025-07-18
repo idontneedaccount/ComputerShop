@@ -31,10 +31,6 @@ public class Order {
     @JoinColumn(name = "UserID", referencedColumnName = "user_id", insertable = false, updatable = false)
     private User user;
 
-    // ❌ REMOVED - ProductID không hợp lý vì một order có thể có nhiều sản phẩm
-    // @Column(name = "productID", columnDefinition = "UNIQUEIDENTIFIER")
-    // String productId;
-
     @Column(name = "OrderDate", nullable = false)
      LocalDateTime orderDate;
 
@@ -44,7 +40,6 @@ public class Order {
     @Column(name = "TotalAmount", nullable = false)
      Long totalAmount;
 
-    // ✅ KEPT - Voucher information
     @Column(name = "voucherID", columnDefinition = "UNIQUEIDENTIFIER")
      String voucherId;
     
@@ -57,29 +52,12 @@ public class Order {
     @Column(name = "voucher_code", columnDefinition = "NVARCHAR(100)")
     private String voucherCode;
 
-    // ❌ REMOVED - Duplicate với User entity, sẽ lấy từ user.fullName
-    // @Column(name = "FullName", columnDefinition = "NVARCHAR(255)")
-    // private String fullName;
-    
-    // ❌ REMOVED - Duplicate với User entity, sẽ lấy từ user.email  
-    // @Column(name = "Email", columnDefinition = "NVARCHAR(255)")
-    // private String email;
-    
-    // ❌ REMOVED - Duplicate với User entity, sẽ lấy từ user.phoneNumber
-    // @Column(name = "Phone", columnDefinition = "NVARCHAR(50)")
-    // private String phone;
-    
-    // ❌ REMOVED - Duplicate với User entity, sẽ lấy từ user.address 
-    // @Column(name = "Address", columnDefinition = "NVARCHAR(500)")
-    // private String address;
-    
     @Column(name = "PaymentMethod", columnDefinition = "NVARCHAR(50)")
     private String paymentMethod;
     
     @Column(name = "Note", columnDefinition = "NVARCHAR(500)")
     private String note;
 
-    // ✅ KEPT - Shipping information (có thể khác với user.address)
     @Column(name = "ShippingAddress", columnDefinition = "NVARCHAR(500)")
     private String shippingAddress;
 
@@ -92,7 +70,6 @@ public class Order {
     @Column(name = "Distance")
     private Double distance;
 
-    // ✅ NEW - Thông tin người nhận khác (nếu khác với user)
     @Column(name = "AlternativeReceiverName", columnDefinition = "NVARCHAR(255)")
     private String alternativeReceiverName;
     
@@ -102,12 +79,6 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
-    // ❌ REMOVED - Product relationship không hợp lý
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "productID", referencedColumnName = "productID", columnDefinition = "UNIQUEIDENTIFIER", insertable = false, updatable = false)
-    // private Products product;
-
-    // ✅ NEW - Helper methods để lấy thông tin từ User
     @Transient
     public String getCustomerName() {
         if (alternativeReceiverName != null && !alternativeReceiverName.trim().isEmpty()) {
