@@ -32,6 +32,10 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderDetails od LEFT JOIN FETCH od.product LEFT JOIN FETCH o.user WHERE o.status = :status ORDER BY o.orderDate DESC")
     List<Order> findByStatusWithDetails(@Param("status") String status);
     
+    // Find orders by user ID and status (for review checking)
+    @Query("SELECT o FROM Order o WHERE o.userId = :userId AND o.status = :status ORDER BY o.orderDate DESC")
+    List<Order> findByUserIdAndStatus(@Param("userId") String userId, @Param("status") String status);
+    
     @Query("SELECT o FROM Order o LEFT JOIN FETCH o.user ORDER BY o.orderDate DESC")
     List<Order> findAllWithUser();
     @Query("SELECT MONTH(o.orderDate), SUM(o.totalAmount) " +

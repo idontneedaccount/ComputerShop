@@ -242,6 +242,12 @@
     border-color: var(--info);
 }
 
+.status-processing {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: var(--warning);
+    border-color: var(--warning);
+}
+
 .status-shipping {
     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
     color: var(--info);
