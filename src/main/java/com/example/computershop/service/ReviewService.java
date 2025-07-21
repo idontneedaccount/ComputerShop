@@ -15,8 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.computershop.dto.ProductRatingDTO;
 import com.example.computershop.dto.ReviewDTO;
 import com.example.computershop.entity.Review;
+import com.example.computershop.entity.Order;
+import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.repository.ReviewRepository;
 import com.example.computershop.repository.UserRepository;
+import com.example.computershop.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +30,7 @@ public class ReviewService {
     
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
     
     /**
      * Convert Review entity to ReviewDTO
@@ -111,12 +115,44 @@ public class ReviewService {
     
     /**
      * Kiểm tra user có thể review sản phẩm không
+     * User chỉ có thể review nếu:
+     * 1. Đã mua sản phẩm này trong đơn hàng có status DELIVERED
+     * 2. Chưa review sản phẩm này trước đó
      */
     public boolean canUserReview(String userId, String productId) {
         if (userId == null || productId == null) return false;
         
-        // Chỉ kiểm tra đã review chưa (vì frontend đã đảm bảo user chỉ review từ đơn hàng DELIVERED)
-        return !reviewRepository.existsByUserIdAndProductId(userId, productId);
+        try {
+            // 1. Kiểm tra user đã review sản phẩm này chưa
+            if (reviewRepository.existsByUserIdAndProductId(userId, productId)) {
+                logger.debug("User {} already reviewed product {}", userId, productId);
+                return false;
+            }
+            
+            // 2. Kiểm tra user có đơn hàng DELIVERED chứa sản phẩm này không
+            List<Order> deliveredOrders = orderRepository.findByUserIdAndStatus(userId, "DELIVERED");
+            
+            for (Order order : deliveredOrders) {
+                // Lấy order với details
+                Order orderWithDetails = orderRepository.findByIdWithDetails(order.getId()).orElse(null);
+                if (orderWithDetails != null && orderWithDetails.getOrderDetails() != null) {
+                    for (OrderDetail detail : orderWithDetails.getOrderDetails()) {
+                        if (detail.getProduct() != null && productId.equals(detail.getProduct().getProductID())) {
+                            logger.debug("User {} can review product {} from delivered order {}", 
+                                       userId, productId, order.getId());
+                            return true;
+                        }
+                    }
+                }
+            }
+            
+            logger.debug("User {} cannot review product {} - no delivered order found", userId, productId);
+            return false;
+            
+        } catch (Exception e) {
+            logger.error("Error checking if user {} can review product {}: {}", userId, productId, e.getMessage());
+            return false;
+        }
     }
     
     /**

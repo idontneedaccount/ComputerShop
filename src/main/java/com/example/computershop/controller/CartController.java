@@ -402,6 +402,62 @@ public class CartController {
     public ResponseEntity<Map<String, Object>> getCartCount(Principal principal) {
         return cartService.getCartCount(principal);
     }
+    
+    /**
+     * Confirm delivery - Update order status to DELIVERED when user confirms receipt
+     */
+    @PostMapping("/confirm-delivery")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> confirmDelivery(@RequestParam String orderId, Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Get current user
+            User user = cartService.getUserFromPrincipal(principal);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để thực hiện hành động này");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Get order
+            Order order = orderService.getOrderById(orderId);
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy đơn hàng");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Check if user owns this order
+            if (!order.getUserId().equals(user.getUserId())) {
+                response.put("success", false);
+                response.put("message", "Bạn không có quyền thao tác với đơn hàng này");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Check if order is in correct status to be delivered
+            if (!"SHIPPED".equals(order.getStatus())) {
+                response.put("success", false);
+                response.put("message", "Chỉ có thể xác nhận đơn hàng đang trong trạng thái giao hàng");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Update order status to DELIVERED
+            order.setStatus("DELIVERED");
+            orderService.updateOrder(order);
+            
+            response.put("success", true);
+            response.put("message", "Đã xác nhận đơn hàng thành công");
+            response.put("orderId", orderId);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
 
     /**
      * Get cart review content for AJAX updates - ✅ REFACTORED to use CartService

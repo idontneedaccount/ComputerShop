@@ -315,4 +315,64 @@ public class UserProfileController {
         }
     }
 
+    /**
+     * Confirm user has received delivery - changes status from DELIVERED to USER_CONFIRMED
+     */
+    @PostMapping("/confirm-delivery")
+    public ResponseEntity<Map<String, Object>> confirmDelivery(@RequestBody Map<String, Object> request, Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            User user = userService.getUserFromPrincipal(principal);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy thông tin người dùng!");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            String orderId = (String) request.get("orderId");
+            if (orderId == null || orderId.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Thiếu thông tin đơn hàng!");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Get order and validate
+            Order order = orderService.getOrderById(orderId);
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy đơn hàng!");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Check if order belongs to user
+            if (!order.getUserId().equals(user.getUserId())) {
+                response.put("success", false);
+                response.put("message", "Bạn không có quyền truy cập đơn hàng này!");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Check if order status is DELIVERED
+            if (!"DELIVERED".equals(order.getStatus())) {
+                response.put("success", false);
+                response.put("message", "Chỉ có thể xác nhận đơn hàng đã được giao!");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Update status to USER_CONFIRMED
+            order.setStatus("USER_CONFIRMED");
+            Order updatedOrder = orderService.updateOrder(order);
+
+            response.put("success", true);
+            response.put("message", "Xác nhận đã nhận hàng thành công! Bạn có thể đánh giá sản phẩm.");
+            response.put("orderId", updatedOrder.getId());
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error confirming delivery for order", e);
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi xác nhận nhận hàng!");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 } 
