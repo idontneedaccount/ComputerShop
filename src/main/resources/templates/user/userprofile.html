@@ -200,7 +200,7 @@
                                                                    (order.status == 'CONFIRMED' ? 'Đã xác nhận' :
                                                                    (order.status == 'SHIPPING' ? 'Đang giao hàng' :
                                                                    (order.status == 'DELIVERED' ? 'Đã giao hàng' :
-                                                                   (order.status == 'USER_CONFIRMED' ? 'Đã xác nhận nhận hàng' : 'Đã hủy'))))}">
+                                                                   (order.status == 'USER_CONFIRMED' ? 'Đã nhận hàng' : 'Đã hủy'))))}">
                                                             </span>
                                                 </td>
                                                 <td>
@@ -225,12 +225,12 @@
                                                     </button>
 
                                                     <!-- Nút đánh giá khi status = USER_CONFIRMED -->
-                                                    <button th:if="${order.status == 'USER_CONFIRMED'}"
+                                                    <a th:if="${order.status == 'USER_CONFIRMED'}"
                                                             class="btn btn-sm btn-outline-warning me-2"
                                                             onclick="showReviewModal(this)"
                                                             th:data-order-id="${order.id}">
                                                         <i class="fas fa-star"></i> Đánh giá
-                                                    </button>
+                                                    </a>
                                                 </td>
                                             </tr>
                                             </tbody>
