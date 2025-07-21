@@ -41,7 +41,7 @@ public class OrderController {
     
     // Status constants
     private static final List<String> ALL_STATUSES = Arrays.asList(
-        "PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"
+            "PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "USER_CONFIRMED", "CANCELLED"
     );
 
     /**
@@ -310,7 +310,7 @@ public class OrderController {
      */
     private String getStatusDisplayName(String status) {
         if (status == null) return "Không xác định";
-        
+
         switch (status) {
             case "PENDING":
                 return "⏳ Chờ xác nhận";
@@ -322,6 +322,8 @@ public class OrderController {
                 return "🚚 Đang giao hàng";
             case "DELIVERED":
                 return "📦 Đã giao hàng";
+            case "USER_CONFIRMED":
+                return "✅ Khách đã nhận";
             case "CANCELLED":
                 return "❌ Đã hủy";
             default:

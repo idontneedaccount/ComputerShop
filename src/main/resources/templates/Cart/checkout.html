@@ -243,9 +243,7 @@
                                                 <label for="voucher-code" class="sr-only">Voucher Code</label>
                                                 <input type="text" id="voucher-code" name="voucherCode" th:value="${voucherCode}" placeholder="Enter voucher code" class="form-control">
                                                 <input type="hidden" name="redirect" value="checkout">
-                                                <div class="input-group-append" style=" position: absolute; margin-top: 15px; margin-left: 500px;">
-                                                    <button type="submit" class="btn btn-outline-primary btn-sm px-3">Apply</button>
-                                                </div>
+                                                <button type="submit" class="btn btn-outline-primary">Apply</button>
                                             </div>
                                         </form>
                                     </div>
@@ -409,6 +407,15 @@
 
             checkoutForm.addEventListener('submit', function(e) {
                 console.log('📝 Form submitted!');
+
+                // Check if submit button is disabled (shipping not calculated)
+                if (checkoutBtn.disabled) {
+                    console.log('❌ Submit blocked - shipping not calculated');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('Vui lòng chờ hệ thống tính phí giao hàng trước khi thanh toán!');
+                    return;
+                }
 
                 const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
                 console.log('💳 Selected payment method:', selectedPaymentMethod ? selectedPaymentMethod.value : 'NONE');
