@@ -4,6 +4,7 @@ import com.example.computershop.entity.Payment;
 import com.example.computershop.repository.PaymentRepository;
 import com.example.computershop.service.IPaymentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentServiceImpl implements IPaymentService {
     private final PaymentRepository paymentRepository;
 
@@ -84,6 +86,19 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Override
     public Payment createVNPayPayment(UUID orderId, UUID userId, Long amount, String vnpTxnRef) {
+        if (orderId == null) {
+            log.error("Cannot create payment with null orderId");
+            throw new IllegalArgumentException("OrderId cannot be null for payment creation");
+        }
+        
+        if (userId == null) {
+            log.error("Cannot create payment with null userId");
+            throw new IllegalArgumentException("UserId cannot be null for payment creation");
+        }
+        
+        log.info("Creating VNPay payment: orderId={}, userId={}, amount={}, vnpTxnRef={}", 
+                orderId, userId, amount, vnpTxnRef);
+        
         Payment payment = new Payment();
         payment.setOrderId(orderId);
         payment.setUserId(userId);
@@ -94,7 +109,14 @@ public class PaymentServiceImpl implements IPaymentService {
         payment.setCreatedAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
         
-        return paymentRepository.save(payment);
+        try {
+            Payment savedPayment = paymentRepository.save(payment);
+            log.info("Successfully created VNPay payment: paymentId={}", savedPayment.getPaymentId());
+            return savedPayment;
+        } catch (Exception e) {
+            log.error("Error saving payment: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override

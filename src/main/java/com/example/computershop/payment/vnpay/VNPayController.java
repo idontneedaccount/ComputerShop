@@ -43,6 +43,12 @@ public class VNPayController {
     @GetMapping({"/user/checkout/vnpay"})
     public String submidOrder(HttpServletRequest request, @RequestParam("orderId") String orderId) {
         try {
+            // Validate orderId
+            if (orderId == null || orderId.trim().isEmpty()) {
+                log.error("Invalid orderId for VNPay payment: {}", orderId);
+                return "redirect:/cart/checkout?error=invalid_order_id";
+            }
+            
             String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
             
             // Get order from database instead of session
@@ -58,8 +64,14 @@ public class VNPayController {
                 return "redirect:/cart/checkout?error=invalid_order_status";
             }
             
-            long totalAmountVND = order.getTotalAmount();
+            // Validate userId
             String userId = order.getUserId();
+            if (userId == null || userId.trim().isEmpty()) {
+                log.error("Order {} has no associated userId", orderId);
+                return "redirect:/cart/checkout?error=invalid_user_id";
+            }
+            
+            long totalAmountVND = order.getTotalAmount();
             
             log.info("Processing VNPay payment for order {}: {} VND", orderId, totalAmountVND);
             
@@ -76,24 +88,39 @@ public class VNPayController {
                        java.net.URLEncoder.encode(e.getMessage(), "UTF-8");
             }
             
-            // Create payment record with the same transaction reference
+            // Check if payment record already exists for this order
             try {
-                Payment payment = paymentService.createVNPayPayment(
-                    UUID.fromString(orderId), 
-                    UUID.fromString(userId), 
-                    totalAmountVND, 
-                    paymentRequest.getVnpTxnRef()
-                );
+                Optional<Payment> existingPayment = paymentService.findByOrderId(UUID.fromString(orderId));
                 
-                log.info("Created VNPay payment record: paymentId={}, orderId={}, vnpTxnRef={}", 
-                        payment.getPaymentId(), orderId, paymentRequest.getVnpTxnRef());
+                if (existingPayment.isPresent()) {
+                    // Update existing payment with new transaction reference
+                    Payment payment = existingPayment.get();
+                    payment.setVnpTxnRef(paymentRequest.getVnpTxnRef());
+                    payment.setPaymentStatus("Pending");
+                    payment.setPaidAmount(totalAmountVND);
+                    payment.setUpdatedAt(LocalDateTime.now());
+                    paymentService.save(payment);
+                    
+                    log.info("Updated existing VNPay payment record for order {}", orderId);
+                } else {
+                    // Create new payment record
+                    paymentService.createVNPayPayment(
+                        UUID.fromString(orderId), 
+                        UUID.fromString(userId), 
+                        totalAmountVND, 
+                        paymentRequest.getVnpTxnRef()
+                    );
+                    
+                    log.info("Created new VNPay payment record for order {}", orderId);
+                }
+                
+                return "redirect:" + paymentRequest.getPaymentUrl();
                 
             } catch (Exception e) {
-                log.error("Failed to create VNPay payment record", e);
-                return "redirect:/cart/checkout?error=payment_creation_failed";
+                log.error("Failed to create/update VNPay payment record", e);
+                return "redirect:/cart/checkout?error=payment_creation_failed&message=" + 
+                       java.net.URLEncoder.encode(e.getMessage(), "UTF-8");
             }
-            
-            return "redirect:" + paymentRequest.getPaymentUrl();
             
         } catch (Exception e) {
             log.error("Error in VNPay checkout", e);
