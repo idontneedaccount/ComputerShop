@@ -23,7 +23,7 @@ public class Payment {
     @Column(name = "payment_id", columnDefinition = "UNIQUEIDENTIFIER")
     private UUID paymentId;
     
-    @Column(name = "OrderID", unique = true, columnDefinition = "UNIQUEIDENTIFIER")
+    @Column(name = "OrderID", columnDefinition = "UNIQUEIDENTIFIER")
     private UUID orderId;
     
     @Column(name = "user_id", columnDefinition = "UNIQUEIDENTIFIER")  
