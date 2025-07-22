@@ -21,118 +21,129 @@
     </style>
 </head>
 <body id="page-top">
-    <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
-    <div id="wrapper">
-        <!-- Sidebar -->
-        <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
-        <div id="content-wrapper">
-            <div class="container-fluid">
-                <!-- Breadcrumbs-->
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="#">Báo cáo</a></li>
-                    <li class="breadcrumb-item active">Doanh số</li>
-                </ol>
-                <!-- Page Navigation -->
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">
-                        <i class="fas fa-chart-line"></i> Báo cáo doanh số
-                    </h1>
-                    <div class="btn-group" role="group">
-                        <a href="/admin/reports/sales" class="btn btn-primary btn-sm">
-                            <i class="fas fa-chart-line"></i> Doanh số
-                        </a>
-                        <a href="/admin/reports/products" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-box"></i> Sản phẩm
-                        </a>
-                        <a href="/admin/reports/customers" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-users"></i> Khách hàng
-                        </a>
-                    </div>
-                </div>
-                <!-- Nội dung báo cáo doanh số -->
-                <div class="card mb-4 report-section">
-                    <div class="card-header">
-                        <i class="fas fa-chart-line"></i> Thống kê doanh thu theo tháng
-                    </div>
-                    <div class="card-body">
-                        <!-- Biểu đồ doanh thu -->
-                        <div class="chart-container">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                        <!-- Bảng doanh thu theo tháng -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-report">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Tháng</th>
-                                        <th>Doanh thu (VNĐ)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="rev, idx : ${monthlyRevenue}">
-                                        <td th:text="${idx.index + 1}"></td>
-                                        <td th:text="${#numbers.formatInteger(rev, 0, 'POINT')} + ' ₫'"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card-footer small text-muted text-right">
-                        Dữ liệu cập nhật từ hệ thống
-                    </div>
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="#">Báo cáo</a></li>
+                <li class="breadcrumb-item active">Doanh số</li>
+            </ol>
+            <!-- Page Navigation -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-chart-line"></i> Báo cáo doanh số
+                </h1>
+                <div class="btn-group" role="group">
+                    <a href="/admin/reports/sales" class="btn btn-primary btn-sm">
+                        <i class="fas fa-chart-line"></i> Doanh số
+                    </a>
+                    <a href="/admin/reports/products" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-box"></i> Sản phẩm
+                    </a>
+                    <a href="/admin/reports/customers" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-users"></i> Khách hàng
+                    </a>
                 </div>
             </div>
-            <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+            <!-- Nội dung báo cáo doanh số -->
+            <div class="card mb-4 report-section">
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i> Thống kê doanh thu theo tháng
+                </div>
+                <div class="card-body">
+                    <!-- Biểu đồ doanh thu -->
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    <!-- Bảng doanh thu theo tháng -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-report">
+                            <thead class="thead-light">
+                            <tr>
+                                <th>Tháng</th>
+                                <th>Doanh thu (VNĐ)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="rev, idx : ${monthlyRevenue}">
+                                <td th:text="${idx.index + 1}"></td>
+                                <td th:text="${#numbers.formatInteger(rev, 0, 'POINT')} + ' ₫'"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted text-right">
+                    Dữ liệu cập nhật từ hệ thống
+                </div>
+            </div>
         </div>
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
     </div>
-    <!-- /#wrapper -->
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-    <!-- Logout Modal-->
-    <div th:replace="~{admin/fragments/logout :: logout}"></div>
-    <!-- Script truyền data từ Thymeleaf sang JS để vẽ biểu đồ -->
-    <script>
-        // Lấy dữ liệu từ Thymeleaf
-        const monthlyRevenue = /*[[${monthlyRevenue}]]*/ [];
-        // Hàm format số tiền VNĐ
-        function formatVND(num) {
-            return num.toLocaleString('vi-VN') + ' ₫';
-        }
-        // Vẽ biểu đồ doanh thu
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Array.from({length: 12}, (_, i) => `Tháng ${i+1}`),
-                    datasets: [{
-                        label: 'Doanh thu (VNĐ)',
-                        data: monthlyRevenue,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false },
-                        title: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) { return formatVND(value); }
+</div>
+<!-- /#wrapper -->
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+<!-- Logout Modal-->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+
+<!-- Chart.js đã có ở footer -->
+<!-- Script truyền data từ Thymeleaf sang JS để vẽ biểu đồ -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@4"></script>
+<script th:inline="javascript">
+    // Lấy dữ liệu từ Thymeleaf
+    let monthlyRevenue = /*[[${monthlyRevenue}]]*/ [];
+    if (Array.isArray(monthlyRevenue)) {
+        monthlyRevenue = monthlyRevenue.map(v => Number(v) || 0);
+    }
+    function formatVND(num) {
+        return num.toLocaleString('vi-VN') + ' ₫';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: 12}, (_, i) => `Tháng ${i+1}`),
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: monthlyRevenue,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return formatVND(context.parsed.y);
                             }
                         }
                     }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return formatVND(value); }
+                        }
+                    }
                 }
-            });
+            }
         });
-    </script>
+    });
+</script>
 </body>
 </html>

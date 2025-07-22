@@ -9,105 +9,105 @@
     </style>
 </head>
 <body id="page-top">
-    <nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
-    <div id="wrapper">
-        <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
-        <div id="content-wrapper">
-            <div class="container-fluid">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="#">Báo cáo</a></li>
-                    <li class="breadcrumb-item active">Khách hàng</li>
-                </ol>
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">
-                        <i class="fas fa-users"></i> Báo cáo khách hàng
-                    </h1>
-                    <div class="btn-group" role="group">
-                        <a href="/admin/reports/sales" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-chart-line"></i> Doanh số
-                        </a>
-                        <a href="/admin/reports/products" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-box"></i> Sản phẩm
-                        </a>
-                        <a href="/admin/reports/customers" class="btn btn-primary btn-sm">
-                            <i class="fas fa-users"></i> Khách hàng
-                        </a>
-                    </div>
-                </div>
-                <div class="card mb-4 report-section">
-                    <div class="card-header">
-                        <i class="fas fa-users"></i> Thống kê khách hàng mới theo tháng
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="customerLineChart"></canvas>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-report">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Tháng</th>
-                                        <th>Số khách hàng mới</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="num, idx : ${newUsersByMonth}">
-                                        <td th:text="${idx.index + 1}"></td>
-                                        <td th:text="${num}"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card-footer small text-muted text-right">
-                        Dữ liệu cập nhật từ hệ thống
-                    </div>
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+<div id="wrapper">
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="#">Báo cáo</a></li>
+                <li class="breadcrumb-item active">Khách hàng</li>
+            </ol>
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-users"></i> Báo cáo khách hàng
+                </h1>
+                <div class="btn-group" role="group">
+                    <a href="/admin/reports/sales" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-chart-line"></i> Doanh số
+                    </a>
+                    <a href="/admin/reports/products" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-box"></i> Sản phẩm
+                    </a>
+                    <a href="/admin/reports/customers" class="btn btn-primary btn-sm">
+                        <i class="fas fa-users"></i> Khách hàng
+                    </a>
                 </div>
             </div>
-            <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+            <div class="card mb-4 report-section">
+                <div class="card-header">
+                    <i class="fas fa-users"></i> Thống kê khách hàng mới theo tháng
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="customerLineChart"></canvas>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-report">
+                            <thead class="thead-light">
+                            <tr>
+                                <th>Tháng</th>
+                                <th>Số khách hàng mới</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="num, idx : ${newUsersByMonth}">
+                                <td th:text="${idx.index + 1}"></td>
+                                <td th:text="${num}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted text-right">
+                    Dữ liệu cập nhật từ hệ thống
+                </div>
+            </div>
         </div>
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
     </div>
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-    <div th:replace="~{admin/fragments/logout :: logout}"></div>
-    <!-- Script truyền data từ Thymeleaf sang JS để vẽ biểu đồ -->
-    <script>
-        // Lấy dữ liệu từ Thymeleaf
-        const newUsersByMonth = /*[[${newUsersByMonth}]]*/ [];
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('customerLineChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: Array.from({length: 12}, (_, i) => `Tháng ${i+1}`),
-                    datasets: [{
-                        label: 'Số khách hàng mới',
-                        data: newUsersByMonth,
-                        fill: false,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        tension: 0.3,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
-                    }]
+</div>
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+<!-- Script truyền data từ Thymeleaf sang JS để vẽ biểu đồ -->
+<script th:inline="javascript">
+    // Lấy dữ liệu từ Thymeleaf
+    const newUsersByMonth = /*[[${newUsersByMonth}]]*/ [];
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('customerLineChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 12}, (_, i) => `Tháng ${i+1}`),
+                datasets: [{
+                    label: 'Số khách hàng mới',
+                    data: newUsersByMonth,
+                    fill: false,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: { display: false }
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: true, position: 'top' },
-                        title: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            precision: 0
-                        }
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        precision: 0
                     }
                 }
-            });
+            }
         });
-    </script>
+    });
+</script>
 </body>
 </html>
