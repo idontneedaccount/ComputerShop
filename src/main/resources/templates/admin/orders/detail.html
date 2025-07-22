@@ -254,6 +254,7 @@
 								<div class="mt-2">
                                     <span th:switch="${order?.status}" class="badge badge-pill p-2">
                                         <span th:case="'PENDING'" class="badge badge-warning">⏳ Chờ xác nhận</span>
+                                        <span th:case="'PAYMENT_PENDING'" class="badge badge-warning">💳 Chờ thanh toán</span>
                                         <span th:case="'CONFIRMED'" class="badge badge-info">✅ Đã xác nhận</span>
                                         <span th:case="'PROCESSING'" class="badge badge-primary">🔄 Đang xử lý</span>
                                         <span th:case="'SHIPPED'" class="badge badge-secondary">🚚 Đang giao hàng</span>
@@ -304,6 +305,30 @@
 							</form>
 						</div>
 					</div>
+                            <!-- Update Status Form -->
+                            <form method="post" th:action="@{/admin/orders/update-status}" id="updateStatusForm">
+                                <input type="hidden" name="orderId" th:value="${order?.id}">
+
+                                <div class="form-group">
+                                    <label for="newStatus" class="font-weight-bold">Cập nhật trạng thái:</label>
+                                    <select class="form-control" id="newStatus" name="status" required>
+                                        <option value="">-- Chọn trạng thái --</option>
+                                        <option value="PENDING" th:selected="${order?.status == 'PENDING'}">⏳ Chờ xác nhận</option>
+                                        <option value="PAYMENT_PENDING" th:selected="${order?.status == 'PAYMENT_PENDING'}">💳 Chờ thanh toán</option>
+                                        <option value="CONFIRMED" th:selected="${order?.status == 'CONFIRMED'}">✅ Đã xác nhận</option>
+                                        <option value="PROCESSING" th:selected="${order?.status == 'PROCESSING'}">🔄 Đang xử lý</option>
+                                        <option value="SHIPPED" th:selected="${order?.status == 'SHIPPED'}">🚚 Đang giao hàng</option>
+                                        <option value="DELIVERED" th:selected="${order?.status == 'DELIVERED'}">📦 Đã giao hàng</option>
+                                        <option value="CANCELLED" th:selected="${order?.status == 'CANCELLED'}">❌ Đã hủy</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block" id="submitButton">
+                                    <i class="fas fa-save mr-1"></i>Cập nhật trạng thái
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
 					<!-- Order Summary -->
 					<div class="card shadow mb-4">

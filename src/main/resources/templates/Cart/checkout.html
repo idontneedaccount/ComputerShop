@@ -54,6 +54,38 @@
 
             <!-- If cart has items -->
             <div th:if="${cartItems != null && !cartItems.isEmpty()}">
+
+                <!-- Info Messages -->
+                <div th:if="${param.info}" class="row mb-4">
+                    <div class="col-12">
+                        <div th:if="${param.info[0] == 'please_use_checkout_form'}" class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Thông báo:</strong> Vui lòng sử dụng form checkout bên dưới để đặt hàng.
+                            Hệ thống sẽ tự động xử lý thanh toán VNPay sau khi bạn điền thông tin và nhấn "Checkout".
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Messages -->
+                <div th:if="${param.error}" class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Lỗi:</strong>
+                            <span th:if="${param.error[0] == 'order_not_found'}">Không tìm thấy đơn hàng. Vui lòng thử lại.</span>
+                            <span th:if="${param.error[0] == 'payment_creation_failed'}">Không thể tạo thanh toán. Vui lòng thử lại.</span>
+                            <span th:if="${param.error[0] == 'vnpay_error'}">Lỗi VNPay. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</span>
+                            <span th:if="${param.error[0] == 'missing_data'}">Thiếu thông tin cần thiết. Vui lòng thử lại.</span>
+                            <span th:if="${param.error[0] == 'invalid_order_status'}">Đơn hàng không ở trạng thái hợp lệ để thanh toán. Vui lòng tạo đơn hàng mới.</span>
+                            <span th:if="${param.error[0] == 'amount_invalid'}">
+                                    <span th:text="${param.message != null ? param.message[0] : 'Số tiền không hợp lệ cho VNPay. Vui lòng chọn phương thức thanh toán khác.'}"></span>
+                                </span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Customer Info Section -->
                 <div class="checkout-customer-section">
                     <div class="checkout-method-wrap">
@@ -422,76 +454,44 @@
                 const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
                 console.log('💳 Selected payment method:', selectedPaymentMethod ? selectedPaymentMethod.value : 'NONE');
 
-                if (selectedPaymentMethod && selectedPaymentMethod.value === 'VNPAY') {
-                    console.log('🔵 VNPay selected - PREVENTING DEFAULT SUBMIT');
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    // Validate required fields
-                    const fullName = checkoutForm.querySelector('[name="fullName"]').value;
-                    const phone = checkoutForm.querySelector('[name="phone"]').value;
-                    const address = checkoutForm.querySelector('[name="address"]').value;
-                    const region = checkoutForm.querySelector('[name="region"]').value;
-                    const city = checkoutForm.querySelector('[name="city"]').value;
-                    const paymentMethod = checkoutForm.querySelector('[name="paymentMethod"]:checked').value;
-
-                    console.log('🔍 Form validation:');
-                    console.log('- Full Name:', fullName);
-                    console.log('- Phone:', phone);
-                    console.log('- Address:', address);
-                    console.log('- Region:', region);
-                    console.log('- City:', city);
-                    console.log('- Payment Method:', paymentMethod);
-
-                    if (!fullName || !phone || !address || !region || !paymentMethod) {
-                        console.log('❌ Validation failed!');
-                        alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
-                        return;
-                    }
-
-                    // Set city if empty
-                    if (!city) {
-                        checkoutForm.querySelector('[name="city"]').value = region;
-                        console.log('🏙️ City was empty, set to region:', region);
-                    }
-
-                    // Disable button and show loading
-                    checkoutBtn.disabled = true;
-                    checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý VNPay...';
-                    console.log('⏳ Button disabled, processing VNPay...');
-
-                    // Get form data
-                    const formData = new FormData(checkoutForm);
-
-                    // Debug: Log form data
-                    console.log('📋 Form data being sent to VNPay:');
-                    for (let [key, value] of formData.entries()) {
-                        console.log('  ' + key + ':', value);
-                    }
-
-                    // Redirect to VNPay QR page
-                    const params = new URLSearchParams();
-                    for (let [key, value] of formData.entries()) {
-                        params.append(key, value);
-                    }
-
-                    const redirectUrl = '/payment/vnpay/qr?' + params.toString();
-                    console.log('🔄 Redirecting to:', redirectUrl);
-
-                    // Add small delay to see the loading
-                    setTimeout(function() {
-                        window.location.href = redirectUrl;
-                    }, 500);
-
-                } else if (selectedPaymentMethod && selectedPaymentMethod.value === 'COD') {
-                    console.log('🟢 COD selected - ALLOWING NORMAL SUBMIT');
-                    checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý đơn hàng...';
-                    // Let form submit normally for COD
-                } else {
+                if (!selectedPaymentMethod) {
                     console.log('❌ No payment method selected');
                     e.preventDefault();
                     alert('Vui lòng chọn phương thức thanh toán!');
+                    return;
                 }
+
+                // Validate required fields
+                const fullName = checkoutForm.querySelector('[name="fullName"]').value;
+                const phone = checkoutForm.querySelector('[name="phone"]').value;
+                const address = checkoutForm.querySelector('[name="address"]').value;
+                const region = checkoutForm.querySelector('[name="region"]').value;
+
+                if (!fullName || !phone || !address || !region) {
+                    console.log('❌ Validation failed!');
+                    e.preventDefault();
+                    alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                    return;
+                }
+
+                // Set city if empty
+                const cityField = checkoutForm.querySelector('[name="city"]');
+                if (!cityField.value) {
+                    cityField.value = region;
+                    console.log('🏙️ City was empty, set to region:', region);
+                }
+
+                // Update button based on payment method and disable to prevent double submit
+                checkoutBtn.disabled = true;
+                if (selectedPaymentMethod.value === 'VNPAY') {
+                    console.log('🔵 VNPay selected - Backend will handle redirect');
+                    checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý VNPay...';
+                } else if (selectedPaymentMethod.value === 'COD') {
+                    console.log('🟢 COD selected - Processing order');
+                    checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý đơn hàng...';
+                }
+
+                // Allow form to submit normally - backend will handle the rest
             });
 
             // Add click handlers for payment method selection
