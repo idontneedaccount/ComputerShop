@@ -55,4 +55,8 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT MONTH(u.createdAt), COUNT(u) FROM User u WHERE YEAR(u.createdAt) = :year GROUP BY MONTH(u.createdAt) ORDER BY MONTH(u.createdAt)")
     List<Object[]> countNewUsersByMonth(@Param("year") int year);
+    
+    // Methods cho Notification Service
+    List<User> findByRole(com.example.computershop.enums.Role role);
+    List<User> findByIsActive(Boolean isActive);
 }

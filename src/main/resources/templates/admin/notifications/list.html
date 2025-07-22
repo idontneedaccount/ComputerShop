@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/header :: header}">
+    <title>Quản lý Thông báo</title>
+</head>
+<body id="page-top">
+
+<nav th:replace="~{admin/fragments/nav-bar :: nav-bar}"></nav>
+
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="~{admin/fragments/sidebar :: sidebar}"></ul>
+
+    <div id="content-wrapper" class="min-vh-100 d-flex flex-column">
+        <div class="container-fluid">
+            <!-- Notifications Statistics -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Tổng thông báo
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${notifications.size()}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-bell fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Thông báo chưa đọc
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#aggregates.sum(notifications.![isRead == false ? 1 : 0])}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-bell-slash fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Thông báo đơn hàng
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#aggregates.sum(notifications.![orderId != null ? 1 : 0])}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Thông báo hệ thống
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#aggregates.sum(notifications.![orderId == null and productId == null ? 1 : 0])}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-cog fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Notifications Statistics -->
+            <!-- Breadcrumbs -->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/admin/dashboard}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">Quản lý Thông báo</li>
+            </ol>
+
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-bell mr-2"></i>Quản lý Thông báo
+                </h1>
+                <div class="badge badge-info badge-pill">
+                    Tổng: <span th:text="${notifications.size() ?: 0}">0</span> thông báo
+                </div>
+                <div>
+                    <a href="/notifications/admin/broadcast" class="btn btn-primary btn-sm">
+                        <i class="fas fa-bullhorn fa-sm mr-1"></i>
+                        Gửi thông báo tổng
+                    </a>
+                </div>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Filter & Search Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h6 class="fas fa-table">
+                        <i class="fas fa-filter mr-3"></i>Tìm kiếm & Lọc thông báo
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" th:action="@{/notifications/admin}">
+                        <div class="row">
+                            <!-- Search -->
+                            <div class="col-lg-4 col-md-6 mb-3">
+                                <label for="searchInput" class="form-label font-weight-bold">Tìm kiếm:</label>
+                                <input type="text" class="form-control" id="searchInput" name="search" th:value="${searchTerm}" placeholder="Nội dung, người nhận...">
+                            </div>
+                            <!-- Status Filter -->
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <label for="statusFilter" class="form-label font-weight-bold">Trạng thái:</label>
+                                <select class="form-control" id="statusFilter" name="status">
+                                    <option value="">-- Tất cả --</option>
+                                    <option value="unread" th:selected="${selectedStatus == 'unread'}">Chưa đọc</option>
+                                    <option value="read" th:selected="${selectedStatus == 'read'}">Đã đọc</option>
+                                </select>
+                            </div>
+                            <!-- Type Filter -->
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <label for="typeFilter" class="form-label font-weight-bold">Loại:</label>
+                                <select class="form-control" id="typeFilter" name="type">
+                                    <option value="">-- Tất cả --</option>
+                                    <option value="order" th:selected="${selectedType == 'order'}">Đơn hàng</option>
+                                    <option value="product" th:selected="${selectedType == 'product'}">Sản phẩm</option>
+                                    <option value="system" th:selected="${selectedType == 'system'}">Hệ thống</option>
+                                </select>
+                            </div>
+                            <!-- Sort -->
+                            <div class="col-lg-2 col-md-6 mb-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary mr-2 flex-fill">
+                                    <i class="fas fa-search mr-1"></i>Tìm
+                                </button>
+                                <a th:href="@{/notifications/admin}" class="btn btn-outline-secondary" title="Xóa bộ lọc">
+                                    <i class="fas fa-eraser"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notifications Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header ">
+                    <h6 class="fas fa-table">
+                        <i class="fas fa-list mr-3"></i>Danh sách thông báo
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- Empty State -->
+                    <div th:if="${notifications == null or #lists.isEmpty(notifications)}" class="text-center py-5">
+                        <i class="fas fa-inbox fa-4x text-gray-300 mb-3"></i>
+                        <h5 class="text-gray-500">Không có thông báo nào</h5>
+                        <p class="text-muted">Chưa có thông báo nào phù hợp với tiêu chí tìm kiếm.</p>
+                        <a th:href="@{/notifications/admin}" class="btn btn-outline-primary">
+                            <i class="fas fa-refresh mr-1"></i>Xem tất cả thông báo
+                        </a>
+                    </div>
+                    <!-- Table -->
+                    <div th:if="${notifications != null and !#lists.isEmpty(notifications)}" class="table-responsive">
+                        <table class="table table-bordered table-hover" id="notificationsTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 120px;">ID</th>
+                                    <th style="width: 180px;">Người nhận</th>
+                                    <th>Nội dung</th>
+                                    <th class="text-center" style="width: 100px;">Loại</th>
+                                    <th class="text-center" style="width: 100px;">Trạng thái</th>
+                                    <th class="text-center" style="width: 150px;">Thời gian tạo</th>
+                                    <th class="text-center" style="width: 80px;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="notification : ${notifications}">
+                                    <td class="text-center">
+                                        <code class="text-primary font-weight-bold" th:text="${#strings.length(notification.notificationId) > 8 ? #strings.substring(notification.notificationId, 0, 8) + '...' : notification.notificationId}">ID</code>
+                                    </td>
+                                    <td>
+                                        <div th:if="${notification.user != null}">
+                                            <strong class="text-dark mb-1" th:text="${notification.user.fullName}">Tên user</strong><br>
+                                            <small class="text-muted" th:text="${notification.user.email}">email@example.com</small>
+                                        </div>
+                                        <div th:unless="${notification.user != null}">
+                                            <small class="text-muted">User không tồn tại</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="notification-message" th:text="${notification.message}" th:title="${notification.message}">
+                                            Nội dung thông báo...
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span th:if="${notification.orderId != null}" class="badge badge-primary notification-type-badge">
+                                            <i class="fas fa-shopping-cart mr-1"></i>Đơn hàng
+                                        </span>
+                                        <span th:if="${notification.productId != null}" class="badge badge-info notification-type-badge">
+                                            <i class="fas fa-box mr-1"></i>Sản phẩm
+                                        </span>
+                                        <span th:if="${notification.orderId == null and notification.productId == null}" class="badge badge-secondary notification-type-badge">
+                                            <i class="fas fa-info-circle mr-1"></i>Hệ thống
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span th:if="${notification.isRead}" class="badge badge-success">Đã đọc</span>
+                                        <span th:unless="${notification.isRead}" class="badge badge-warning">Chưa đọc</span>
+                                    </td>
+                                    <td class="text-center" th:text="${#temporals.format(notification.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-danger btn-sm delete-notification-btn" th:data-notification-id="${notification.notificationId}" title="Xóa thông báo">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+        <footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+    </div>
+    <!-- /.content-wrapper -->
+</div>
+<!-- /#wrapper -->
+<!-- Scroll to Top Button -->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+<!-- Logout Modal -->
+<div th:replace="~{admin/fragments/logout :: logout}"></div>
+<!-- Bootstrap core JavaScript -->
+<script th:src="@{/assets2/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/assets2/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<!-- Core plugin JavaScript -->
+<script th:src="@{/assets2/vendor/jquery-easing/jquery.easing.min.js}"></script>
+<!-- Custom scripts for all pages -->
+<script th:src="@{/assets2/js/sb-admin.min.js}"></script>
+<!-- Custom CSS for better dropdown display -->
+<style>
+#statusFilter, #typeFilter, .form-control {
+    font-size: 14px;
+    padding: 8px 12px;
+}
+#statusFilter, #typeFilter {
+    min-width: 140px;
+}
+#searchInput {
+    min-width: 250px;
+}
+#statusFilter option, #typeFilter option {
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: visible;
+}
+.form-control {
+    min-height: 38px;
+    border: 1px solid #d1d3e2;
+}
+.form-control:focus {
+    border-color: #5a5c69;
+    box-shadow: 0 0 0 0.2rem rgba(90, 92, 105, 0.25);
+}
+.btn {
+    min-height: 38px;
+    line-height: 1.4;
+}
+.badge-warning {
+    background-color: #f6c23e;
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+.notification-type-badge {
+    font-size: 0.75rem;
+}
+.notification-message {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>
+<!-- Page level custom scripts -->
+<script>
+$(document).ready(function() {
+    // DataTable
+    $('#notificationsTable').DataTable({
+        "pageLength": 25,
+        "order": [[5, "desc"]],
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+        }
+    });
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+    // Clear search input shortcut
+    $('#searchInput').on('keyup', function(e) {
+        if (e.key === 'Escape') {
+            $(this).val('');
+        }
+    });
+    // Quick search on Enter
+    $('#searchInput').on('keypress', function(e) {
+        if (e.which === 13) {
+            $(this).closest('form').submit();
+        }
+    });
+    // Delete notification
+    $('.delete-notification-btn').click(function() {
+        const notificationId = $(this).data('notification-id');
+        const row = $(this).closest('tr');
+        if (confirm('Bạn có chắc chắn muốn xóa thông báo này?')) {
+            $.ajax({
+                url: `/notifications/admin/${notificationId}`,
+                method: 'DELETE',
+                success: function(response) {
+                    if (response.success) {
+                        $('#notificationsTable').DataTable().row(row).remove().draw();
+                        showAlert('Đã xóa thông báo thành công', 'success');
+                    }
+                },
+                error: function() {
+                    showAlert('Có lỗi xảy ra khi xóa thông báo', 'danger');
+                }
+            });
+        }
+    });
+    function showAlert(message, type) {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
+                ${message}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        `;
+        $('.container-fluid').prepend(alertHtml);
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 3000);
+    }
+});
+</script>
+</body>
+</html> 

@@ -120,6 +120,12 @@
                                     <i class="flaticon-heart"></i>
                                 </a>
                             </li>
+                            <li class="notifications" sec:authorize="isAuthenticated()">
+                                <a th:href="@{/notifications/user}" class="notification-btn" title="Thông báo">
+                                    <span class="notification-count" id="notificationCount">0</span>
+                                    <i class="flaticon-bell"></i>
+                                </a>
+                            </li>
                             <li class="shopping-cart">
                                 <a href="#" class="cart-dropdown-btn">
                                     <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}">0</span>
@@ -135,6 +141,12 @@
                                     <ul>
                                         <li sec:authorize="isAuthenticated()">
                                             <a th:href="@{/user/user-profile}">Tài khoản của tôi</a>
+                                        </li>
+                                        <li sec:authorize="isAuthenticated()">
+                                            <a th:href="@{/notifications/user}">
+                                                <i class="flaticon-bell me-1"></i>Thông báo 
+                                                <span class="badge bg-success ms-1" id="dropdownNotificationCount">0</span>
+                                            </a>
                                         </li>
                                         <li sec:authorize="isAuthenticated()">
                                             <a th:href="@{/user/user-profile}">Lịch sử đơn hàng</a>
@@ -175,4 +187,101 @@
             </div>
         </div>
     </header>
+
+    <!-- Notification Count Script -->
+    <script th:if="${#authorization.expression('isAuthenticated()')}">
+        $(document).ready(function() {
+            loadNotificationCount();
+            
+            // Refresh notification count every 30 seconds
+            setInterval(loadNotificationCount, 30000);
+        });
+
+        function loadNotificationCount() {
+            $.get('/notifications/api/unread-count')
+                .done(function(response) {
+                    if (response.success) {
+                        const count = response.unreadCount;
+                        updateNotificationBadges(count);
+                    }
+                })
+                .fail(function() {
+                    console.log('Failed to load notification count');
+                });
+        }
+
+        function updateNotificationBadges(count) {
+            const displayCount = count > 99 ? '99+' : count.toString();
+            
+            // Update header notification icon
+            $('#notificationCount').text(displayCount);
+            $('#notificationCount').toggle(count > 0);
+            
+            // Update dropdown notification badge
+            $('#dropdownNotificationCount').text(count);
+            $('#dropdownNotificationCount').toggle(count > 0);
+            
+            // Add visual indicator
+            if (count > 0) {
+                $('.notification-btn').addClass('has-notifications');
+            } else {
+                $('.notification-btn').removeClass('has-notifications');
+            }
+        }
+    </script>
+
+    <!-- Notification Styles -->
+    <style>
+        .notifications {
+            position: relative;
+        }
+        
+        .notification-btn {
+            position: relative;
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 18px;
+            height: 18px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .notification-btn.has-notifications .notification-count {
+            display: flex;
+        }
+        
+        .flaticon-bell::before {
+            content: "\f0f3";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+        
+        .notification-btn:hover {
+            color: #007bff;
+        }
+        
+        .notification-btn.has-notifications {
+            animation: bellShake 0.5s ease-in-out;
+        }
+        
+        @keyframes bellShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+    </style>
 </div>

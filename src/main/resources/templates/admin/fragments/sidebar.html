@@ -84,6 +84,23 @@
         </a>
     </li>
     <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseNotifications"
+           aria-expanded="false" aria-controls="collapseNotifications">
+            <i class="fas fa-fw fa-bell"></i>
+            <span>Quản lí thông báo</span>
+        </a>
+        <div id="collapseNotifications" class="collapse" aria-labelledby="headingNotifications" data-parent="#accordionSidebar">
+            <div class="collapse-inner">
+                <a class="collapse-item" th:href="@{/notifications/admin}" sec:authorize="hasAnyRole('Admin')">
+                    <i class="fas fa-list mr-2"></i>Danh sách thông báo
+                </a>
+                <a class="collapse-item" th:href="@{/notifications/admin/broadcast}" sec:authorize="hasAnyRole('Admin')">
+                    <i class="fas fa-bullhorn mr-2"></i>Gửi thông báo tổng
+                </a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
         <a class="nav-link" th:href="@{/admin/orders}">
             <i class="fas fa-fw fa-shopping-cart"></i>
             <span>Quản lí đơn hàng</span>

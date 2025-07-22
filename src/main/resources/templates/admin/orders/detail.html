@@ -254,7 +254,8 @@
 								<div class="mt-2">
                                     <span th:switch="${order?.status}" class="badge badge-pill p-2">
                                         <span th:case="'PENDING'" class="badge badge-warning">⏳ Chờ xác nhận</span>
-                                        <span th:case="'PAYMENT_PENDING'" class="badge badge-warning">💳 Chờ thanh toán</span>
+                                        <span th:case="'PAYMENT_PENDING'"
+                                              class="badge badge-warning">💳 Chờ thanh toán</span>
                                         <span th:case="'CONFIRMED'" class="badge badge-info">✅ Đã xác nhận</span>
                                         <span th:case="'PROCESSING'" class="badge badge-primary">🔄 Đang xử lý</span>
                                         <span th:case="'SHIPPED'" class="badge badge-secondary">🚚 Đang giao hàng</span>
@@ -305,88 +306,66 @@
 							</form>
 						</div>
 					</div>
-                            <!-- Update Status Form -->
-                            <form method="post" th:action="@{/admin/orders/update-status}" id="updateStatusForm">
-                                <input type="hidden" name="orderId" th:value="${order?.id}">
+				</div>
+			</div>
 
-                                <div class="form-group">
-                                    <label for="newStatus" class="font-weight-bold">Cập nhật trạng thái:</label>
-                                    <select class="form-control" id="newStatus" name="status" required>
-                                        <option value="">-- Chọn trạng thái --</option>
-                                        <option value="PENDING" th:selected="${order?.status == 'PENDING'}">⏳ Chờ xác nhận</option>
-                                        <option value="PAYMENT_PENDING" th:selected="${order?.status == 'PAYMENT_PENDING'}">💳 Chờ thanh toán</option>
-                                        <option value="CONFIRMED" th:selected="${order?.status == 'CONFIRMED'}">✅ Đã xác nhận</option>
-                                        <option value="PROCESSING" th:selected="${order?.status == 'PROCESSING'}">🔄 Đang xử lý</option>
-                                        <option value="SHIPPED" th:selected="${order?.status == 'SHIPPED'}">🚚 Đang giao hàng</option>
-                                        <option value="DELIVERED" th:selected="${order?.status == 'DELIVERED'}">📦 Đã giao hàng</option>
-                                        <option value="CANCELLED" th:selected="${order?.status == 'CANCELLED'}">❌ Đã hủy</option>
-                                    </select>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary btn-block" id="submitButton">
-                                    <i class="fas fa-save mr-1"></i>Cập nhật trạng thái
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-					<!-- Order Summary -->
-					<div class="card shadow mb-4">
-						<div class="card-header py-3">
-							<h6 class="m-0 font-weight-bold">
-								<i class="fas fa-chart-pie mr-2"></i>Tóm tắt đơn hàng
-							</h6>
-						</div>
-						<div class="card-body">
-							<div class="mb-2">
-								<strong>Số lượng sản phẩm:</strong>
-								<span class="float-right"
-								      th:text="${order?.orderDetails != null ? #lists.size(order.orderDetails) : 0}">
+			<!-- Order Summary -->
+			<div class="card shadow mb-4">
+				<div class="card-header py-3">
+					<h6 class="m-0 font-weight-bold">
+						<i class="fas fa-chart-pie mr-2"></i>Tóm tắt đơn hàng
+					</h6>
+				</div>
+				<div class="card-body">
+					<div class="mb-2">
+						<strong>Số lượng sản phẩm:</strong>
+						<span class="float-right"
+						      th:text="${order?.orderDetails != null ? #lists.size(order.orderDetails) : 0}">
                                     2
                                 </span>
-							</div>
+					</div>
 
-							<!-- Voucher Summary (if applied) -->
-							<div th:if="${order?.voucherCode != null}" class="mb-2">
-								<div class="alert alert-info py-2">
-									<small>
-										<i class="fas fa-tag mr-1"></i>
-										<strong>Voucher áp dụng:</strong> <span
-											th:text="${order.voucherCode}">VOUCHER20</span><br>
-										<strong>Giá gốc:</strong> <span
-											th:text="${#numbers.formatDecimal(order.originalAmount ?: order.totalAmount, 0, 'COMMA', 0, 'POINT')}">1,600,000</span>
-										VNĐ<br>
-										<strong>Giảm giá:</strong> <span class="text-danger">-<span
-											th:text="${#numbers.formatDecimal(order.discountAmount ?: 0, 0, 'COMMA', 0, 'POINT')}">100,000</span> VNĐ</span>
-									</small>
-								</div>
-							</div>
+					<!-- Voucher Summary (if applied) -->
+					<div th:if="${order?.voucherCode != null}" class="mb-2">
+						<div class="alert alert-info py-2">
+							<small>
+								<i class="fas fa-tag mr-1"></i>
+								<strong>Voucher áp dụng:</strong> <span
+									th:text="${order.voucherCode}">VOUCHER20</span><br>
+								<strong>Giá gốc:</strong> <span
+									th:text="${#numbers.formatDecimal(order.originalAmount ?: order.totalAmount, 0, 'COMMA', 0, 'POINT')}">1,600,000</span>
+								VNĐ<br>
+								<strong>Giảm giá:</strong> <span class="text-danger">-<span
+									th:text="${#numbers.formatDecimal(order.discountAmount ?: 0, 0, 'COMMA', 0, 'POINT')}">100,000</span> VNĐ</span>
+							</small>
+						</div>
+					</div>
 
-							<hr>
-							<div class="h5 mb-0">
-								<strong class="text-success">Tổng tiền:
-									<span th:if="${order?.totalAmount}">
+					<hr>
+					<div class="h5 mb-0">
+						<strong class="text-success">Tổng tiền:
+							<span th:if="${order?.totalAmount}">
                                         <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">
                                             1,500,000
                                         </span> VNĐ
                                     </span>
-									<span th:unless="${order?.totalAmount}">0 VNĐ</span>
-								</strong>
-							</div>
-						</div>
+							<span th:unless="${order?.totalAmount}">0 VNĐ</span>
+						</strong>
 					</div>
-
 				</div>
 			</div>
 
 		</div>
-		<!-- /.container-fluid -->
-
-		<!-- Sticky Footer -->
-		<footer th:replace="~{admin/fragments/footer :: footer}"></footer>
-
 	</div>
-	<!-- /.content-wrapper -->
+
+</div>
+<!-- /.container-fluid -->
+
+<!-- Sticky Footer -->
+<footer th:replace="~{admin/fragments/footer :: footer}"></footer>
+
+</div>
+<!-- /.content-wrapper -->
 
 </div>
 <!-- /#wrapper -->

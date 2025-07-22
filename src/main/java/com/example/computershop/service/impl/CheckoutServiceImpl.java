@@ -4,6 +4,7 @@ import com.example.computershop.dto.request.CheckoutRequest;
 import com.example.computershop.entity.*;
 import com.example.computershop.repository.CartRepository;
 import com.example.computershop.service.CheckoutService;
+import com.example.computershop.service.NotificationService;
 import com.example.computershop.service.OrderService;
 import com.example.computershop.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,14 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final OrderService orderService;
     private final VoucherService voucherService;
     private final CartRepository cartRepository;
+    private final NotificationService notificationService;
 
     @Autowired
-    public CheckoutServiceImpl(OrderService orderService, VoucherService voucherService, CartRepository cartRepository) {
+    public CheckoutServiceImpl(OrderService orderService, VoucherService voucherService, CartRepository cartRepository, NotificationService notificationService) {
         this.orderService = orderService;
         this.voucherService = voucherService;
         this.cartRepository = cartRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -47,6 +50,18 @@ public class CheckoutServiceImpl implements CheckoutService {
         
         // Save order
         Order savedOrder = orderService.createOrder(order, orderDetails);
+        
+        // Create notifications after successful order creation
+        try {
+            // Tạo notification cho user về đơn hàng thành công
+            notificationService.createOrderSuccessNotification(user, savedOrder);
+            
+            // Tạo notification cho admin về đơn hàng mới
+            notificationService.createNewOrderNotificationForAdmin(savedOrder);
+        } catch (Exception e) {
+            // Log error but don't fail the checkout process
+            System.err.println("Warning: Failed to create notifications for order " + savedOrder.getId() + ": " + e.getMessage());
+        }
         
         // Clear cart after successful checkout
         clearUserCart(user);
