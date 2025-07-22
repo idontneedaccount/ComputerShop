@@ -80,6 +80,7 @@
                                 <select class="form-control" id="statusFilter" name="status">
                                     <option value="">-- Tất cả trạng thái --</option>
                                     <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">⏳ Chờ xác nhận</option>
+                                    <option value="PAYMENT_PENDING" th:selected="${selectedStatus == 'PAYMENT_PENDING'}">💳 Chờ thanh toán</option>
                                     <option value="CONFIRMED" th:selected="${selectedStatus == 'CONFIRMED'}">✅ Đã xác nhận</option>
                                     <option value="PROCESSING" th:selected="${selectedStatus == 'PROCESSING'}">🔄 Đang xử lý</option>
                                     <option value="SHIPPED" th:selected="${selectedStatus == 'SHIPPED'}">🚚 Đang giao hàng</option>
@@ -195,19 +196,19 @@
                                     <td class="text-center">
                                         <div th:if="${order.paymentMethod == 'VNPAY'}">
                                             <div th:with="paymentStatus=${paymentStatusMap[order.id]}">
-                                                <div th:if="${paymentStatus == 'PAID'}">
+                                                <div th:if="${paymentStatus == 'Paid'}">
                                                     <span class="badge badge-success">✅ Đã thanh toán</span>
                                                     <small class="text-muted d-block">VNPay</small>
                                                 </div>
-                                                <div th:if="${paymentStatus == 'PENDING'}">
+                                                <div th:if="${paymentStatus == 'Pending'}">
                                                     <span class="badge badge-warning">⏳ Chờ thanh toán</span>
                                                     <small class="text-muted d-block">VNPay</small>
                                                 </div>
-                                                <div th:if="${paymentStatus == 'FAILED'}">
+                                                <div th:if="${paymentStatus == 'Failed'}">
                                                     <span class="badge badge-danger">❌ Thất bại</span>
                                                     <small class="text-muted d-block">VNPay</small>
                                                 </div>
-                                                <div th:if="${paymentStatus == 'ERROR'}">
+                                                <div th:if="${paymentStatus == 'Error'}">
                                                     <span class="badge badge-danger">⚠️ Lỗi</span>
                                                     <small class="text-muted d-block">VNPay</small>
                                                 </div>

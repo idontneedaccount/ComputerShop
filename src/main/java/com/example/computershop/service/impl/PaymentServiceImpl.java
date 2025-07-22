@@ -2,11 +2,12 @@ package com.example.computershop.service.impl;
 
 import com.example.computershop.entity.Payment;
 import com.example.computershop.repository.PaymentRepository;
-import com.example.computershop.service.interfaces.IPaymentService;
+import com.example.computershop.service.IPaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,22 +15,16 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements IPaymentService {
-    
     private final PaymentRepository paymentRepository;
 
     @Override
-    public Payment findByOrderId(UUID orderId) {
-        return paymentRepository.findByOrderId(orderId);
+    public Payment save(Payment payment) {
+        return paymentRepository.save(payment);
     }
 
     @Override
-    public Payment findByVnpTxnRef(String vnpTxnRef) {
-        return paymentRepository.findByVnpTxnRef(vnpTxnRef);
-    }
-
-    @Override
-    public Payment findByTransactionId(String transactionId) {
-        return paymentRepository.findByTransactionId(transactionId);
+    public Optional<Payment> findById(UUID paymentId) {
+        return paymentRepository.findById(paymentId);
     }
 
     @Override
@@ -38,18 +33,13 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     @Override
-    public <S extends Payment> S save(S entity) {
-        return paymentRepository.save(entity);
+    public void deleteById(UUID paymentId) {
+        paymentRepository.deleteById(paymentId);
     }
 
     @Override
-    public Optional<Payment> findById(UUID id) {
-        return paymentRepository.findById(id);
-    }
-
-    @Override
-    public boolean existsById(UUID id) {
-        return paymentRepository.existsById(id);
+    public boolean existsById(UUID paymentId) {
+        return paymentRepository.existsById(paymentId);
     }
 
     @Override
@@ -58,27 +48,95 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     @Override
-    public void deleteById(UUID id) {
-        paymentRepository.deleteById(id);
-    }
-
-    @Override
-    public void deleteAll() {
-        paymentRepository.deleteAll();
-    }
-
-    @Override
     public List<Payment> findAll(Sort sort) {
         return paymentRepository.findAll(sort);
     }
 
     @Override
-    public List<Payment> findByPaymentStatus(String status) {
-        return paymentRepository.findByPaymentStatus(status);
+    public Optional<Payment> findByOrderId(UUID orderId) {
+        return paymentRepository.findByOrderId(orderId);
     }
 
     @Override
-    public List<Payment> findByPaymentMethod(String method) {
-        return paymentRepository.findByPaymentMethod(method);
+    public List<Payment> findByUserId(UUID userId) {
+        return paymentRepository.findByUserId(userId);
     }
-} 
+
+    @Override
+    public Optional<Payment> findByVnpTxnRef(String vnpTxnRef) {
+        return paymentRepository.findByVnpTxnRef(vnpTxnRef);
+    }
+
+    @Override
+    public Optional<Payment> findByTransactionId(String transactionId) {
+        return paymentRepository.findByTransactionId(transactionId);
+    }
+
+    @Override
+    public List<Payment> findByPaymentMethod(String paymentMethod) {
+        return paymentRepository.findByPaymentMethod(paymentMethod);
+    }
+
+    @Override
+    public List<Payment> findByPaymentStatus(String paymentStatus) {
+        return paymentRepository.findByPaymentStatus(paymentStatus);
+    }
+
+    @Override
+    public Payment createVNPayPayment(UUID orderId, UUID userId, Long amount, String vnpTxnRef) {
+        Payment payment = new Payment();
+        payment.setOrderId(orderId);
+        payment.setUserId(userId);
+        payment.setPaymentMethod("VNPAY");
+        payment.setPaymentStatus("Pending");
+        payment.setPaidAmount(amount);
+        payment.setVnpTxnRef(vnpTxnRef);
+        payment.setCreatedAt(LocalDateTime.now());
+        payment.setUpdatedAt(LocalDateTime.now());
+        
+        return paymentRepository.save(payment);
+    }
+
+    @Override
+    public Payment updateVNPayPaymentResult(String vnpTxnRef, String vnpResponseCode, 
+                                          String vnpTransactionStatus, String vnpPayDate, 
+                                          String transactionId, String bankCode, String cardType) {
+        Optional<Payment> paymentOpt = paymentRepository.findByVnpTxnRef(vnpTxnRef);
+        if (paymentOpt.isPresent()) {
+            Payment payment = paymentOpt.get();
+            payment.setVnpResponseCode(vnpResponseCode);
+            payment.setVnpTransactionStatus(vnpTransactionStatus);
+            payment.setVnpPayDate(vnpPayDate);
+            payment.setTransactionId(transactionId);
+            payment.setBankCode(bankCode);
+            payment.setCardType(cardType);
+            payment.setUpdatedAt(LocalDateTime.now());
+            
+            // Update payment status based on VNPay response
+            if ("00".equals(vnpResponseCode) && "00".equals(vnpTransactionStatus)) {
+                payment.setPaymentStatus("Paid");
+                payment.setPaidAt(LocalDateTime.now());
+            } else {
+                payment.setPaymentStatus("Failed");
+            }
+            
+            return paymentRepository.save(payment);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean hasSuccessfulPayment(UUID orderId) {
+        return paymentRepository.hasSuccessfulPayment(orderId);
+    }
+
+    @Override
+    public Long getTotalPaidAmountByOrderId(UUID orderId) {
+        return paymentRepository.getTotalPaidAmountByOrderId(orderId);
+    }
+
+    @Override
+    public List<Payment> findRecentPaymentsByUserId(UUID userId) {
+        return paymentRepository.findRecentPaymentsByUserId(userId);
+    }
+}

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -41,7 +42,7 @@ public class OrderController {
     
     // Status constants
     private static final List<String> ALL_STATUSES = Arrays.asList(
-            "PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "USER_CONFIRMED", "CANCELLED"
+        "PENDING", "PAYMENT_PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "USER_CONFIRMED", "CANCELLED"
     );
 
     /**
@@ -282,9 +283,10 @@ public class OrderController {
         for (Order order : orders) {
             try {
                 // Try to find payment by orderId
-                Payment payment = paymentRepository.findByOrderId(UUID.fromString(order.getId()));
+                Optional<Payment> paymentOpt = paymentRepository.findByOrderId(UUID.fromString(order.getId()));
                 
-                if (payment != null) {
+                if (paymentOpt.isPresent()) {
+                    Payment payment = paymentOpt.get();
                     paymentStatusMap.put(order.getId(), payment.getPaymentStatus());
                 } else {
                     // No payment record found, determine status by payment method
@@ -314,6 +316,8 @@ public class OrderController {
         switch (status) {
             case "PENDING":
                 return "⏳ Chờ xác nhận";
+            case "PAYMENT_PENDING":
+                return "💳 Chờ thanh toán";
             case "CONFIRMED":
                 return "✅ Đã xác nhận";
             case "PROCESSING":
