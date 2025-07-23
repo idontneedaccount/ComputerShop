@@ -3,7 +3,7 @@
     <div class="cart-dropdown" id="cart-dropdown">
         <div class="cart-content-wrap">
             <div class="cart-header">
-                <h2 class="header-title">Cart review</h2>
+                <h2 class="header-title">Giỏ hàng</h2>
                 <button class="cart-close sidebar-close"><i class="fas fa-times"></i></button>
             </div>
             <div class="cart-body">
@@ -12,9 +12,9 @@
                     <div class="empty-cart-icon">
                         <i class="flaticon-shopping-cart"></i>
                     </div>
-                    <h4>Your cart is empty</h4>
-                    <p>Browse our products and add items to your cart!</p>
-                    <a th:href="@{/shopping}" class="axil-btn btn-bg-primary btn-sm">Start Shopping</a>
+                    <h4>Giỏ hàng trống</h4>
+                    <p>Tham khảo các sản phẩm của chúng tôi</p>
+                    <a th:href="@{/user/shopping-page}" class="axil-btn btn-bg-primary btn-sm">Bắt đầu mua sắm</a>
                 </div>
                 
                 <!-- Cart Items -->
@@ -43,7 +43,7 @@
                         <div class="item-content">
                             <h3 class="item-title">
                                 <a th:href="@{'/user/single-product?id=' + ${item.product.productID}}" 
-                                   th:text="${item.product.name}">Product Name</a>
+                                   th:text="${item.product.name}">Tên sản phẩm</a>
                             </h3>
                             
                             <!-- Variant Information -->
@@ -68,7 +68,7 @@
                                 <span class="quantity-value" th:text="${item.quantity}">1</span>
                             </div>
                             <div class="item-total">
-                                <span class="total-label">Total: </span>
+                                <span class="total-label">Tổng cộng: </span>
                                 <!-- Calculate total using correct price -->
                                 <span th:if="${item.hasVariant()}" 
                                       th:text="${#numbers.formatDecimal(item.variant.price * item.quantity, 0, 'COMMA', 0, 'POINT')}">0</span>
@@ -82,15 +82,15 @@
             </div>
             <div class="cart-footer" th:if="${cartItems != null && !cartItems.isEmpty()}">
                 <h3 class="cart-subtotal">
-                    <span class="subtotal-title">Subtotal:</span>
+                    <span class="subtotal-title">Tạm tính:</span>
                     <span class="subtotal-amount">
                         <span th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')}">0</span>
                         <span class="currency-symbol"> VND</span>
                     </span>
                 </h3>
                 <div class="group-btn">
-                    <a th:href="@{/cart/view}" class="axil-btn btn-bg-primary viewcart-btn">View Cart</a>
-                    <a th:href="@{/cart/checkout}" class="axil-btn btn-bg-secondary checkout-btn">Checkout</a>
+                    <a th:href="@{/cart/view}" class="axil-btn btn-bg-primary viewcart-btn">Xem Giỏ Hàng</a>
+                    <a th:href="@{/cart/checkout}" class="axil-btn btn-bg-secondary checkout-btn">Thanh Toán</a>
                 </div>
             </div>
         </div>

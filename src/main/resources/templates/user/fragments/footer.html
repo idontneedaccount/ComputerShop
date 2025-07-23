@@ -57,10 +57,7 @@
                     <div class="axil-footer-widget">
                         <h5 class="widget-title">Liên hệ</h5>
                         <div class="inner">
-                            <p>123 Đường ABC, <br>
-                                Quận XYZ, TP. Hồ Chí Minh, <br>
-                                Việt Nam.
-                            </p>
+                            <p>Đại học FPT Hoà Lạc,Việt Nam</p>
                             <ul class="support-list-item">
                                 <li><a href="mailto:contact@example.com"><i class="fal fa-envelope-open"></i> contact@example.com</a></li>
                                 <li><a href="tel:(+84)123456789"><i class="fal fa-phone-alt"></i> (+84) 123 456 789</a></li>
@@ -73,11 +70,11 @@
                         <h5 class="widget-title">Tài khoản</h5>
                         <div class="inner">
                             <ul>
-                                <li><a th:href="@{/my-account}">Tài khoản của tôi</a></li>
-                                <li><a th:href="@{/sign-up}">Đăng nhập / Đăng ký</a></li>
-                                <li><a th:href="@{/cart}">Giỏ hàng</a></li>
-                                <li><a th:href="@{/wishlist}">Danh sách yêu thích</a></li>
-                                <li><a th:href="@{/shop}">Cửa hàng</a></li>
+                                <li><a th:href="@{/user/user-profile}">Tài khoản của tôi</a></li>
+                                <li><a th:href="@{/auth/register}">Đăng ký</a></li>
+                                <li><a th:href="@{/auth/login}">Đăng nhập</a></li>
+                                <li><a th:href="@{/cart/view}">Giỏ hàng</a></li>
+                                <li><a th:href="@{/user/shopping-page}">Cửa hàng</a></li>
                             </ul>
                         </div>
                     </div>
@@ -89,28 +86,11 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-xl-4">
-                    <div class="social-share">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
-                    </div>
                 </div>
                 <div class="col-xl-4 col-lg-12">
                     <div class="copyright-left d-flex flex-wrap justify-content-center">
                         <ul class="quick-link">
-                            <li>© 2024. Bản quyền thuộc về <a target="_blank" href="#">ComputerShop</a>.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-12">
-                    <div class="copyright-right d-flex flex-wrap justify-content-xl-end justify-content-center align-items-center">
-                        <span class="card-text">Chấp nhận thanh toán</span>
-                        <ul class="payment-icons-bottom quick-link">
-                            <li><img th:src="@{/assets/images/icons/cart/cart-1.png}" alt="paypal cart"></li>
-                            <li><img th:src="@{/assets/images/icons/cart/cart-2.png}" alt="paypal cart"></li>
-                            <li><img th:src="@{/assets/images/icons/cart/cart-5.png}" alt="paypal cart"></li>
+                            <li>© 2025. Bản quyền thuộc về <a target="_blank" href="#">ComputerShop</a>.</li>
                         </ul>
                     </div>
                 </div>

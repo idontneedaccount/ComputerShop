@@ -31,8 +31,6 @@
                 <div class="col-sm-6">
                     <div class="header-top-link">
                         <ul class="quick-link">
-                            <li><a href="#">Trợ giúp</a></li>
-                            
                             <!-- Show when user is NOT authenticated -->
                             <li sec:authorize="!isAuthenticated()">
                                 <a th:href="@{/auth/register}">Tham gia</a>
@@ -88,10 +86,6 @@
                             <li>
                                 <a th:href="@{/user/shopping-page}">Cửa hàng</a>
                             </li>
-                            <li class="menu-item-has-children">
-                                <a href="#">Trang</a>
-                            </li>
-                            <li><a href="contact.html">Liên hệ</a></li>
                         </ul>
                     </nav>
                     <!-- End Mainmanu Nav -->
@@ -110,18 +104,13 @@
                         </li>
                         <li class="axil-search d-xl-none d-block">
                             <form th:action="@{/user/shopping-page}" method="get" style="display: flex; align-items: center;">
-                                <input type="search" class="placeholder product-search-input" name="search" 
+                                <input type="search" class="placeholder product-search-input" name="search"
                                        th:value="${searchTerm}" maxlength="128" 
                                        placeholder="Bạn đang tìm gì?" autocomplete="off" style="width: 150px; margin-right: 5px;">
                                 <button type="submit" class="icon wooc-btn-search">
                                     <i class="flaticon-magnifying-glass"></i>
                                 </button>
                             </form>
-                        </li>
-                        <li class="wishlist" sec:authorize="isAuthenticated()">
-                            <a href="wishlist.html">
-                                <i class="flaticon-heart"></i>
-                            </a>
                         </li>
                         <li class="shopping-cart">
                             <a href="#" class="cart-dropdown-btn">
@@ -140,12 +129,11 @@
                                         <a th:href="@{/user/user-profile}">Tài khoản của tôi</a>
                                     </li>
                                     <li sec:authorize="isAuthenticated()">
-                                        <a th:href="@{/user/user-profile}">Lịch sử đơn hàng</a>
+                                        <a th:href="@{/notifications/user}">
+                                            <i class="flaticon-bell me-1"></i>Thông báo
+                                            <span class="badge bg-success ms-1" id="dropdownNotificationCount">0</span>
+                                        </a>
                                     </li>
-                                    <li sec:authorize="isAuthenticated()">
-                                        <a href="#">Yêu cầu trả hàng</a>
-                                    </li>
-                                    <li><a href="#">Hỗ trợ</a></li>
                                     <li sec:authorize="isAuthenticated()">
                                         <a th:href="@{/logout}">Đăng xuất</a>
                                     </li>
