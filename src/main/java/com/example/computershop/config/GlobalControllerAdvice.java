@@ -37,11 +37,7 @@ public class GlobalControllerAdvice {
     @Autowired
     private VoucherService voucherService;
     
-    // ❌ REMOVED - CartItemDisplay đã được chuyển sang DTO package
 
-    /**
-     * Get user from principal - handles both OAuth2 and form authentication
-     */
     private User getUserFromPrincipal(Principal principal) {
         if (principal == null) {
             return null;

@@ -55,17 +55,7 @@ public class CartController {
         this.voucherService = voucherService;
     }
 
-    // =========================== HELPER METHODS ===========================
 
-    // ❌ REMOVED - All helper methods moved to CartService
-
-    // ❌ REMOVED - validateProductAvailability moved to CartService
-
-    // =========================== CART CRUD OPERATIONS ===========================
-
-    /**
-     * Add product to cart - ✅ REFACTORED to use CartService
-     */
     @RequestMapping(value = "/add/{id}", method = {RequestMethod.GET, RequestMethod.POST})
     public Object add(@PathVariable String id, @RequestParam(defaultValue = "1") int sl,
                       Principal principal, RedirectAttributes redirectAttributes,
@@ -91,11 +81,7 @@ public class CartController {
         }
     }
 
-    // ❌ REMOVED - processCartAddition logic moved to CartService
 
-    /**
-     * View cart contents - ✅ REFACTORED to use CartService
-     */
     @GetMapping("/view")
     public String view(Model model, Principal principal) {
         try {
@@ -113,7 +99,7 @@ public class CartController {
     }
 
     /**
-     * Update cart item quantity - ✅ REFACTORED to use CartService (now supports variants)
+     * Update cart item quantity -  REFACTORED to use CartService (now supports variants)
      */
     @PostMapping("/update/{id}")
     public String update(@PathVariable String id, @RequestParam int sl,
@@ -141,7 +127,7 @@ public class CartController {
     }
 
     /**
-     * Remove item from cart - ✅ REFACTORED to use CartService (now supports variants)
+     * Remove item from cart -  REFACTORED to use CartService (now supports variants)
      */
     @GetMapping("/remove/{id}")
     public String remove(@PathVariable String id,
@@ -169,7 +155,7 @@ public class CartController {
     }
 
     /**
-     * Clear all items from cart - ✅ REFACTORED to use CartService
+     * Clear all items from cart - REFACTORED to use CartService
      */
     @GetMapping("/clear")
     public String clear(Principal principal) {
@@ -185,7 +171,7 @@ public class CartController {
     // =========================== VOUCHER OPERATIONS ===========================
 
     /**
-     * Apply voucher to cart - ✅ REFACTORED to use CartService
+     * Apply voucher to cart - REFACTORED to use CartService
      */
     @PostMapping("/apply-voucher")
     public String applyVoucher(@RequestParam String voucherCode,
@@ -212,7 +198,7 @@ public class CartController {
     }
 
     /**
-     * Remove voucher from cart - ✅ REFACTORED to use CartService
+     * Remove voucher from cart - REFACTORED to use CartService
      */
     @GetMapping("/remove-voucher")
     public String removeVoucher(@RequestParam(defaultValue = "cart") String redirect,
@@ -233,7 +219,7 @@ public class CartController {
         return getRedirectPath(redirect);
     }
 
-    // ❌ REMOVED - All voucher helper methods moved to CartService
+    // REMOVED - All voucher helper methods moved to CartService
 
     /**
      * Get redirect path based on redirect parameter
@@ -254,12 +240,12 @@ public class CartController {
         return "Admin".equals(roleName) || "ADMIN".equals(roleName);
     }
 
-    // ❌ REMOVED - formatCurrency and safeGetUsageCount moved to CartService
+    // REMOVED - formatCurrency and safeGetUsageCount moved to CartService
 
     // =========================== CHECKOUT OPERATIONS ===========================
 
     /**
-     * Display checkout page - ✅ REFACTORED to use CartService
+     * Display checkout page - REFACTORED to use CartService
      */
     @GetMapping("/checkout")
     public String checkout(Model model, Principal principal) {
@@ -302,13 +288,9 @@ public class CartController {
                                   Model model, Principal principal) {
 
         CheckoutRequest request = new CheckoutRequest();
-        // ❌ REMOVED - Các field này không còn tồn tại trong CheckoutRequest
-        // request.setFullName(fullName);
-        // request.setEmail(email);
-        // request.setPhone(phone);
-        // request.setAddress(address);
 
-        // ✅ NEW - Set shipping address và alternative receiver nếu cần
+
+        //  NEW - Set shipping address và alternative receiver nếu cần
         if (address != null && !address.trim().isEmpty()) {
             request.setShippingAddress(address);
         }
@@ -332,7 +314,7 @@ public class CartController {
     }
 
     /**
-     * Internal checkout processing logic - ✅ REFACTORED to use CheckoutService
+     * Internal checkout processing logic -  REFACTORED to use CheckoutService
      */
     private String processCheckoutInternal(CheckoutRequest request, Model model, Principal principal) {
         try {
@@ -347,12 +329,12 @@ public class CartController {
                 return CartConstants.REDIRECT_CART_VIEW;
             }
 
-            // ✅ Always create order, but with different status based on payment method
+            //  Always create order, but with different status based on payment method
             Order savedOrder = checkoutService.processCheckout(request, user, userCart);
 
             // Handle different payment methods
             if ("VNPAY".equals(request.getPaymentMethod())) {
-                // 🔄 NEW FLOW: Set order to PAYMENT_PENDING status and redirect to VNPay
+                //  NEW FLOW: Set order to PAYMENT_PENDING status and redirect to VNPay
                 savedOrder.setStatus("PAYMENT_PENDING");
                 orderService.updateOrder(savedOrder);
                 
@@ -373,9 +355,6 @@ public class CartController {
         }
     }
 
-    // ❌ REMOVED - createOrderWithVoucher, createOrder, createOrderDetails moved to CheckoutService
-
-    // =========================== ORDER OPERATIONS ===========================
 
     /**
      * View specific order details
@@ -411,7 +390,7 @@ public class CartController {
     // =========================== API ENDPOINTS ===========================
 
     /**
-     * Get cart count for current user - ✅ REFACTORED to use CartService
+     * Get cart count for current user - REFACTORED to use CartService
      */
     @GetMapping("/count")
     @ResponseBody
@@ -476,7 +455,7 @@ public class CartController {
     }
 
     /**
-     * Get cart review content for AJAX updates - ✅ REFACTORED to use CartService
+     * Get cart review content for AJAX updates - REFACTORED to use CartService
      */
     @GetMapping("/review")
     public String getCartReview(Model model, Principal principal) {
@@ -541,7 +520,7 @@ public class CartController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Kiểm tra tồn kho - ✅ IMPROVED: Use CartService for better abstraction
+            // Kiểm tra tồn kho - IMPROVED: Use CartService for better abstraction
             List<Cart> userCart = cartService.getCurrentUserCart(principal);
             int currentQuantity = 0;
             Cart existingCartItem = null;
