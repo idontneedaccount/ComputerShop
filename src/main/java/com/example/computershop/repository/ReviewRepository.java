@@ -36,11 +36,7 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
     
     // Lấy review của user cho sản phẩm cụ thể
     Optional<Review> findByUserIdAndProductId(String userId, String productId);
-    
-    // Lấy reviews theo rating filter
-    @Query("SELECT r FROM Review r LEFT JOIN FETCH r.user WHERE r.productId = :productId AND r.rating = :rating ORDER BY r.createdAt DESC")
-    Page<Review> findByProductIdAndRatingOrderByCreatedAtDesc(@Param("productId") String productId, @Param("rating") Integer rating, Pageable pageable);
-    
+
     // Top 5 sản phẩm có rating cao nhất
     @Query("SELECT r.productId, AVG(CAST(r.rating AS double)), COUNT(r) FROM Review r GROUP BY r.productId HAVING COUNT(r) >= 3 ORDER BY AVG(CAST(r.rating AS double)) DESC")
     List<Object[]> getTop5HighestRatedProducts(Pageable pageable);

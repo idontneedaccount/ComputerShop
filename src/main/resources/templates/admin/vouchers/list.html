@@ -76,10 +76,12 @@
                                         <a th:href="@{/admin/vouchers/edit/{id}(id=${voucher.voucherId})}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a th:href="@{/admin/vouchers/delete/{id}(id=${voucher.voucherId})}" class="btn btn-sm btn-danger" 
-                                           onclick="return confirm('Bạn có chắc muốn xóa voucher này?');">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                        <button type="button" class="btn btn-sm btn-info"
+                                                onclick="toggleVoucherStatus(this)"
+                                                th:data-voucher-id="${voucher.voucherId}"
+                                                title="Bật/Tắt trạng thái">
+                                            <i class="fas fa-toggle-on"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -115,6 +117,27 @@
     $(document).ready(function() {
         $('#vouchersTable').DataTable();
     });
+    function toggleVoucherStatus(button) {
+        const voucherId = button.getAttribute('data-voucher-id');
+        fetch('/admin/toggle-voucher-status/' + voucherId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    location.reload();
+                } else {
+                    alert('Có lỗi xảy ra!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra!');
+            });
+    }
 </script>
 </body>
 </html> 

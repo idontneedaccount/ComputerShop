@@ -12,6 +12,6 @@ public interface VoucherService {
     Voucher getVoucherById(String id);
     List<Voucher> getAllVouchers();
     Voucher updateVoucher(Voucher voucher);
-    void deleteVoucher(String id);
     Long calculateDiscountAmount(Voucher voucher, Long originalAmount);
+    Boolean toggleStatus(String voucherID);
 } 

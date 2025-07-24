@@ -14,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.computershop.dto.ProductRatingDTO;
 import com.example.computershop.dto.ReviewDTO;
-import com.example.computershop.entity.Review;
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
+import com.example.computershop.entity.Review;
+import com.example.computershop.repository.OrderRepository;
 import com.example.computershop.repository.ReviewRepository;
 import com.example.computershop.repository.UserRepository;
-import com.example.computershop.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -105,32 +105,18 @@ public class ReviewService {
     public Page<Review> getProductReviews(String productId, Pageable pageable) {
         return reviewRepository.findByProductIdOrderByCreatedAtDesc(productId, pageable);
     }
-    
-    /**
-     * Lấy reviews theo rating filter
-     */
-    public Page<Review> getProductReviewsByRating(String productId, Integer rating, Pageable pageable) {
-        return reviewRepository.findByProductIdAndRatingOrderByCreatedAtDesc(productId, rating, pageable);
-    }
-    
+
     /**
      * Kiểm tra user có thể review sản phẩm không
      * User chỉ có thể review nếu:
-     * 1. Đã mua sản phẩm này trong đơn hàng có status DELIVERED
-     * 2. Chưa review sản phẩm này trước đó
+     * 1. Đã mua sản phẩm này trong đơn hàng có status USER_CONFIRMED
      */
     public boolean canUserReview(String userId, String productId) {
         if (userId == null || productId == null) return false;
         
         try {
-            // 1. Kiểm tra user đã review sản phẩm này chưa
-            if (reviewRepository.existsByUserIdAndProductId(userId, productId)) {
-                logger.debug("User {} already reviewed product {}", userId, productId);
-                return false;
-            }
-            
-            // 2. Kiểm tra user có đơn hàng DELIVERED chứa sản phẩm này không
-            List<Order> deliveredOrders = orderRepository.findByUserIdAndStatus(userId, "DELIVERED");
+            // Kiểm tra user có đơn hàng USER_CONFIRMED chứa sản phẩm này không
+            List<Order> deliveredOrders = orderRepository.findByUserIdAndStatus(userId, "USER_CONFIRMED");
             
             for (Order order : deliveredOrders) {
                 // Lấy order với details
@@ -138,7 +124,7 @@ public class ReviewService {
                 if (orderWithDetails != null && orderWithDetails.getOrderDetails() != null) {
                     for (OrderDetail detail : orderWithDetails.getOrderDetails()) {
                         if (detail.getProduct() != null && productId.equals(detail.getProduct().getProductID())) {
-                            logger.debug("User {} can review product {} from delivered order {}", 
+                            logger.debug("User {} can review product {} from user-confirmed order {}",
                                        userId, productId, order.getId());
                             return true;
                         }
@@ -146,12 +132,53 @@ public class ReviewService {
                 }
             }
             
-            logger.debug("User {} cannot review product {} - no delivered order found", userId, productId);
+            logger.debug("User {} cannot review product {} - no user-confirmed order found", userId, productId);
             return false;
             
         } catch (Exception e) {
             logger.error("Error checking if user {} can review product {}: {}", userId, productId, e.getMessage());
             return false;
+        }
+    }
+    
+    /**
+     * Tạo review mới hoặc cập nhật review hiện có
+     */
+    @Transactional
+    public Review UpdateReview(String userId, String productId, Integer rating, String comment) {
+        try {
+            // Validation
+            if (!canUserReview(userId, productId)) {
+                throw new IllegalArgumentException("User cannot review this product");
+            }
+            
+            if (rating < 1 || rating > 5) {
+                throw new IllegalArgumentException("Rating must be between 1 and 5");
+            }
+            
+            // Kiểm tra xem đã có review hay chưa
+            Optional<Review> existingReview = reviewRepository.findByUserIdAndProductId(userId, productId);
+            
+            if (existingReview.isPresent()) {
+                // Cập nhật review hiện có
+                Review review = existingReview.get();
+                review.setRating(rating);
+                review.setComment(comment);
+                return reviewRepository.save(review);
+            } else {
+                // Tạo review mới
+                Review review = Review.builder()
+                        .userId(userId)
+                        .productId(productId)
+                        .rating(rating)
+                        .comment(comment)
+                        .build();
+                
+                return reviewRepository.save(review);
+            }
+        } catch (Exception e) {
+            logger.error("Error creating/updating review for user: {} product: {}", userId, productId, e);
+            throw new RuntimeException("Failed to create or update review", e);
         }
     }
     
@@ -164,6 +191,11 @@ public class ReviewService {
             // Validation
             if (!canUserReview(userId, productId)) {
                 throw new IllegalArgumentException("User cannot review this product");
+            }
+            
+            // Kiểm tra user đã review sản phẩm này chưa
+            if (reviewRepository.existsByUserIdAndProductId(userId, productId)) {
+                throw new IllegalArgumentException("User already reviewed this product");
             }
             
             if (rating < 1 || rating > 5) {
@@ -231,7 +263,6 @@ public class ReviewService {
             
             // Kiểm tra quyền xóa (chỉ người tạo hoặc admin)
             if (!review.getUserId().equals(userId)) {
-                // TODO: Check if user is admin
                 throw new IllegalArgumentException("User cannot delete this review");
             }
             

@@ -1,23 +1,32 @@
 package com.example.computershop.controller;
 
-import com.example.computershop.entity.Products;
-import com.example.computershop.entity.ProductVariant;
-import com.example.computershop.entity.VariantFieldConfig;
-import com.example.computershop.service.ProductService;
-import com.example.computershop.service.ProductVariantService;
-import com.example.computershop.service.VariantFieldConfigService;
-import com.example.computershop.service.StorageService;
-import lombok.AllArgsConstructor;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
+
+import com.example.computershop.entity.ProductVariant;
+import com.example.computershop.entity.Products;
+import com.example.computershop.entity.VariantFieldConfig;
+import com.example.computershop.service.ProductService;
+import com.example.computershop.service.ProductVariantService;
+import com.example.computershop.service.StorageService;
+import com.example.computershop.service.VariantFieldConfigService;
+
+import lombok.AllArgsConstructor;
 
 @Controller
 @RequestMapping("/admin/product-variants")
@@ -55,7 +64,6 @@ public class ProductVariantController {
     
     @PostMapping("/add/{productId}")
     public String addVariant(@PathVariable String productId,
-                            @ModelAttribute ProductVariant variant,
                             @RequestParam Map<String, String> allParams,
                             @RequestParam(required = false) MultipartFile variantImage,
                             @RequestParam(required = false) MultipartFile[] variantImages,
@@ -65,6 +73,30 @@ public class ProductVariantController {
             if (product == null) {
                 redirectAttributes.addFlashAttribute(ERROR, "Sản phẩm không tồn tại!");
                 return PRODUCT;
+            }
+            
+            // Tạo ProductVariant object từ request parameters
+            ProductVariant variant = new ProductVariant();
+            
+            // Set basic fields from request parameters
+            variant.setCpu(allParams.get("cpu"));
+            variant.setRam(allParams.get("ram"));
+            variant.setStorage(allParams.get("storage"));
+            variant.setGpu(allParams.get("gpu"));
+            variant.setScreen(allParams.get("screen"));
+            variant.setSku(allParams.get("sku"));
+            
+            // Parse price and quantity
+            try {
+                if (allParams.get("price") != null) {
+                    variant.setPrice(new BigInteger(allParams.get("price")));
+                }
+                if (allParams.get("quantity") != null) {
+                    variant.setQuantity(Integer.parseInt(allParams.get("quantity")));
+                }
+            } catch (NumberFormatException e) {
+                redirectAttributes.addFlashAttribute(ERROR, "Định dạng số không hợp lệ!");
+                return PRODUCT_VARIANTS + productId;
             }
             
             // XỬ LÝ UPLOAD ẢNH CHÍNH
@@ -105,7 +137,7 @@ public class ProductVariantController {
                 String value = allParams.get("custom_" + field.getFieldKey());
                 if (value != null && !value.trim().isEmpty()) {
                     customAttributes.put(field.getFieldKey(), value.trim());
-                } else if (field.getIsRequired()) {
+                } else if (field.getIsRequired() != null && field.getIsRequired()) {
                     redirectAttributes.addFlashAttribute(ERROR, "Trường " + field.getFieldName() + " là bắt buộc!");
                     return PRODUCT_VARIANTS + productId;
                 }

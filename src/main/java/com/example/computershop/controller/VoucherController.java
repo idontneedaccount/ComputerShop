@@ -131,14 +131,16 @@ public class VoucherController {
         return "redirect:/admin/vouchers";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteVoucher(@PathVariable("id") String id, RedirectAttributes redirectAttributes) {
+    @PostMapping("/toggle-voucher-status/{voucherID}")
+    @ResponseBody
+    public String toggleVoucherStatus(@PathVariable("voucherID") String voucherID) {
         try {
-            voucherService.deleteVoucher(id);
-            redirectAttributes.addFlashAttribute("success", "Voucher deleted successfully");
+            if (Boolean.TRUE.equals(this.voucherService.toggleStatus(voucherID))) {
+                return "success";
+            }
+            return "error";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error deleting voucher: " + e.getMessage());
+            return "error";
         }
-        return "redirect:/admin/vouchers";
     }
 } 

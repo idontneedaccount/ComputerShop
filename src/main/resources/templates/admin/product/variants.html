@@ -112,7 +112,7 @@
                 </div>
                 <div class="card-body">
                     <form th:action="@{'/admin/product-variants/add/' + ${product.productID}}" method="post" 
-                          th:object="${newVariant}" enctype="multipart/form-data">
+                          enctype="multipart/form-data">
                         
                         <!-- Basic Variant Info -->
                         <div class="row">
@@ -302,7 +302,7 @@
                                                    <span th:text="${attr.value}" class="text-info">Value</span></small><br>
                                         </div>
                                     </div>
-                                    <small th:if="${variant.customAttributesMap == null or variant.customAttributesMap.isEmpty}"
+                                    <small th:if="${variant.customAttributesMap == null or variant.customAttributesMap.isEmpty()}"
                                            class="text-muted">Không có</small>
                                 </td>
                                 <td>

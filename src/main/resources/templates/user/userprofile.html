@@ -643,10 +643,29 @@
                             <p class="text-primary mb-0">
                                 <strong>${formatPrice(product.price)} ₫</strong>
                             </p>
+                            ${product.hasReviewed ? 
+                                `<div class="mt-2">
+                                    <small class="text-muted">Đánh giá của bạn:</small>
+                                    <div class="d-flex align-items-center">
+                                        <div class="star-display me-2">
+                                            ${generateStarDisplay(product.review.rating)}
+                                        </div>
+                                        <small class="text-muted">${formatDate(product.review.createdAt)}</small>
+                                    </div>
+                                    ${product.review.comment ? 
+                                        `<small class="text-muted d-block mt-1">"${product.review.comment.length > 50 ? 
+                                            product.review.comment.substring(0, 50) + '...' : 
+                                            product.review.comment}"</small>` : ''}
+                                </div>` : ''}
                         </div>
                         <div class="col-md-3 text-end">
                             ${product.hasReviewed
-                    ? '<span class="badge bg-success"><i class="fas fa-check me-1"></i>Đã đánh giá</span>'
+                    ? `<button class="btn btn-warning btn-sm" onclick="selectProductToReview('${product.productID}')">
+                                     <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                                   </button>
+                                   <div class="mt-1">
+                                       <span class="badge bg-success"><i class="fas fa-check me-1"></i>Đã đánh giá</span>
+                                   </div>`
                     : `<button class="btn btn-warning btn-sm" onclick="selectProductToReview('${product.productID}')">
                                      <i class="fas fa-star me-1"></i>Đánh giá
                                    </button>`
@@ -662,11 +681,6 @@
     function selectProductToReview(productId) {
         const product = currentProducts.find(p => p.productID === productId);
         if (!product) return;
-
-        if (product.hasReviewed) {
-            showNotification('❌ Bạn đã đánh giá sản phẩm này rồi!', 'error');
-            return;
-        }
 
         // Hide product list, show review form
         document.getElementById('reviewProductList').style.display = 'none';
@@ -688,17 +702,31 @@
                     </div>
                     <div class="col-md-9">
                         <h5 class="card-title">${product.name}</h5>
-                        <p class="text-muted mb-1">Thương hiệu: ${product.brand || 'Không rõ'}</p>
+                        <p class="text-muted mb-1">Thương hiệu: ${product.brand || 'Không rồ'}</p>
                         <p class="text-primary mb-0">
                             <strong>${formatPrice(product.price)} ₫</strong>
                         </p>
+                        ${product.hasReviewed ? 
+                            '<div class="alert alert-info mt-2"><i class="fas fa-info-circle me-2"></i>Bạn đang chỉnh sửa đánh giá hiện có</div>' : 
+                            '<div class="alert alert-success mt-2"><i class="fas fa-star me-2"></i>Tạo đánh giá mới cho sản phẩm</div>'}
                     </div>
                 </div>
             </div>
         `;
 
-        // Reset form
+        // Reset form and load existing review if available
         resetReviewForm();
+        if (product.hasReviewed && product.review) {
+            loadExistingReview(product.review);
+        }
+        
+        // Update submit button text
+        const submitButton = document.getElementById('submitReview');
+        if (product.hasReviewed) {
+            submitButton.innerHTML = '<i class="fas fa-save me-2"></i>Cập nhật đánh giá';
+        } else {
+            submitButton.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đánh giá';
+        }
     }
 
     function resetReviewForm() {
@@ -712,6 +740,50 @@
 
         // Reset comment
         document.getElementById('reviewComment').value = '';
+    }
+    
+    function loadExistingReview(review) {
+        // Load rating
+        if (review.rating) {
+            document.getElementById('star' + review.rating).checked = true;
+            
+            // Update visual stars
+            const stars = document.querySelectorAll('.star-rating-input .star');
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                if (starRating <= review.rating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+        
+        // Load comment
+        if (review.comment) {
+            document.getElementById('reviewComment').value = review.comment;
+        }
+    }
+    
+    function generateStarDisplay(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                stars += '<i class="fas fa-star text-warning"></i>';
+            } else {
+                stars += '<i class="far fa-star text-muted"></i>';
+            }
+        }
+        return stars;
+    }
+    
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+        });
     }
 
     // Back to product list
@@ -775,6 +847,7 @@
 
         // Disable button
         this.disabled = true;
+        const originalText = this.innerHTML;
         this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
 
         const data = {
@@ -811,7 +884,7 @@
                 .finally(() => {
                     // Re-enable button
                     this.disabled = false;
-                    this.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đánh giá';
+                    this.innerHTML = originalText;
                 });
     });
 
@@ -891,6 +964,14 @@
     #selectedProductInfo .card-body img {
         max-height: 120px;
         object-fit: cover;
+    }
+    
+    .star-display {
+        font-size: 0.9rem;
+    }
+    
+    .star-display i {
+        margin-right: 1px;
     }
 </style>
 </body>
