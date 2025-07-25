@@ -191,26 +191,7 @@ public class NotificationServiceImpl implements NotificationService {
                         ("product".equals(type) && n.getProductId() != null) ||
                         ("system".equals(type) && n.getOrderId() == null && n.getProductId() == null))
                 .collect(Collectors.toList());
-        
-        // Debug type breakdown
-        long orderCount = all.stream().filter(n -> n.getOrderId() != null).count();
-        long productCount = all.stream().filter(n -> n.getProductId() != null).count();
-        long systemCount = all.stream().filter(n -> n.getOrderId() == null && n.getProductId() == null).count();
-        
-        System.out.println("Breakdown by type:");
-        System.out.println("- Order notifications: " + orderCount);
-        System.out.println("- Product notifications: " + productCount);
-        System.out.println("- System notifications: " + systemCount);
-        System.out.println("After filtering: " + filtered.size() + " notifications");
-        System.out.println("=====================================");
-        
         return filtered;
-    }
-
-    @Override
-    public void deleteOldNotifications(int daysOld) {
-        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(daysOld);
-        notificationRepository.deleteNotificationsOlderThan(cutoffDate);
     }
 
     @Override
@@ -220,10 +201,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notification.orElse(null);
     }
 
-    @Override
-    public void deleteNotification(String notificationId) {
-        notificationRepository.deleteById(notificationId);
-    }
+
 
     private String getStatusDisplayName(String status) {
         if (status == null) return "Không xác định";

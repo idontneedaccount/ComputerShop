@@ -18,6 +18,7 @@ public class SecurityConfig {
     private final AuthenticationSuccessHandler successHandler;
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
+    private final OAuth2FailureHandler oauth2FailureHandler;
     private final ClientRegistrationRepository clientRegistrationRepository;
     private static final String LOGIN ="/auth/login";
 
@@ -25,16 +26,18 @@ public class SecurityConfig {
                          @Qualifier("customAuthenticationSuccessHandler") AuthenticationSuccessHandler successHandler, 
                          AuthenticationFailureHandler customAuthenticationFailureHandler,
                          @Qualifier("oauth2SuccessHandler") OAuth2SuccessHandler oauth2SuccessHandler,
+                         @Qualifier("oauth2FailureHandler") OAuth2FailureHandler oauth2FailureHandler,
                          ClientRegistrationRepository clientRegistrationRepository) {
         this.authenticationProvider = authenticationProvider;
         this.successHandler = successHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
         this.oauth2SuccessHandler = oauth2SuccessHandler;
+        this.oauth2FailureHandler = oauth2FailureHandler;
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, OAuth2FailureHandler oauth2FailureHandler) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
@@ -42,7 +45,8 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**", "/home", "/css/**",
                                         "/js/**", "/images/**", "/assets/**","/error/**","/assets2/**","/uploads/**",
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page","/",
-                                        "/cart/add/**", "/cart/count", "/cart/add-variant","/user/single-product/**")
+                                        "/cart/add/**", "/cart/count", "/cart/add-variant","/user/single-product/**",
+                                        "/notifications/api/**")  // Added API endpoints to permitAll
                                 .permitAll()
                                 .requestMatchers("/admin/dashboard","/admin/orders/**","/notifications/admin/personal","/admin/api/**",
                                         "/admin/vouchers/**","/admin/product/**","/admin/vouchers/**","/admin/purchase-orders/**",
@@ -54,7 +58,7 @@ public class SecurityConfig {
                                 .hasAnyRole("Shipper","Admin")
                                 .requestMatchers("/user/user-profile","/cart/view","/cart/checkout",
                                         "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**",
-                                        "/api/reviews/product/**","/notifications/api/**","/notifications/user")
+                                        "/api/reviews/product/**","/notifications/user")
                                 .hasAnyRole("Admin","Sales","Shipper","Customer")
                                 .anyRequest().authenticated())
                 .formLogin(form -> form

@@ -39,68 +39,6 @@
 
 </nav>
 
-<!-- Admin Notification Count Script - Only load when authenticated -->
-<script th:if="${#authorization.expression('isAuthenticated()')}">
-    $(document).ready(function() {
-        console.log('🚀 [NAV-BAR] Loading admin notification count for authenticated user...');
-        loadAdminNotificationCount();
-        setInterval(loadAdminNotificationCount, 30000);
-        
-        // Listen for page navigation events
-        $(window).on('focus load pageshow', function() {
-            console.log('🔄 [NAV-BAR] Page focus/load detected, refreshing count...');
-            loadAdminNotificationCount();
-        });
-    });
-
-    function loadAdminNotificationCount() {
-        console.log('🔄 [ADMIN] Fetching notification count from /notifications/api/unread-count...');
-        
-        $.get('/notifications/api/unread-count')
-            .done(function(response) {
-                console.log('✅ [ADMIN] Notification API response:', response);
-                if (response.success) {
-                    const count = response.unreadCount;
-                    console.log('✅ [ADMIN] Unread notification count:', count);
-                    updateAdminNotificationBadges(count);
-                } else {
-                    console.error('❌ [ADMIN] API returned invalid response:', response);
-                }
-            })
-            .fail(function(xhr, status, error) {
-                console.error('❌ [ADMIN] Failed to load notification count:', error);
-                console.error('❌ [ADMIN] Status:', status);
-                console.error('❌ [ADMIN] Response text:', xhr.responseText);
-            });
-    }
-
-    function updateAdminNotificationBadges(count) {
-        console.log('🔄 [ADMIN] Updating notification badges with count:', count);
-        
-        const displayCount = count > 99 ? '99+' : count.toString();
-        
-        // Update bell icon badge
-        $('#adminNotificationCount').text(displayCount);
-        $('#adminNotificationCount').toggle(count > 0);
-        
-        // Update dropdown badge
-        $('#dropdownNotificationCount').text(count);
-        $('#dropdownNotificationCount').toggle(count > 0);
-        
-        if (count > 0) {
-            $('.notification-btn').addClass('has-notifications');
-            console.log('✅ [ADMIN] Showing notification badges with count:', displayCount);
-        } else {
-            $('.notification-btn').removeClass('has-notifications');
-            console.log('✅ [ADMIN] Hiding notification badges (count = 0)');
-        }
-    }
-
-    // Make functions global for other pages to call
-    window.loadAdminNotificationCount = loadAdminNotificationCount;
-    window.updateAdminNotificationBadges = updateAdminNotificationBadges;
-</script>
-
 <!-- Admin Notification Styles -->
 <style>
     .notifications {

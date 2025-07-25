@@ -1,9 +1,7 @@
 package com.example.computershop.service.impl;
 
-import com.example.computershop.entity.Categories;
 import com.example.computershop.entity.Voucher;
 import com.example.computershop.repository.VoucherRepository;
-import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.VoucherService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +32,10 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Optional<Voucher> getVoucherByCode(String code) {
         Optional<Voucher> voucher = voucherRepository.findByCode(code);
-        if (voucher.isPresent()) {
-            voucher.get().ensureProperInitialization();
+        if (voucher.isEmpty()) {
+            return voucher;
         }
+        voucher.get().ensureProperInitialization();
         return voucher;
     }
 

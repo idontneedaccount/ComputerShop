@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,20 +58,33 @@ public class NotificationController {
      */
     @GetMapping("/api/unread-count")
     @ResponseBody
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getUnreadCount(Principal principal) {
-        User user = getCurrentUser(principal);
-        if (user == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "User not authenticated"));
+        try {
+            User user = getCurrentUser(principal);
+            if (user == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "User not authenticated");
+                errorResponse.put("success", false);
+                errorResponse.put("unreadCount", 0);
+                return ResponseEntity.ok(errorResponse);
+            }
+            
+            // Count unread notifications
+            long unreadCount = notificationService.countUnreadNotificationsByUserId(user.getUserId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("unreadCount", unreadCount);
+            response.put("success", true);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Internal server error");
+            errorResponse.put("success", false);
+            errorResponse.put("unreadCount", 0);
+            return ResponseEntity.ok(errorResponse);
         }
-        
-        // Sử dụng service method
-        long unreadCount = notificationService.countUnreadNotificationsByUserId(user.getUserId());
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("unreadCount", unreadCount);
-        response.put("success", true);
-        
-        return ResponseEntity.ok(response);
     }
     
     /**
@@ -122,6 +134,43 @@ public class NotificationController {
      * Đánh dấu notification đã đọc
      */
     @PostMapping("/mark-read/{notificationId}")
+    public String markAsReadWeb(@PathVariable String notificationId, 
+                               @RequestParam(value = "redirectUrl", required = false) String redirectUrl,
+                               Principal principal, RedirectAttributes redirectAttributes) {
+        User user = getCurrentUser(principal);
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "Bạn cần đăng nhập");
+            return "redirect:/auth/login";
+        }
+        
+        try {
+            // Kiểm tra notification có thuộc về user không
+            Notification notification = notificationService.getNotificationById(notificationId);
+            if (notification == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy thông báo");
+                return redirectUrl != null ? "redirect:" + redirectUrl : "redirect:/notifications/admin";
+            }
+            
+            if (!notification.getUserId().equals(user.getUserId())) {
+                redirectAttributes.addFlashAttribute("error", "Bạn không có quyền thực hiện thao tác này");
+                return redirectUrl != null ? "redirect:" + redirectUrl : "redirect:/notifications/admin";
+            }
+            
+            // Mark as read
+            notificationService.markNotificationAsRead(notificationId);
+            redirectAttributes.addFlashAttribute("success", "Đã đánh dấu thông báo đã đọc");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
+        
+        return redirectUrl != null ? "redirect:" + redirectUrl : "redirect:/notifications/admin";
+    }
+
+    /**
+     * Đánh dấu notification đã đọc (API version)
+     */
+    @PostMapping("/api/mark-read/{notificationId}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> markAsRead(@PathVariable String notificationId, Principal principal) {
         User user = getCurrentUser(principal);
@@ -221,7 +270,7 @@ public class NotificationController {
         }
         
         // Chỉ lấy notifications của admin user hiện tại
-        List<Notification> allUserNotifications = notificationService.getNotificationsByUserId(admin.getUserId());
+        List<Notification> allUserNotifications = notificationService.getAllNotifications();
         List<Notification> notifications;
         
         // Áp dụng search và filter trên notifications của user hiện tại
@@ -359,44 +408,171 @@ public class NotificationController {
         }
     }
     
+    
     /**
-     * Xóa notifications cũ của admin hiện tại
+     * Xem chi tiết notification cho admin
      */
-    @PostMapping("/admin/cleanup")
-    @PreAuthorize("hasRole('Admin')")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> cleanupOldNotifications(@RequestParam("daysOld") int daysOld, Principal principal) {
+    @GetMapping("/admin/detail/{notificationId}")
+    public String viewNotificationDetail(@PathVariable String notificationId, Model model, 
+                                       Principal principal, RedirectAttributes redirectAttributes) {
         try {
             User admin = getCurrentUser(principal);
             if (admin == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", "User not authenticated"));
+                redirectAttributes.addFlashAttribute("error", "Bạn cần đăng nhập để truy cập trang này");
+                return "redirect:/auth/login";
             }
             
-            if (daysOld < 7) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Cannot delete notifications newer than 7 days"));
+            // Lấy notification
+            Notification notification = notificationService.getNotificationById(notificationId);
+            if (notification == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy thông báo");
+                return "redirect:/notifications/admin";
             }
             
-            // Chỉ xóa notifications cũ của admin user hiện tại
-            LocalDateTime cutoffDate = LocalDateTime.now().minusDays(daysOld);
-            List<Notification> userNotifications = notificationService.getNotificationsByUserId(admin.getUserId());
+            // Lấy thông tin liên quan
+            Map<String, Object> relatedInfo = getDetailedRelatedInfo(notification);
             
-            long deletedCount = userNotifications.stream()
-                .filter(n -> n.getCreatedAt().isBefore(cutoffDate))
-                .mapToLong(n -> {
-                    notificationService.deleteNotification(n.getNotificationId());
-                    return 1;
-                })
-                .sum();
+            // Tự động đánh dấu đã đọc khi xem detail
+            if (notification.getIsRead() == null || !notification.getIsRead()) {
+                notificationService.markNotificationAsRead(notificationId);
+                // Reload notification để có updated read status
+                notification = notificationService.getNotificationById(notificationId);
+            }
             
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Đã xóa " + deletedCount + " thông báo cũ của bạn");
-            response.put("deletedCount", deletedCount);
-            response.put("success", true);
+            // Thêm data vào model
+            model.addAttribute("notification", notification);
+            model.addAttribute("relatedInfo", relatedInfo);
             
-            return ResponseEntity.ok(response);
+            return "admin/notifications/detail";
             
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Failed to cleanup notifications: " + e.getMessage()));
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi tải thông tin: " + e.getMessage());
+            return "redirect:/notifications/admin";
+        }
+    }
+
+    /**
+     * Lấy thông tin liên quan đến notification
+     */
+    private String getRelatedInfo(Notification notification) {
+        StringBuilder info = new StringBuilder();
+        
+        try {
+            if (notification.getOrderId() != null) {
+                // Thông tin về đơn hàng
+                info.append("Đơn hàng ID: ").append(notification.getOrderId());
+                // Có thể thêm logic để lấy thông tin đơn hàng từ OrderService nếu cần
+            }
+            
+            if (notification.getProductId() != null) {
+                // Thông tin về sản phẩm
+                info.append("Sản phẩm ID: ").append(notification.getProductId());
+                // Có thể thêm logic để lấy thông tin sản phẩm từ ProductService nếu cần
+            }
+            
+            if (notification.getOrderId() == null && notification.getProductId() == null) {
+                info.append("Thông báo hệ thống");
+            }
+            
+        } catch (Exception e) {
+            info.append("Không thể tải thông tin liên quan");
+        }
+        
+        return info.toString();
+    }
+
+    /**
+     * Lấy thông tin chi tiết liên quan đến notification (cho detail page)
+     */
+    private Map<String, Object> getDetailedRelatedInfo(Notification notification) {
+        Map<String, Object> relatedInfo = new HashMap<>();
+        
+        try {
+            // Thông tin cơ bản
+            relatedInfo.put("notificationId", notification.getNotificationId());
+            relatedInfo.put("userId", notification.getUserId());
+            relatedInfo.put("createdAt", notification.getCreatedAt());
+            relatedInfo.put("isRead", notification.getIsRead());
+            // relatedInfo.put("readAt", notification.getReadAt()); // Comment out nếu không có field này
+            
+            // Thông tin về loại notification
+            if (notification.getOrderId() != null) {
+                relatedInfo.put("type", "order");
+                relatedInfo.put("typeDescription", "Thông báo đơn hàng");
+                relatedInfo.put("orderId", notification.getOrderId());
+                // Có thể thêm thông tin chi tiết về order nếu cần
+                relatedInfo.put("orderDetails", "Chi tiết đơn hàng sẽ được hiển thị ở đây");
+            } else if (notification.getProductId() != null) {
+                relatedInfo.put("type", "product");
+                relatedInfo.put("typeDescription", "Thông báo sản phẩm");
+                relatedInfo.put("productId", notification.getProductId());
+                // Có thể thêm thông tin chi tiết về product nếu cần
+                relatedInfo.put("productDetails", "Chi tiết sản phẩm sẽ được hiển thị ở đây");
+            } else {
+                relatedInfo.put("type", "system");
+                relatedInfo.put("typeDescription", "Thông báo hệ thống");
+                relatedInfo.put("systemInfo", "Thông báo chung của hệ thống");
+            }
+            
+            // Thông tin về user
+            if (notification.getUser() != null) {
+                Map<String, Object> userInfo = new HashMap<>();
+                userInfo.put("userId", notification.getUser().getUserId());
+                userInfo.put("fullName", notification.getUser().getFullName());
+                userInfo.put("email", notification.getUser().getEmail());
+                userInfo.put("role", notification.getUser().getRole());
+                relatedInfo.put("userInfo", userInfo);
+            }
+            
+        } catch (Exception e) {
+            relatedInfo.put("error", "Không thể tải thông tin liên quan: " + e.getMessage());
+        }
+        
+        return relatedInfo;
+    }
+    
+    /**
+     * Test API endpoint để kiểm tra detail function
+     */
+    @GetMapping("/admin/test-detail/{notificationId}")
+    @PreAuthorize("hasRole('Admin')")
+    @ResponseBody
+    public ResponseEntity<String> testNotificationDetail(@PathVariable String notificationId, Principal principal) {
+        try {
+            User admin = getCurrentUser(principal);
+            if (admin == null) {
+                return ResponseEntity.badRequest().body("User not authenticated");
+            }
+            
+            Notification notification = notificationService.getNotificationById(notificationId);
+            if (notification == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            String result = String.format(
+                "Notification Details:\n" +
+                "ID: %s\n" +
+                "Message: %s\n" +
+                "User ID: %s\n" +
+                "Created: %s\n" +
+                "Is Read: %s\n" +
+                "Order ID: %s\n" +
+                "Product ID: %s\n" +
+                "Related Info: %s",
+                notification.getNotificationId(),
+                notification.getMessage(),
+                notification.getUserId(),
+                notification.getCreatedAt(),
+                notification.getIsRead(),
+                notification.getOrderId(),
+                notification.getProductId(),
+                getRelatedInfo(notification)
+            );
+            
+            return ResponseEntity.ok(result);
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
     
@@ -407,7 +583,8 @@ public class NotificationController {
             return null;
         }
         try {
-            return userService.getUserFromPrincipal(principal);
+            User user = userService.getUserFromPrincipal(principal);
+            return user;
         } catch (Exception e) {
             return null;
         }

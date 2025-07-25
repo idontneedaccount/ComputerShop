@@ -5,7 +5,6 @@ import com.example.computershop.entity.User;
 import com.example.computershop.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,7 +36,6 @@ import java.net.URI;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final UserRepository userRepository;
 
-    @Autowired
     public OAuth2SuccessHandler(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

@@ -7,11 +7,8 @@ public enum Role {
     Admin("Quản trị viên"),
     ADMIN("Quản trị viên"), // Backward compatibility
     Customer("Người dùng"),
-    CUSTOMER("Nguời dùng"), // Backward compatibility
     Shipper("Nhân viên vận chuyển"),
-    SHIPPER("Nhân viên vận chuyển"), // Backward compatibility
-    Sales("Nhân viên bán hàng"),
-    SALES("Nhân viên bán hàng"); // Backward compatibility
+    Sales("Nhân viên bán hàng");
 
     private final String displayName;
 

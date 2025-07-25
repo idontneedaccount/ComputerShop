@@ -171,6 +171,11 @@
                                                     </div>
                                                 </div>
                                                 <div class="notification-actions">
+                                                    <a th:href="@{'/notifications/admin/detail/' + ${notification.notificationId}}"
+                                                       class="btn btn-sm btn-outline-primary mr-1"
+                                                       title="Xem chi tiết">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
                                                     <button th:if="${!notification.isRead}"
                                                         class="btn btn-sm btn-outline-success mark-read-btn"
                                                         th:data-notification-id="${notification.notificationId}"
@@ -208,6 +213,8 @@
             .notification-actions {
                 opacity: 0;
                 transition: opacity 0.3s ease;
+                display: flex;
+                gap: 4px;
             }
 
             .notification-item:hover .notification-actions {

@@ -19,130 +19,98 @@
     <link th:href="@{/assets2/css/admin-custom.css}" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script th:src="@{/assets/js/noti.js}"></script>
 
-
+    
     <!-- Sidebar Collapse Styles -->
     <style>
-        /* Sidebar collapse styling - chỉ cho menu có submenu */
-        .sidebar .nav-link[data-toggle="collapse"].collapsed:after {
-            content: "\f107";
-            font-family: "Font Awesome 5 Free",serif;
-            font-weight: 900;
-            float: right;
-            transition: transform 0.15s ease-in-out;
-        }
+    /* Sidebar collapse styling - chỉ cho menu có submenu */
+    .sidebar .nav-link[data-toggle="collapse"].collapsed:after {
+        content: "\f107";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        float: right;
+        transition: transform 0.15s ease-in-out;
+    }
 
-        .sidebar .nav-link[data-toggle="collapse"]:not(.collapsed):after {
-            content: "\f106";
-            font-family: "Font Awesome 5 Free",serif;
-            font-weight: 900;
-            float: right;
-            transition: transform 0.15s ease-in-out;
-        }
+    .sidebar .nav-link[data-toggle="collapse"]:not(.collapsed):after {
+        content: "\f106";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        float: right;
+        transition: transform 0.15s ease-in-out;
+    }
 
-        /* Remove dropdown-like styling, make it blend with sidebar */
-        .sidebar .collapse {
-            border: none;
-            background: transparent;
-        }
+    /* Remove dropdown-like styling, make it blend with sidebar */
+    .sidebar .collapse {
+        border: none;
+        background: transparent;
+    }
 
-        .sidebar .collapse-inner {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 0;
-            box-shadow: none;
-            margin: 0;
-            padding: 0;
-        }
+    .sidebar .collapse-inner {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+    }
 
-        .sidebar .collapse-item {
-            padding: 0.75rem 1rem 0.75rem 3rem;
-            margin: 0;
-            display: block;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            border-radius: 0;
-            white-space: nowrap;
-            font-size: 0.85rem;
-            transition: all 0.15s ease-in-out;
-            border-left: 3px solid transparent;
-        }
+    .sidebar .collapse-item {
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        margin: 0;
+        display: block;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        border-radius: 0;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        transition: all 0.15s ease-in-out;
+        border-left: 3px solid transparent;
+    }
 
-        .sidebar .collapse-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            text-decoration: none;
-            border-left-color: #4e73df;
-            padding-left: 3.2rem;
-        }
+    .sidebar .collapse-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-decoration: none;
+        border-left-color: #4e73df;
+        padding-left: 3.2rem;
+    }
 
-        .sidebar .collapse-item.active {
-            background-color: rgba(78, 115, 223, 0.15);
-            color: white;
-            border-left-color: #4e73df;
-        }
+    .sidebar .collapse-item.active {
+        background-color: rgba(78, 115, 223, 0.15);
+        color: white;
+        border-left-color: #4e73df;
+    }
 
-        .sidebar .collapse-header {
-            display: none;
-            /* Hide headers for cleaner look */
-        }
+    .sidebar .collapse-header {
+        display: none; /* Hide headers for cleaner look */
+    }
 
-        /* Additional sidebar improvements */
-        .sidebar .nav-link {
-            position: relative;
-        }
+    /* Additional sidebar improvements */
+    .sidebar .nav-link {
+        position: relative;
+    }
 
-        .sidebar .nav-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+    .sidebar .nav-item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-        .sidebar .nav-item:last-child {
-            border-bottom: none;
-        }
+    .sidebar .nav-item:last-child {
+        border-bottom: none;
+    }
 
-        /* Smooth transitions for all sidebar elements */
-        .sidebar .nav-link,
-        .sidebar .collapse-item {
-            transition: all 0.15s ease-in-out;
-        }
+    /* Smooth transitions for all sidebar elements */
+    .sidebar .nav-link,
+    .sidebar .collapse-item {
+        transition: all 0.15s ease-in-out;
+    }
 
-        /* Active state for main nav items */
-        .sidebar .nav-item.active>.nav-link {
-            background-color: rgba(78, 115, 223, 0.15);
-            border-left: 3px solid #4e73df;
-        }
+    /* Active state for main nav items */
+    .sidebar .nav-item.active > .nav-link {
+        background-color: rgba(78, 115, 223, 0.15);
+        border-left: 3px solid #4e73df;
+    }
     </style>
-    <script th:if="${#authorization.expression('isAuthenticated()')}">
-        $(document).ready(function () {
-            console.log('🚀 Notifications page loaded');
 
-            // Test notification count immediately
-            console.log('🔍 Testing notification count API...');
-            setTimeout(function () {
-                $.get('/notifications/api/unread-count')
-                    .done(function (data) {
-                        console.log('✅ Test API call successful:', data);
-                        // Ngay lập tức gọi function global để update navbar
-                        if (window.updateAdminNotificationBadges && data.success) {
-                            console.log('🔄 Calling global update function with count:', data.unreadCount);
-                            window.updateAdminNotificationBadges(data.unreadCount);
-                        }
-
-                        // FORCE DEBUG: Always show badge
-                        console.log('🧪 [DEBUG] Force showing notification badge...');
-                        const debugCount = data.success ? data.unreadCount : 13;
-                        $('#adminNotificationCount').text(debugCount).css({
-                            'display': 'flex !important',
-                            'visibility': 'visible !important',
-                            'opacity': '1 !important',
-                            'background': '#dc3545 !important',
-                            'color': 'white !important'
-                        }).show();
-                    })
-                    .fail(function (xhr, status, error) {
-                        console.error('❌ Test API call failed:', error, status, xhr.responseText);
-                    });
-            }, 500);
-        });
-    </script>
 </div>
