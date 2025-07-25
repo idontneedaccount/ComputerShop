@@ -465,14 +465,6 @@
 </script>
 
 <style>
-    .icon-circle {
-        height: 2rem;
-        width: 2rem;
-        border-radius: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
 
     .chart-area {
         position: relative;
@@ -499,12 +491,14 @@
 </style>
 
 <script>
-    // Load statistics when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add small delay to ensure all elements are rendered
-        setTimeout(function() {
-            loadStatistics();
-        }, 100);
+    document.addEventListener('DOMContentLoaded', function () {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('section') === 'statistics') {
+            toggleStatistics(); // ✅ Gọi toggle sau khi trang load
+        }
+
+        // Luôn load thống kê nếu cần (nếu không toggle thủ công thì nên tự load)
+        loadStatistics();
     });
 
     // Load statistics data from API

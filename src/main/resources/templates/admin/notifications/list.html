@@ -23,7 +23,7 @@
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                         Tổng thông báo
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${notifications.size()}">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalNotifications}">0</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-bell fa-2x text-gray-300"></i>
@@ -40,7 +40,7 @@
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                         Thông báo chưa đọc
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#aggregates.sum(notifications.![isRead == false ? 1 : 0])}">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${unreadNotifications}">0</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-bell-slash fa-2x text-gray-300"></i>
@@ -57,7 +57,7 @@
                                     <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                         Thông báo đơn hàng
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#aggregates.sum(notifications.![orderId != null ? 1 : 0])}">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${orderNotifications}">0</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
@@ -74,7 +74,7 @@
                                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                         Thông báo hệ thống
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#aggregates.sum(notifications.![orderId == null and productId == null ? 1 : 0])}">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${systemNotifications}">0</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-cog fa-2x text-gray-300"></i>
@@ -99,7 +99,7 @@
                     <i class="fas fa-bell mr-2"></i>Quản lý Thông báo
                 </h1>
                 <div class="badge badge-info badge-pill">
-                    Tổng: <span th:text="${notifications.size() ?: 0}">0</span> thông báo
+                    Hiển thị: <span th:text="${notifications.size() ?: 0}">0</span> / <span th:text="${totalNotifications}">0</span> thông báo
                 </div>
                 <div>
                     <a href="/notifications/admin/broadcast" class="btn btn-primary btn-sm">
@@ -128,45 +128,89 @@
             <!-- Filter & Search Card -->
             <div class="card shadow mb-4">
                 <div class="card-header">
-                    <h6 class="fas fa-table">
-                        <i class="fas fa-filter mr-3"></i>Tìm kiếm & Lọc thông báo
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-filter mr-2"></i>Tìm kiếm & Lọc thông báo
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form method="get" th:action="@{/notifications/admin}">
+                    <form method="get" th:action="@{/notifications/admin}" id="searchForm">
                         <div class="row">
                             <!-- Search -->
                             <div class="col-lg-4 col-md-6 mb-3">
                                 <label for="searchInput" class="form-label font-weight-bold">Tìm kiếm:</label>
-                                <input type="text" class="form-control" id="searchInput" name="search" th:value="${searchTerm}" placeholder="Nội dung, người nhận...">
+                                <div class="input-group">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="searchInput" 
+                                           name="search" 
+                                           th:value="${searchTerm}" 
+                                           placeholder="Nội dung, người nhận..."
+                                           autocomplete="off">
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-outline-secondary" title="Tìm kiếm">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
+                            
                             <!-- Status Filter -->
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <label for="statusFilter" class="form-label font-weight-bold">Trạng thái:</label>
-                                <select class="form-control" id="statusFilter" name="status">
+                                <select class="form-control" id="statusFilter" name="status" onchange="this.form.submit()">
                                     <option value="">-- Tất cả --</option>
                                     <option value="unread" th:selected="${selectedStatus == 'unread'}">Chưa đọc</option>
                                     <option value="read" th:selected="${selectedStatus == 'read'}">Đã đọc</option>
                                 </select>
                             </div>
+                            
                             <!-- Type Filter -->
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <label for="typeFilter" class="form-label font-weight-bold">Loại:</label>
-                                <select class="form-control" id="typeFilter" name="type">
+                                <select class="form-control" id="typeFilter" name="type" onchange="this.form.submit()">
                                     <option value="">-- Tất cả --</option>
                                     <option value="order" th:selected="${selectedType == 'order'}">Đơn hàng</option>
                                     <option value="product" th:selected="${selectedType == 'product'}">Sản phẩm</option>
                                     <option value="system" th:selected="${selectedType == 'system'}">Hệ thống</option>
                                 </select>
                             </div>
-                            <!-- Sort -->
+                            
+                            <!-- Buttons -->
                             <div class="col-lg-2 col-md-6 mb-3 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary mr-2 flex-fill">
-                                    <i class="fas fa-search mr-1"></i>Tìm
-                                </button>
-                                <a th:href="@{/notifications/admin}" class="btn btn-outline-secondary" title="Xóa bộ lọc">
-                                    <i class="fas fa-eraser"></i>
-                                </a>
+                                <div class="btn-group w-100">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search mr-1"></i>Tìm
+                                    </button>
+                                    <a th:href="@{/notifications/admin}" class="btn btn-outline-secondary" title="Xóa bộ lọc">
+                                        <i class="fas fa-eraser"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Filters -->
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a th:href="@{/notifications/admin(status='unread')}" 
+                                       class="btn btn-outline-warning"
+                                       th:classappend="${selectedStatus == 'unread'} ? 'active' : ''">
+                                        <i class="fas fa-bell mr-1"></i>Chưa đọc
+                                    </a>
+                                    <a th:href="@{/notifications/admin(type='order')}" 
+                                       class="btn btn-outline-primary"
+                                       th:classappend="${selectedType == 'order'} ? 'active' : ''">
+                                        <i class="fas fa-shopping-cart mr-1"></i>Đơn hàng
+                                    </a>
+                                    <a th:href="@{/notifications/admin(type='system')}" 
+                                       class="btn btn-outline-secondary"
+                                       th:classappend="${selectedType == 'system'} ? 'active' : ''">
+                                        <i class="fas fa-cog mr-1"></i>Hệ thống
+                                    </a>
+                                    <a th:href="@{/notifications/admin}" class="btn btn-outline-dark">
+                                        <i class="fas fa-list mr-1"></i>Tất cả
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -192,7 +236,7 @@
                     </div>
                     <!-- Table -->
                     <div th:if="${notifications != null and !#lists.isEmpty(notifications)}" class="table-responsive">
-                        <table class="table table-bordered table-hover" id="notificationsTable" width="100%" cellspacing="0">
+                        <table class="table table-bordered table-hover" id="notificationsTable">
                             <thead>
                                 <tr>
                                     <th class="text-center" style="width: 120px;">ID</th>
@@ -201,7 +245,6 @@
                                     <th class="text-center" style="width: 100px;">Loại</th>
                                     <th class="text-center" style="width: 100px;">Trạng thái</th>
                                     <th class="text-center" style="width: 150px;">Thời gian tạo</th>
-                                    <th class="text-center" style="width: 80px;">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -239,11 +282,6 @@
                                         <span th:unless="${notification.isRead}" class="badge badge-warning">Chưa đọc</span>
                                     </td>
                                     <td class="text-center" th:text="${#temporals.format(notification.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</td>
-                                    <td class="text-center">
-                                        <button class="btn btn-danger btn-sm delete-notification-btn" th:data-notification-id="${notification.notificationId}" title="Xóa thông báo">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -320,66 +358,73 @@
 <!-- Page level custom scripts -->
 <script>
 $(document).ready(function() {
-    // DataTable
-    $('#notificationsTable').DataTable({
+    // DataTable with search disabled (use server-side search instead)
+    const table = $('#notificationsTable').DataTable({
         "pageLength": 25,
-        "order": [[5, "desc"]],
+        "searching": false, // Disable client-side search
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
         }
     });
-    // Auto-dismiss alerts after 5 seconds
-    setTimeout(function() {
-        $('.alert').fadeOut('slow');
-    }, 5000);
-    // Clear search input shortcut
-    $('#searchInput').on('keyup', function(e) {
-        if (e.key === 'Escape') {
-            $(this).val('');
-        }
+
+    // Real-time search with debounce
+    let searchTimeout;
+    $('#searchInput').on('input', function() {
+        clearTimeout(searchTimeout);
+        const searchTerm = $(this).val();
+        
+        searchTimeout = setTimeout(function() {
+            if (searchTerm.length >= 2 || searchTerm.length === 0) {
+                $('#searchForm').submit();
+            }
+        }, 500); // Wait 500ms after user stops typing
     });
+
     // Quick search on Enter
     $('#searchInput').on('keypress', function(e) {
         if (e.which === 13) {
-            $(this).closest('form').submit();
+            e.preventDefault();
+            $('#searchForm').submit();
         }
     });
-    // Delete notification
-    $('.delete-notification-btn').click(function() {
-        const notificationId = $(this).data('notification-id');
-        const row = $(this).closest('tr');
-        if (confirm('Bạn có chắc chắn muốn xóa thông báo này?')) {
-            $.ajax({
-                url: `/notifications/admin/${notificationId}`,
-                method: 'DELETE',
-                success: function(response) {
-                    if (response.success) {
-                        $('#notificationsTable').DataTable().row(row).remove().draw();
-                        showAlert('Đã xóa thông báo thành công', 'success');
-                    }
-                },
-                error: function() {
-                    showAlert('Có lỗi xảy ra khi xóa thông báo', 'danger');
-                }
-            });
+
+    // Clear search shortcut
+    $('#searchInput').on('keyup', function(e) {
+        if (e.key === 'Escape') {
+            $(this).val('');
+            $('#searchForm').submit();
         }
     });
-    function showAlert(message, type) {
-        const alertHtml = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
-                ${message}
-                <button type="button" class="close" data-dismiss="alert">
-                    <span>&times;</span>
-                </button>
-            </div>
-        `;
-        $('.container-fluid').prepend(alertHtml);
-        setTimeout(function() {
-            $('.alert').alert('close');
-        }, 3000);
+
+    // Highlight search terms
+    const searchTerm = '[[${searchTerm}]]';
+    if (searchTerm && searchTerm.trim() !== '') {
+        highlightSearchTerm(searchTerm);
     }
+
+    // Auto-dismiss alerts
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+});
+
+function highlightSearchTerm(term) {
+    if (term && term.trim() !== '') {
+        $('.notification-message').each(function() {
+            const text = $(this).text();
+            const highlightedText = text.replace(
+                new RegExp('(' + term + ')', 'gi'),
+                '<mark class="bg-warning">$1</mark>'
+            );
+            $(this).html(highlightedText);
+        });
+    }
+}
+
+// Show loading state during search
+$('#searchForm').on('submit', function() {
+    $('.btn[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Đang tìm...');
 });
 </script>
 </body>
-</html> 
+</html>

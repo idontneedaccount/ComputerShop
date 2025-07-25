@@ -53,4 +53,23 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
     @Modifying
     @Query("DELETE FROM Notification n WHERE n.createdAt < :beforeDate")
     void deleteNotificationsOlderThan(@Param("beforeDate") LocalDateTime beforeDate);
-} 
+    
+    @Query("SELECT n FROM Notification n WHERE " +
+           "(:search IS NULL OR :search = '' OR " +
+           " LOWER(n.message) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           " LOWER(n.user.fullName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           " LOWER(n.user.email) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND (:status IS NULL OR :status = '' OR " +
+           " (:status = 'read' AND n.isRead = true) OR " +
+           " (:status = 'unread' AND n.isRead = false)) " +
+           "AND (:type IS NULL OR :type = '' OR " +
+           " (:type = 'order' AND n.orderId IS NOT NULL) OR " +
+           " (:type = 'product' AND n.productId IS NOT NULL) OR " +
+           " (:type = 'system' AND n.orderId IS NULL AND n.productId IS NULL)) " +
+           "ORDER BY n.createdAt DESC")
+    List<Notification> findNotificationsWithFilters(
+        @Param("search") String search,
+        @Param("status") String status,
+        @Param("type") String type
+    );
+}

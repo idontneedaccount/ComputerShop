@@ -1,13 +1,12 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
 <nav class="navbar navbar-expand navbar-dark bg-dark static-top" th:fragment="nav-bar">
-
-
-        <a class="navbar-brand mr-1" th:href="@{/admin/dashboard}">Trang Quản Trị Viên</a>
-
-
+    <a class="navbar-brand mr-1" th:href="@{/admin/dashboard}" sec:authorize="hasAnyRole('Admin')">Trang Quản Trị Viên</a>
+    <a class="navbar-brand mr-1" th:href="@{/admin/dashboard}" sec:authorize="hasAnyRole('Sales')">Trang Nhân Viên Bán Hàng</a>
+    <a class="navbar-brand mr-1" th:href="@{/shipper/dashboard}" sec:authorize="hasAnyRole('Shipper')">Trang Nhân Viên Giao Hàng</a>
     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
             <i class="fas fa-bars"></i>
-        </button>
-
+    </button>
     <!-- Navbar Search -->
     <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
         <div class="input-group">
@@ -22,18 +21,148 @@
 
         <!-- Navbar -->
         <ul class="navbar-nav ml-auto ml-md-0">
+            <!-- Admin Notification Icon - Only show when authenticated -->
+            <li class="nav-item notifications" sec:authorize="isAuthenticated()">
+                <a th:href="@{/notifications/admin/personal}" class="nav-link notification-btn" title="Thông báo của tôi">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count" id="adminNotificationCount">0</span>
+                </a>
+            </li>
+            
             <li class="nav-item dropdown no-arrow">
                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user-circle fa-fw"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="#">Settings</a>
-                    <a class="dropdown-item" href="#">Activity Log</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/auth/login">Logout</a>
+                    <a class="dropdown-item" href="/auth/login">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Đăng xuất
+                    </a>
                 </div>
             </li>
         </ul>
 
 </nav>
+
+<!-- Admin Notification Count Script - Only load when authenticated -->
+<script th:if="${#authorization.expression('isAuthenticated()')}">
+    $(document).ready(function() {
+        console.log('🚀 [NAV-BAR] Loading admin notification count for authenticated user...');
+        loadAdminNotificationCount();
+        setInterval(loadAdminNotificationCount, 30000);
+        
+        // Listen for page navigation events
+        $(window).on('focus load pageshow', function() {
+            console.log('🔄 [NAV-BAR] Page focus/load detected, refreshing count...');
+            loadAdminNotificationCount();
+        });
+    });
+
+    function loadAdminNotificationCount() {
+        console.log('🔄 [ADMIN] Fetching notification count from /notifications/api/unread-count...');
+        
+        $.get('/notifications/api/unread-count')
+            .done(function(response) {
+                console.log('✅ [ADMIN] Notification API response:', response);
+                if (response.success) {
+                    const count = response.unreadCount;
+                    console.log('✅ [ADMIN] Unread notification count:', count);
+                    updateAdminNotificationBadges(count);
+                } else {
+                    console.error('❌ [ADMIN] API returned invalid response:', response);
+                }
+            })
+            .fail(function(xhr, status, error) {
+                console.error('❌ [ADMIN] Failed to load notification count:', error);
+                console.error('❌ [ADMIN] Status:', status);
+                console.error('❌ [ADMIN] Response text:', xhr.responseText);
+            });
+    }
+
+    function updateAdminNotificationBadges(count) {
+        console.log('🔄 [ADMIN] Updating notification badges with count:', count);
+        
+        const displayCount = count > 99 ? '99+' : count.toString();
+        
+        // Update bell icon badge
+        $('#adminNotificationCount').text(displayCount);
+        $('#adminNotificationCount').toggle(count > 0);
+        
+        // Update dropdown badge
+        $('#dropdownNotificationCount').text(count);
+        $('#dropdownNotificationCount').toggle(count > 0);
+        
+        if (count > 0) {
+            $('.notification-btn').addClass('has-notifications');
+            console.log('✅ [ADMIN] Showing notification badges with count:', displayCount);
+        } else {
+            $('.notification-btn').removeClass('has-notifications');
+            console.log('✅ [ADMIN] Hiding notification badges (count = 0)');
+        }
+    }
+
+    // Make functions global for other pages to call
+    window.loadAdminNotificationCount = loadAdminNotificationCount;
+    window.updateAdminNotificationBadges = updateAdminNotificationBadges;
+</script>
+
+<!-- Admin Notification Styles -->
+<style>
+    .notifications {
+        position: relative;
+    }
+    
+    .notification-btn {
+        position: relative;
+        color: rgba(255, 255, 255, 0.8) !important;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+    
+    .notification-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #dc3545;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-weight: bold;
+        min-width: 18px;
+        height: 18px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+    
+    .notification-btn:hover {
+        color: #ffc107 !important;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .notification-btn.has-notifications {
+        animation: bellShake 1s ease-in-out;
+    }
+    
+    .notification-btn.has-notifications {
+        color: #ffc107;
+    }
+    
+    .notification-btn.has-notifications .notification-count {
+        display: flex;
+    }
+    
+    @keyframes bellShake {
+        0%, 100% { transform: rotate(0deg); }
+        10%, 30%, 50%, 70%, 90% { transform: rotate(-5deg); }
+        20%, 40%, 60%, 80% { transform: rotate(5deg); }
+    }
+</style>

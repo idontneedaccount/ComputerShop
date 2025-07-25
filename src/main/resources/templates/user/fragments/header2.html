@@ -186,4 +186,63 @@
             </div>
         </div>
     </div>
+
+    <!-- Notification Count Script -->
+    <script th:if="${#authorization.expression('isAuthenticated()')}">
+        $(document).ready(function() {
+            loadNotificationCount();
+            
+            // Refresh notification count every 30 seconds
+            setInterval(loadNotificationCount, 30000);
+        });
+
+        function loadNotificationCount() {
+            $.get('/notifications/api/unread-count')
+                .done(function(response) {
+                    if (response.success) {
+                        const count = response.unreadCount;
+                        updateNotificationBadges(count);
+                    }
+                });
+        }
+
+        function updateNotificationBadges(count) {
+            const displayCount = count > 99 ? '99+' : count.toString();
+            
+            // Update header notification icon
+            $('#notificationCount').text(displayCount);
+            $('#notificationCount').toggle(count > 0);
+            
+            // Update dropdown notification badge
+            $('#dropdownNotificationCount').text(count);
+            $('#dropdownNotificationCount').toggle(count > 0);
+            
+            // Add visual indicator
+            if (count > 0) {
+                $('.notification-btn').addClass('has-notifications');
+            } else {
+                $('.notification-btn').removeClass('has-notifications');
+            }
+        }
+    </script>
+
+    <!-- Notification Styles -->
+    <style>
+
+        .notification-btn.has-notifications .notification-count {
+            display: flex;
+        }
+        
+        .flaticon-bell::before {
+            content: "\f0f3";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+        
+        @keyframes bellShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+    </style>
 </header>

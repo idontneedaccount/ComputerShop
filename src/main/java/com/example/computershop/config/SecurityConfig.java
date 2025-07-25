@@ -44,12 +44,17 @@ public class SecurityConfig {
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page","/",
                                         "/cart/add/**", "/cart/count", "/cart/add-variant","/user/single-product/**")
                                 .permitAll()
-                                .requestMatchers("/admin/dashboard","/admin/orders/**").hasAnyRole("Admin","Sales")
-                                .requestMatchers("/admin/**").hasAnyRole("Admin")
-                                .requestMatchers("/shipper/**").hasAnyRole("Shipper","Admin")
+                                .requestMatchers("/admin/dashboard","/admin/orders/**","/notifications/admin/personal","/admin/api/**",
+                                        "/admin/vouchers/**","/admin/product/**","/admin/vouchers/**","/admin/purchase-orders/**",
+                                        "/admin/export-orders/**","/admin/reports/**")
+                                .hasAnyRole("Admin","Sales")
+                                .requestMatchers("/admin/**")
+                                .hasAnyRole("Admin")
+                                .requestMatchers("/shipper/**")
+                                .hasAnyRole("Shipper","Admin")
                                 .requestMatchers("/user/user-profile","/cart/view","/cart/checkout",
                                         "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**",
-                                        "/api/reviews/product/**")
+                                        "/api/reviews/product/**","/notifications/api/**","/notifications/user")
                                 .hasAnyRole("Admin","Sales","Shipper","Customer")
                                 .anyRequest().authenticated())
                 .formLogin(form -> form

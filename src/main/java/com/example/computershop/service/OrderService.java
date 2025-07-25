@@ -16,6 +16,7 @@ public interface OrderService {
     // Admin methods
     List<Order> getOrdersByStatus(String status);
     Order updateOrder(Order order);
+    Order updateOrderStatus(String orderId, String newStatus);
     List<Object[]> getMonthlyRevenue(int year);
     List<Integer> getDistinctYears();
     long countOrders();

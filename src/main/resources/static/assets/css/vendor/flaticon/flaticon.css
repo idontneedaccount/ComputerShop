@@ -201,3 +201,6 @@ i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
 .flaticon-reply:before {
     content: "\f13d";
 }
+.flaticon-bell:before {
+    content: "\f13e";
+}

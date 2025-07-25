@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
-<p sec:authentication="principal.authorities"></p>
+
 <ul class="sidebar navbar-nav" id="accordionSidebar" th:fragment="sidebar" lang="vi">
     <li class="nav-item active" sec:authorize="hasAnyRole('Admin', 'Sales')">
         <a class="nav-link" th:href="@{/admin/dashboard}">
@@ -100,7 +100,7 @@
             </div>
         </div>
     </li>
-    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin','Sales')">
         <a class="nav-link" th:href="@{/admin/orders}">
             <i class="fas fa-fw fa-shopping-cart"></i>
             <span>Quản lí đơn hàng</span>
@@ -136,7 +136,7 @@
             </div>
         </div>
     </li>
-    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin','Sales')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseWarehouse" aria-expanded="false" aria-controls="collapseWarehouse">
             <i class="fas fa-warehouse"></i>
             <span>Quản lý kho</span>
@@ -153,15 +153,15 @@
         </div>
     </li>
     <!-- Thống kê - Toggle statistics -->
-    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
-        <a class="nav-link" href="/admin/dashboard" onclick="toggleStatistics(); return false;" id="statisticsToggle">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin','Sales')">
+        <a class="nav-link" th:href="@{/admin/dashboard(section='statistics')}" id="statisticsToggle">
             <i class="fas fa-fw fa-chart-pie"></i>
             <span>Thống kê</span>
         </a>
     </li>
 
     <!-- Báo cáo - Dropdown menu -->
-    <li class="nav-item" sec:authorize="hasAnyRole('Admin')">
+    <li class="nav-item" sec:authorize="hasAnyRole('Admin','Sales')">
         <a class="nav-link collapsed" href="#" onclick="toggleReportsMenu(event); return false;">
             <i class="fas fa-fw fa-chart-line"></i>
             <span>Báo cáo</span>
