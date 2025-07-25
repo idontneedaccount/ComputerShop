@@ -128,8 +128,17 @@ public class OrderController {
                 return "redirect:/admin/orders/" + orderId;
             }
             
-            // Get và update order status (with notification)
-            Order updatedOrder = orderService.updateOrderStatus(orderId, newStatus);
+            // Get và update order
+            Order order = orderService.getOrderById(orderId);
+            if (order == null) {
+                redirectAttributes.addFlashAttribute(ERROR, "Không tìm thấy đơn hàng với ID: " + orderId);
+                return ORDER_VIEW_REDIRECT;
+            }
+            
+            String oldStatus = order.getStatus();
+            order.setStatus(newStatus);
+            
+            Order updatedOrder = orderService.updateOrder(order);
             if (updatedOrder != null) {
                 String newStatusDisplay = getStatusDisplayName(newStatus);
                 redirectAttributes.addFlashAttribute(SUCCESS, 
@@ -201,7 +210,10 @@ public class OrderController {
                     return true;
                 }
                 // ✅ NEW - Search in alternative receiver phone
-                return order.getAlternativeReceiverPhone() != null && order.getAlternativeReceiverPhone().contains(searchTerm);
+                if (order.getAlternativeReceiverPhone() != null && order.getAlternativeReceiverPhone().contains(searchTerm)) {
+                    return true;
+                }
+                return false;
             })
             .collect(Collectors.toList());
     }

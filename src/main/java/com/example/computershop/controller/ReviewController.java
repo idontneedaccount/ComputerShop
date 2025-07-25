@@ -44,7 +44,7 @@ public class ReviewController {
     }
     
     /**
-     * Lấy danh sách reviews của sản phẩm (sử dụng DTO để tránh circular reference)
+     * Lấy danh sách reviews của sản phẩm
      */
     @GetMapping("/product/{productId}")
     public ResponseEntity<Page<ReviewDTO>> getProductReviews(

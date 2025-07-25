@@ -1,8 +1,12 @@
 package com.example.computershop.service.impl;
 
+import com.example.computershop.entity.Categories;
 import com.example.computershop.entity.Voucher;
 import com.example.computershop.repository.VoucherRepository;
+import com.example.computershop.service.CategoriesService;
 import com.example.computershop.service.VoucherService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +16,7 @@ import java.util.Optional;
 
 @Service
 public class VoucherServiceImpl implements VoucherService {
-
+    private static final Logger logger = LoggerFactory.getLogger(VoucherServiceImpl.class);
     private final VoucherRepository voucherRepository;
 
     @Autowired
@@ -93,10 +97,6 @@ public class VoucherServiceImpl implements VoucherService {
         return savedVoucher;
     }
 
-    @Override
-    public void deleteVoucher(String id) {
-        voucherRepository.deleteById(id);
-    }
 
     @Override
     public Long calculateDiscountAmount(Voucher voucher, Long originalAmount) {
@@ -130,5 +130,19 @@ public class VoucherServiceImpl implements VoucherService {
 
         System.out.println("DEBUG - calculateDiscountAmount: Final discount amount: " + discountAmount);
         return discountAmount;
+    }
+    public Boolean toggleStatus(String voucherID) {
+        try {
+            Voucher voucher = this.voucherRepository.findById(voucherID).orElse(null);
+            if (voucher != null) {
+                voucher.setIsActive(!voucher.getIsActive());
+                this.voucherRepository.save(voucher);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("error", e.getMessage(), e);
+        }
+        return false;
     }
 } 

@@ -1,28 +1,39 @@
 package com.example.computershop.controller;
 
-import com.example.computershop.dto.UserProfileData;
-import com.example.computershop.dto.request.UserInfoUpdateRequest;
-import com.example.computershop.dto.request.PasswordChangeRequest;
-import com.example.computershop.entity.Order;
-import com.example.computershop.entity.OrderDetail;
-import com.example.computershop.entity.Products;
-import com.example.computershop.entity.User;
-import com.example.computershop.service.OrderService;
-import com.example.computershop.service.ReviewService;
-import com.example.computershop.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.computershop.dto.UserProfileData;
+import com.example.computershop.dto.request.PasswordChangeRequest;
+import com.example.computershop.dto.request.UserInfoUpdateRequest;
+import com.example.computershop.entity.Order;
+import com.example.computershop.entity.OrderDetail;
+import com.example.computershop.entity.Products;
+import com.example.computershop.entity.Review;
+import com.example.computershop.entity.User;
+import com.example.computershop.service.OrderService;
+import com.example.computershop.service.ReviewService;
+import com.example.computershop.service.UserService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/user")
@@ -251,8 +262,21 @@ public class UserProfileController {
                     productInfo.put("price", product.getPrice());
                     productInfo.put("imageURL", product.getImageURL());
                     
-                    boolean hasReviewed = reviewService.getUserReviewForProduct(user.getUserId(), product.getProductID()).isPresent();
+                    // Check if user has reviewed this product
+                    Optional<Review> existingReview = reviewService.getUserReviewForProduct(user.getUserId(), product.getProductID());
+                    boolean hasReviewed = existingReview.isPresent();
                     productInfo.put("hasReviewed", hasReviewed);
+                    
+                    // If reviewed, include review data
+                    if (hasReviewed) {
+                        Review review = existingReview.get();
+                        Map<String, Object> reviewData = new HashMap<>();
+                        reviewData.put("reviewId", review.getReviewId());
+                        reviewData.put("rating", review.getRating());
+                        reviewData.put("comment", review.getComment());
+                        reviewData.put("createdAt", review.getCreatedAt());
+                        productInfo.put("review", reviewData);
+                    }
                     
                     products.add(productInfo);
                 }
@@ -271,7 +295,7 @@ public class UserProfileController {
     }
     
     /**
-     * Submit product review
+     * Submit product review (create or update)
      */
     @PostMapping("/submit-review")
     public ResponseEntity<Map<String, Object>> submitReview(@RequestBody Map<String, Object> request, Principal principal) {
@@ -296,11 +320,17 @@ public class UserProfileController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Create review (ReviewService sẽ handle validation)
-            reviewService.createReview(user.getUserId(), productId, rating, comment);
+            // Check if review already exists
+            Optional<Review> existingReview = reviewService.getUserReviewForProduct(user.getUserId(), productId);
+            
+            // Create or update review
+            Review review = reviewService.UpdateReview(user.getUserId(), productId, rating, comment);
             
             response.put("success", true);
-            response.put("message", "Đánh giá sản phẩm thành công!");
+            response.put("message", existingReview.isPresent() ? 
+                "Cập nhật đánh giá thành công!" : "Đánh giá sản phẩm thành công!");
+            response.put("reviewId", review.getReviewId());
+            response.put("isUpdate", existingReview.isPresent());
             return ResponseEntity.ok(response);
             
         } catch (IllegalArgumentException e) {
