@@ -22,7 +22,7 @@ public class Categories {
 
     @Column(name = "name",nullable = false, columnDefinition = "nvarchar(255)")
     String name;
-    @Column(name = "description", columnDefinition = "nvarchar(255)")
+    @Column(name = "description", columnDefinition = "nvarchar(max)")
     String description;
     
     @Column(name = "is_active", columnDefinition = "bit")

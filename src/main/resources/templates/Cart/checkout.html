@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>eTrade || Checkout</title>
+    <title>eTrade || Thanh toán</title>
     <meta name="robots" content="noindex, follow" />
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -45,9 +45,9 @@
             <div th:if="${cartItems == null || cartItems.isEmpty()}" class="row">
                 <div class="col-12">
                     <div class="empty-cart-message text-center">
-                        <h4>Your cart is empty</h4>
-                        <p>You need to add some items to your cart before you can checkout.</p>
-                        <a th:href="@{/cart/view}" class="axil-btn btn-bg-primary">Go to Cart</a>
+                        <h4>Giỏ hàng của bạn đang trống</h4>
+                        <p>Bạn cần thêm một số sản phẩm vào giỏ hàng trước khi thanh toán.</p>
+                        <a th:href="@{/cart/view}" class="axil-btn btn-bg-primary">Đi tới giỏ hàng</a>
                     </div>
                 </div>
             </div>
@@ -61,8 +61,8 @@
                         <div th:if="${param.info[0] == 'please_use_checkout_form'}" class="alert alert-info alert-dismissible fade show" role="alert">
                             <i class="fas fa-info-circle"></i>
                             <strong>Thông báo:</strong> Vui lòng sử dụng form checkout bên dưới để đặt hàng.
-                            Hệ thống sẽ tự động xử lý thanh toán VNPay sau khi bạn điền thông tin và nhấn "Checkout".
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            Hệ thống sẽ tự động xử lý thanh toán VNPay sau khi bạn điền thông tin và nhấn "Thanh toán".
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                             <span th:if="${param.error[0] == 'amount_invalid'}">
                                     <span th:text="${param.message != null ? param.message[0] : 'Số tiền không hợp lệ cho VNPay. Vui lòng chọn phương thức thanh toán khác.'}"></span>
                                 </span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
                     </div>
                 </div>
@@ -91,11 +91,11 @@
                     <div class="checkout-method-wrap">
                         <div class="single-method">
                             <i class="fal fa-user"></i>
-                            Returning customer? <a href="#" class="checkout-method-switcher">Click here to login</a>
+                            Khách hàng quay lại? <a href="#" class="checkout-method-switcher">Nhấn vào đây để đăng nhập</a>
                         </div>
                         <div class="single-method">
                             <i class="fal fa-tag"></i>
-                            Have a coupon? <a href="#" class="checkout-method-switcher">Click here to enter your code</a>
+                            Có voucher? <a href="#" class="checkout-method-switcher">Nhấn vào đây để nhập mã</a>
                         </div>
                     </div>
                 </div>
@@ -105,12 +105,12 @@
                         <!-- Billing Details -->
                         <div class="col-lg-6">
                             <div class="axil-checkout-billing">
-                                <h4 class="title mb--40">Billing details</h4>
+                                <h4 class="title mb--40">Thông tin thanh toán</h4>
 
                                 <!-- Full Name -->
                                 <div class="form-group">
-                                    <label for="fullName">Full Name <span>*</span></label>
-                                    <input type="text" id="fullName" name="fullName" placeholder="Adam John" required>
+                                    <label for="fullName">Họ và tên <span>*</span></label>
+                                    <input type="text" id="fullName" name="fullName" placeholder="Nguyễn Văn A" required>
                                 </div>
 
                                 <!-- Province/City -->
@@ -219,13 +219,13 @@
 
                                 <!-- Phone -->
                                 <div class="form-group">
-                                    <label for="phone">Phone <span>*</span></label>
+                                    <label for="phone">Số điện thoại <span>*</span></label>
                                     <input type="tel" id="phone" name="phone" placeholder="+84 123 456 789" required>
                                 </div>
 
                                 <!-- Email Address -->
                                 <div class="form-group">
-                                    <label for="email">Email Address <span>*</span></label>
+                                    <label for="email">Địa chỉ Email <span>*</span></label>
                                     <input type="email" id="email" name="email" placeholder="example@domain.com" required>
                                 </div>
 
@@ -233,7 +233,7 @@
                                 <div class="form-group">
                                     <div class="checkout-box">
                                         <input type="checkbox" class="checkbox-primary" id="create-account">
-                                        <label for="create-account">Create an account?</label>
+                                        <label for="create-account">Tạo tài khoản?</label>
                                     </div>
                                 </div>
 
@@ -241,14 +241,14 @@
                                 <div class="different-address">
                                     <div class="checkout-box">
                                         <input type="checkbox" class="checkbox-primary" id="different-address">
-                                        <label for="different-address">Ship to a different address?</label>
+                                        <label for="different-address">Giao hàng đến địa chỉ khác?</label>
                                     </div>
                                 </div>
 
                                 <!-- Order Notes -->
                                 <div class="form-group">
-                                    <label for="order-notes">Order Notes (optional)</label>
-                                    <textarea id="order-notes" name="note" rows="3" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
+                                    <label for="order-notes">Ghi chú đơn hàng (tùy chọn)</label>
+                                    <textarea id="order-notes" name="note" rows="3" placeholder="Ghi chú về đơn hàng của bạn, ví dụ: ghi chú đặc biệt cho việc giao hàng."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -256,27 +256,27 @@
                         <!-- Order Summary -->
                         <div class="col-lg-6">
                             <div class="axil-order-summery order-checkout-summery">
-                                <h5 class="title mb--20">Your Order</h5>
+                                <h5 class="title mb--20">Đơn hàng của bạn</h5>
 
                                 <!-- Voucher Section -->
                                 <div class="voucher-section mb-3">
                                     <div th:if="${hasVoucher}" class="applied-voucher">
                                         <div class="alert alert-success">
-                                            <strong>✓ Voucher Applied: </strong>
+                                            <strong>✓ Đã áp dụng Voucher: </strong>
                                             <span th:text="${voucherCode}">VOUCHER20</span>
                                             <span class="text-success ms-2">(-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> VND)</span>
-                                            <a th:href="@{/cart/remove-voucher(redirect='checkout')}" class="btn btn-sm btn-outline-danger ms-2">Remove</a>
+                                            <a th:href="@{/cart/remove-voucher(redirect='checkout')}" class="btn btn-sm btn-outline-danger ms-2">Xóa</a>
                                         </div>
                                     </div>
 
                                     <div class="voucher-form">
                                         <form th:action="@{/cart/apply-voucher}" method="post">
                                             <div class="input-group mb-2">
-                                                <label for="voucher-code" class="sr-only">Voucher Code</label>
-                                                <input type="text" id="voucher-code" name="voucherCode" th:value="${voucherCode}" placeholder="Enter voucher code" class="form-control">
+                                                <label for="voucher-code" class="sr-only">Mã Voucher</label>
+                                                <input type="text" id="voucher-code" name="voucherCode" th:value="${voucherCode}" placeholder="Nhập mã voucher" class="form-control">
                                                 <input type="hidden" name="redirect" value="checkout">
                                                 <div class="input-group-append" style=" position: absolute; margin-top: 15px; margin-left: 500px;">
-                                                    <button type="submit" class="btn btn-outline-primary btn-sm px-3">Apply</button>
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm px-3">Áp dụng</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -295,8 +295,8 @@
                                     <table class="table summery-table mb--30">
                                         <thead>
                                         <tr>
-                                            <th>Product</th>
-                                            <th>Subtotal</th>
+                                            <th>Sản phẩm</th>
+                                            <th>Tạm tính</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -314,14 +314,14 @@
 
                                         <!-- Subtotal -->
                                         <tr class="order-subtotal">
-                                            <td>Subtotal</td>
+                                            <td>Tạm tính</td>
                                             <td><span th:text="${#numbers.formatDecimal(originalTotal, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</td>
                                         </tr>
 
                                         <!-- Voucher Discount Row -->
                                         <tr th:if="${hasVoucher and totalDiscount > 0}" class="order-discount">
                                             <td>
-                                                <span>Discount</span>
+                                                <span>Giảm giá</span>
                                                 <small th:if="${voucherCode}" class="text-muted">(<span th:text="${voucherCode}"></span>)</small>
                                             </td>
                                             <td class="text-success">-<span th:text="${#numbers.formatDecimal(totalDiscount, 0, 'COMMA', 0, 'POINT')}">0</span> ₫</td>
@@ -387,7 +387,7 @@
                                 </div>
 
                                 <!-- Place Order Button -->
-                                <button type="submit" class="axil-btn btn-bg-primary checkout-btn w-100">Checkout</button>
+                                <button type="submit" class="axil-btn btn-bg-primary checkout-btn w-100">Thanh toán</button>
                             </div>
                         </div>
                     </div>

@@ -25,7 +25,7 @@ public class Products {
     @Column(name = "name", columnDefinition = "nvarchar(255)")
     String name;
     
-    @Column(name = "description", columnDefinition = "nvarchar(255)")
+    @Column(name = "description", columnDefinition = "nvarchar(max)")
     String description;
     
     @Column(name = "brand", columnDefinition = "nvarchar(255)")

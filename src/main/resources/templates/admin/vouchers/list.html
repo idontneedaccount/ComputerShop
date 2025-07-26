@@ -119,7 +119,8 @@
     });
     function toggleVoucherStatus(button) {
         const voucherId = button.getAttribute('data-voucher-id');
-        fetch('/admin/toggle-voucher-status/' + voucherId, {
+        
+        fetch('/admin/vouchers/toggle-voucher-status/' + voucherId, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
