@@ -59,7 +59,7 @@ public class User implements UserDetails, OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_" + role.name());
+        return List.of(() -> "ROLE_" + capitalize(role.name()));
     }
 
     @Override
@@ -83,5 +83,10 @@ public class User implements UserDetails, OAuth2User {
     @Override
     public String getName() {
         return username;
+    }
+
+    private String capitalize(String input) {
+        if (input == null || input.isEmpty()) return input;
+        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
 }

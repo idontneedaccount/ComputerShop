@@ -86,20 +86,6 @@
                     </div>
                 </div>
 
-                <!-- Customer Info Section -->
-                <div class="checkout-customer-section">
-                    <div class="checkout-method-wrap">
-                        <div class="single-method">
-                            <i class="fal fa-user"></i>
-                            Khách hàng quay lại? <a href="#" class="checkout-method-switcher">Nhấn vào đây để đăng nhập</a>
-                        </div>
-                        <div class="single-method">
-                            <i class="fal fa-tag"></i>
-                            Có voucher? <a href="#" class="checkout-method-switcher">Nhấn vào đây để nhập mã</a>
-                        </div>
-                    </div>
-                </div>
-
                 <form th:action="@{/cart/checkout}" method="post">
                     <div class="row">
                         <!-- Billing Details -->
@@ -227,16 +213,6 @@
                                 <div class="form-group">
                                     <label for="email">Địa chỉ Email <span>*</span></label>
                                     <input type="email" id="email" name="email" placeholder="example@domain.com" required>
-                                </div>
-
-
-
-                                <!-- Ship to Different Address -->
-                                <div class="different-address">
-                                    <div class="checkout-box">
-                                        <input type="checkbox" class="checkbox-primary" id="different-address">
-                                        <label for="different-address">Giao hàng đến địa chỉ khác?</label>
-                                    </div>
                                 </div>
 
                                 <!-- Order Notes -->

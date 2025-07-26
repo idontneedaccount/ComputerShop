@@ -117,6 +117,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
                 // ✅ GÁN QUYỀN CHO NGƯỜI DÙNG DỰA TRÊN ROLE
                 List<GrantedAuthority> authorities = new ArrayList<>();
+                String role = user.getRole().name();
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
                 
                 // ✅ Debug để chắc chắn

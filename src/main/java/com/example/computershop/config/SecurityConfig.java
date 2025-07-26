@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers("/admin/dashboard","/admin/orders/**","/notifications/admin/personal","/admin/api/**",
                                         "/admin/vouchers/**","/admin/product/**","/admin/vouchers/**","/admin/purchase-orders/**",
-                                        "/admin/export-orders/**","/admin/reports/**")
+                                        "/admin/export-orders/**","/admin/reports/**","/admin/categories/**")
                                 .hasAnyRole("Admin","Sales")
                                 .requestMatchers("/admin/**")
                                 .hasAnyRole("Admin")
