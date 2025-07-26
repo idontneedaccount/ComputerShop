@@ -1,5 +1,6 @@
-package com.example.computershop.service;
+package com.example.computershop.service.impl;
 
+import com.example.computershop.service.DistanceService;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;

@@ -281,8 +281,9 @@ public class NotificationController {
             notifications = allUserNotifications.stream()
                 .filter(n -> {
                     boolean matchesSearch = search == null || search.trim().isEmpty() || 
-                        n.getMessage().toLowerCase().contains(search.toLowerCase());
-                    
+                        n.getMessage().toLowerCase().contains(search.toLowerCase()) ||
+                            (n.getUser() != null && n.getUser().getFullName().toLowerCase().contains(search.toLowerCase()));
+
                     boolean matchesStatus = status == null || status.trim().isEmpty() || 
                         (status.equals("read") && (n.getIsRead() != null && n.getIsRead())) ||
                         (status.equals("unread") && (n.getIsRead() == null || !n.getIsRead()));
@@ -452,36 +453,6 @@ public class NotificationController {
     }
 
     /**
-     * Lấy thông tin liên quan đến notification
-     */
-    private String getRelatedInfo(Notification notification) {
-        StringBuilder info = new StringBuilder();
-        
-        try {
-            if (notification.getOrderId() != null) {
-                // Thông tin về đơn hàng
-                info.append("Đơn hàng ID: ").append(notification.getOrderId());
-                // Có thể thêm logic để lấy thông tin đơn hàng từ OrderService nếu cần
-            }
-            
-            if (notification.getProductId() != null) {
-                // Thông tin về sản phẩm
-                info.append("Sản phẩm ID: ").append(notification.getProductId());
-                // Có thể thêm logic để lấy thông tin sản phẩm từ ProductService nếu cần
-            }
-            
-            if (notification.getOrderId() == null && notification.getProductId() == null) {
-                info.append("Thông báo hệ thống");
-            }
-            
-        } catch (Exception e) {
-            info.append("Không thể tải thông tin liên quan");
-        }
-        
-        return info.toString();
-    }
-
-    /**
      * Lấy thông tin chi tiết liên quan đến notification (cho detail page)
      */
     private Map<String, Object> getDetailedRelatedInfo(Notification notification) {
@@ -530,51 +501,7 @@ public class NotificationController {
         
         return relatedInfo;
     }
-    
-    /**
-     * Test API endpoint để kiểm tra detail function
-     */
-    @GetMapping("/admin/test-detail/{notificationId}")
-    @PreAuthorize("hasRole('Admin')")
-    @ResponseBody
-    public ResponseEntity<String> testNotificationDetail(@PathVariable String notificationId, Principal principal) {
-        try {
-            User admin = getCurrentUser(principal);
-            if (admin == null) {
-                return ResponseEntity.badRequest().body("User not authenticated");
-            }
-            
-            Notification notification = notificationService.getNotificationById(notificationId);
-            if (notification == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            String result = String.format(
-                "Notification Details:\n" +
-                "ID: %s\n" +
-                "Message: %s\n" +
-                "User ID: %s\n" +
-                "Created: %s\n" +
-                "Is Read: %s\n" +
-                "Order ID: %s\n" +
-                "Product ID: %s\n" +
-                "Related Info: %s",
-                notification.getNotificationId(),
-                notification.getMessage(),
-                notification.getUserId(),
-                notification.getCreatedAt(),
-                notification.getIsRead(),
-                notification.getOrderId(),
-                notification.getProductId(),
-                getRelatedInfo(notification)
-            );
-            
-            return ResponseEntity.ok(result);
-            
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
+
     
     // ===== HELPER METHODS =====
     

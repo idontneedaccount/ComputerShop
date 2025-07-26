@@ -2,7 +2,7 @@ package com.example.computershop.payment.vnpay;
 
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.Payment;
-import com.example.computershop.service.OrderServiceImpl;
+import com.example.computershop.service.impl.OrderServiceImpl;
 import com.example.computershop.service.IPaymentService;
 import com.example.computershop.payment.vnpay.VNPayService.VNPayPaymentRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -212,14 +212,16 @@ public class VNPayController {
                             Order order = orderService.getOrderById(payment.getOrderId().toString());
                             if (order != null) {
                                 if (paymentStatus == 1) {
+                                    String oldStatus = order.getStatus();
                                     // Payment successful - update order status to CONFIRMED
                                     order.setStatus("CONFIRMED");
-                                    orderService.updateOrder(order);
+                                    orderService.updateOrder(order, oldStatus);
                                     log.info("Updated order {} status to CONFIRMED after successful VNPay payment", order.getId());
                                 } else if (paymentStatus == 0) {
+                                    String oldStatus = order.getStatus();
                                     // Payment failed - update order status to CANCELLED
                                     order.setStatus("CANCELLED");
-                                    orderService.updateOrder(order);
+                                    orderService.updateOrder(order, oldStatus);
                                     log.info("Updated order {} status to CANCELLED after failed VNPay payment", order.getId());
                                 }
                             } else {

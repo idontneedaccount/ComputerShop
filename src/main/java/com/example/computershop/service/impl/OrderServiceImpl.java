@@ -1,9 +1,11 @@
-package com.example.computershop.service;
+package com.example.computershop.service.impl;
 
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.OrderDetail;
 import com.example.computershop.repository.OrderRepository;
 import com.example.computershop.repository.OrderDetailRepository;
+import com.example.computershop.service.NotificationService;
+import com.example.computershop.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,8 +89,39 @@ public class OrderServiceImpl implements OrderService {
     
     @Override
     @Transactional
-    public Order updateOrder(Order order) {
-        return orderRepository.save(order);
+    public Order updateOrder(Order order,String oldStatus) {
+        System.out.println("=== UPDATE ORDER DEBUG ===");
+        System.out.println("Order ID: " + order.getId());
+        System.out.println("New Status: " + order.getStatus());
+        
+        Order existingOrder = orderRepository.findById(order.getId()).orElse(null);
+        
+        if (existingOrder != null) {
+            System.out.println("Old Status in DB: " + oldStatus);
+        } else {
+            System.out.println("Order not found in DB (new order)");
+        }
+        
+        // Save order
+        Order savedOrder = orderRepository.save(order);
+        System.out.println("Order saved successfully");
+        
+        // Gửi notification nếu status thay đổi
+        if (oldStatus != null && !oldStatus.equals(order.getStatus())) {
+            System.out.println("Status changed: '" + oldStatus + "' -> '" + order.getStatus() + "'");
+            try {
+                notificationService.createOrderStatusChangeNotification(savedOrder, oldStatus, order.getStatus());
+                System.out.println("✅ Notification created successfully");
+            } catch (Exception e) {
+                System.err.println("❌ Error creating notification: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else if (oldStatus != null) {
+            System.out.println("Status not changed, no notification sent");
+        }
+        
+        System.out.println("=== END UPDATE ORDER ===");
+        return savedOrder;
     }
      @Override
     public List<Object[]> getMonthlyRevenue(int year) {
@@ -117,25 +150,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order updateOrderStatus(String orderId, String newStatus) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
-        
-        String oldStatus = order.getStatus();
-        order.setStatus(newStatus);
-        
-        Order updatedOrder = orderRepository.save(order);
-        
-        // Gửi notification khi status thay đổi
-        if (!oldStatus.equals(newStatus)) {
-            try {
-                notificationService.createOrderStatusChangeNotification(updatedOrder, oldStatus, newStatus);
-            } catch (Exception e) {
-                System.err.println("Error creating status change notification: " + e.getMessage());
-                // Log error but don't fail the order update
-            }
-        }
-        
-        return updatedOrder;
+    public void updateOrderStatus(String orderId, String newStatus) {
     }
 } 

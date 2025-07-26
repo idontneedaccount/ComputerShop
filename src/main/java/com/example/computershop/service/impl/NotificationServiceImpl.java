@@ -31,14 +31,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createOrderSuccessNotification(User user, Order order) {
-        String message = "";
-        if(order.getStatus().isEmpty()) {
-            message = String.format(
-                    "Đơn hàng #%s của bạn đã được đặt thành công! Tổng tiền: %,d VND. Chúng tôi sẽ xử lý và giao hàng trong thời gian sớm nhất.",
+        String message =  String.format("Đơn hàng #%s của bạn đã được đặt thành công! Tổng tiền: %,d VND. Chúng tôi sẽ xử lý và giao hàng trong thời gian sớm nhất.",
                     order.getId().substring(0, 8), order.getTotalAmount());
-        }else{
-            message = String.format("\"Đơn hàng #%s của bạn đã bị huỷ do không thanh toán!",order.getId().substring(0, 8));
-        }
+        
         Notification notification = Notification.builder()
                 .userId(user.getUserId())
                 .message(message)
@@ -55,11 +50,16 @@ public class NotificationServiceImpl implements NotificationService {
         // Tìm user của đơn hàng
         Optional<User> userOpt = userRepository.findById(order.getUserId());
         if (userOpt.isEmpty()) {
+            System.err.println("❌ User not found with ID: " + order.getUserId());
             return;
         }
         
         User user = userOpt.get();
-        String message = String.format("Trạng thái đơn hàng #%s đã được cập nhật từ '%s' thành '%s'.", order.getId(), getStatusDisplayName(oldStatus), getStatusDisplayName(newStatus));
+
+        String message = String.format("Trạng thái đơn hàng #%s đã được cập nhật từ '%s' thành '%s'.", 
+                                      order.getId().substring(0, 8), 
+                                      getStatusDisplayName(oldStatus), 
+                                      getStatusDisplayName(newStatus));
 
         Notification notification = Notification.builder()
                 .userId(user.getUserId())
@@ -69,7 +69,11 @@ public class NotificationServiceImpl implements NotificationService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        notificationRepository.save(notification);
+        try {
+            notificationRepository.save(notification);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     @Override
