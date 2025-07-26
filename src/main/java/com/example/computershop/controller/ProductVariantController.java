@@ -44,6 +44,16 @@ public class ProductVariantController {
     private static final String PRODUCT_VARIANTS = "redirect:/admin/product-variants/";
     private static final String PRODUCT = "redirect:/admin/product";
     
+    // Regex pattern for variant specification validation: letters, numbers, dots, commas, parentheses, hyphens, quotes, and spaces
+    private static final String SPEC_PATTERN = "^[\\p{L}\\p{N}.,()\\-\"\\s]*$";
+    
+    /**
+     * Validate specification field using the defined pattern
+     */
+    private boolean isValidSpecification(String value) {
+        return value == null || value.trim().isEmpty() || value.matches(SPEC_PATTERN);
+    }
+    
     @GetMapping("/{productId}")
     public String listVariants(@PathVariable String productId, Model model) {
         Products product = productService.findById(productId);
@@ -85,6 +95,32 @@ public class ProductVariantController {
             variant.setGpu(allParams.get("gpu"));
             variant.setScreen(allParams.get("screen"));
             variant.setSku(allParams.get("sku"));
+            
+            // Validate specification fields
+            if (!isValidSpecification(variant.getCpu())) {
+                redirectAttributes.addFlashAttribute(ERROR, "CPU chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + productId;
+            }
+            
+            if (!isValidSpecification(variant.getRam())) {
+                redirectAttributes.addFlashAttribute(ERROR, "RAM chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + productId;
+            }
+            
+            if (!isValidSpecification(variant.getStorage())) {
+                redirectAttributes.addFlashAttribute(ERROR, "Storage chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + productId;
+            }
+            
+            if (!isValidSpecification(variant.getGpu())) {
+                redirectAttributes.addFlashAttribute(ERROR, "GPU chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + productId;
+            }
+            
+            if (!isValidSpecification(variant.getScreen())) {
+                redirectAttributes.addFlashAttribute(ERROR, "Screen chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + productId;
+            }
             
             // Parse price and quantity
             try {
@@ -198,6 +234,32 @@ public class ProductVariantController {
             if (existing == null) {
                 redirectAttributes.addFlashAttribute(ERROR, "Cấu hình không tồn tại!");
                 return PRODUCT;
+            }
+            
+            // Validate specification fields in updated variant
+            if (!isValidSpecification(updatedVariant.getCpu())) {
+                redirectAttributes.addFlashAttribute(ERROR, "CPU chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + existing.getProduct().getProductID();
+            }
+            
+            if (!isValidSpecification(updatedVariant.getRam())) {
+                redirectAttributes.addFlashAttribute(ERROR, "RAM chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + existing.getProduct().getProductID();
+            }
+            
+            if (!isValidSpecification(updatedVariant.getStorage())) {
+                redirectAttributes.addFlashAttribute(ERROR, "Storage chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + existing.getProduct().getProductID();
+            }
+            
+            if (!isValidSpecification(updatedVariant.getGpu())) {
+                redirectAttributes.addFlashAttribute(ERROR, "GPU chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + existing.getProduct().getProductID();
+            }
+            
+            if (!isValidSpecification(updatedVariant.getScreen())) {
+                redirectAttributes.addFlashAttribute(ERROR, "Screen chỉ được chứa chữ, số, dấu '.', ',', '()', '-', '\"' và dấu cách.");
+                return PRODUCT_VARIANTS + existing.getProduct().getProductID();
             }
             
             // XỬ LÝ UPLOAD ẢNH CHÍNH - CẢI THIỆN VỚI CLEANUP
