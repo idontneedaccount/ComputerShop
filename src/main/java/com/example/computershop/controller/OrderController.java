@@ -3,6 +3,7 @@ package com.example.computershop.controller;
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.Payment;
 import com.example.computershop.repository.PaymentRepository;
+import com.example.computershop.service.NotificationService;
 import com.example.computershop.service.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class OrderController {
 
+    private final NotificationService notificationService;
     private OrderService orderService;
     private PaymentRepository paymentRepository;
     
@@ -134,11 +136,11 @@ public class OrderController {
                 redirectAttributes.addFlashAttribute(ERROR, "Không tìm thấy đơn hàng với ID: " + orderId);
                 return ORDER_VIEW_REDIRECT;
             }
-            
             String oldStatus = order.getStatus();
+            // Set status mới và update order - updateOrder() sẽ tự động gửi notification
             order.setStatus(newStatus);
-            
-            Order updatedOrder = orderService.updateOrder(order);
+            Order updatedOrder = orderService.updateOrder(order, oldStatus);
+
             if (updatedOrder != null) {
                 String newStatusDisplay = getStatusDisplayName(newStatus);
                 redirectAttributes.addFlashAttribute(SUCCESS, 
@@ -210,10 +212,7 @@ public class OrderController {
                     return true;
                 }
                 // ✅ NEW - Search in alternative receiver phone
-                if (order.getAlternativeReceiverPhone() != null && order.getAlternativeReceiverPhone().contains(searchTerm)) {
-                    return true;
-                }
-                return false;
+                return order.getAlternativeReceiverPhone() != null && order.getAlternativeReceiverPhone().contains(searchTerm);
             })
             .collect(Collectors.toList());
     }

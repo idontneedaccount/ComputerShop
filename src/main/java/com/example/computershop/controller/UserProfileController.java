@@ -388,10 +388,10 @@ public class UserProfileController {
                 response.put("message", "Chỉ có thể xác nhận đơn hàng đã được giao!");
                 return ResponseEntity.badRequest().body(response);
             }
-
+            String oldStatus = order.getStatus();
             // Update status to USER_CONFIRMED
             order.setStatus("USER_CONFIRMED");
-            Order updatedOrder = orderService.updateOrder(order);
+            Order updatedOrder = orderService.updateOrder(order, oldStatus);
 
             response.put("success", true);
             response.put("message", "Xác nhận đã nhận hàng thành công! Bạn có thể đánh giá sản phẩm.");

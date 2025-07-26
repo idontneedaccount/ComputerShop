@@ -77,7 +77,7 @@ public class AuthenticationController {
             }
 
             authenticationService.verifyUser(verifyRequest);
-            model.addAttribute(messageAttr, "Tài khoản đã xác thực thành công. Bạn có thể đăng nhập.");
+            redirectAttributes.addFlashAttribute(messageAttr, "Tài khoản đã xác thực thành công. Bạn có thể đăng nhập.");
             return "redirect:/auth/login?verified=true";
         } catch (AuthenticationException e) {
             model.addAttribute(errorAttr, e.getMessage());
