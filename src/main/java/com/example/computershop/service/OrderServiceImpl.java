@@ -18,6 +18,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     @Transactional
@@ -111,5 +113,29 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Object[]> getMonthlyOrderCount(int year) {
         return orderRepository.countOrdersByMonth(year);
+    }
+
+    @Override
+    @Transactional
+    public Order updateOrderStatus(String orderId, String newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
+        
+        String oldStatus = order.getStatus();
+        order.setStatus(newStatus);
+        
+        Order updatedOrder = orderRepository.save(order);
+        
+        // Gửi notification khi status thay đổi
+        if (!oldStatus.equals(newStatus)) {
+            try {
+                notificationService.createOrderStatusChangeNotification(updatedOrder, oldStatus, newStatus);
+            } catch (Exception e) {
+                System.err.println("Error creating status change notification: " + e.getMessage());
+                // Log error but don't fail the order update
+            }
+        }
+        
+        return updatedOrder;
     }
 } 

@@ -75,7 +75,7 @@ public class OrderController {
             return ORDER_VIEW;
         } catch (Exception e) {
             model.addAttribute(ERROR, "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
-            model.addAttribute(ORDERS, Arrays.asList());
+            model.addAttribute(ORDERS, List.of());
             model.addAttribute(STATUS_OPTIONS, ALL_STATUSES);
             return ORDER_VIEW;
         }
@@ -140,10 +140,9 @@ public class OrderController {
             
             Order updatedOrder = orderService.updateOrder(order);
             if (updatedOrder != null) {
-                String oldStatusDisplay = getStatusDisplayName(oldStatus);
                 String newStatusDisplay = getStatusDisplayName(newStatus);
                 redirectAttributes.addFlashAttribute(SUCCESS, 
-                    String.format("✅ Đã cập nhật trạng thái đơn hàng từ %s thành %s thành công!", oldStatusDisplay, newStatusDisplay));
+                    String.format("✅ Đã cập nhật trạng thái đơn hàng thành %s thành công! Thông báo đã được gửi đến khách hàng.", newStatusDisplay));
             } else {
                 redirectAttributes.addFlashAttribute(ERROR, "Không thể cập nhật trạng thái đơn hàng");
             }
@@ -194,23 +193,23 @@ public class OrderController {
                 if (order.getId() != null && order.getId().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                //  FIXED - Search in customer name using helper method
+                // ✅ FIXED - Search in customer name using helper method
                 if (order.getCustomerName() != null && order.getCustomerName().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                //  FIXED - Search in email using helper method
+                // ✅ FIXED - Search in email using helper method
                 if (order.getCustomerEmail() != null && order.getCustomerEmail().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // FIXED - Search in phone using helper method
+                // ✅ FIXED - Search in phone using helper method
                 if (order.getCustomerPhone() != null && order.getCustomerPhone().contains(searchTerm)) {
                     return true;
                 }
-                // NEW - Search in alternative receiver name
+                // ✅ NEW - Search in alternative receiver name
                 if (order.getAlternativeReceiverName() != null && order.getAlternativeReceiverName().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // NEW - Search in alternative receiver phone
+                // ✅ NEW - Search in alternative receiver phone
                 if (order.getAlternativeReceiverPhone() != null && order.getAlternativeReceiverPhone().contains(searchTerm)) {
                     return true;
                 }
@@ -233,9 +232,8 @@ public class OrderController {
                         return o1.getOrderDate().compareTo(o2.getOrderDate());
                     })
                     .collect(Collectors.toList());
-                    
+
             case "date_desc":
-            default:
                 return orders.stream()
                     .sorted((o1, o2) -> {
                         if (o1.getOrderDate() == null && o2.getOrderDate() == null) return 0;
@@ -244,7 +242,7 @@ public class OrderController {
                         return o2.getOrderDate().compareTo(o1.getOrderDate());
                     })
                     .collect(Collectors.toList());
-                    
+
             case "price_asc":
                 return orders.stream()
                     .sorted((o1, o2) -> {
@@ -253,7 +251,7 @@ public class OrderController {
                         return amount1.compareTo(amount2);
                     })
                     .collect(Collectors.toList());
-                    
+
             case "price_desc":
                 return orders.stream()
                     .sorted((o1, o2) -> {
@@ -262,7 +260,7 @@ public class OrderController {
                         return amount2.compareTo(amount1);
                     })
                     .collect(Collectors.toList());
-                    
+
             case "status":
                 return orders.stream()
                     .sorted((o1, o2) -> {
@@ -271,6 +269,8 @@ public class OrderController {
                         return status1.compareTo(status2);
                     })
                     .collect(Collectors.toList());
+                default:
+                    return List.of();
         }
     }
 

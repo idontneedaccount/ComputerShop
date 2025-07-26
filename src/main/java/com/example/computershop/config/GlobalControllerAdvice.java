@@ -4,12 +4,9 @@ import com.example.computershop.dto.CartItemDisplay;
 import com.example.computershop.entity.Cart;
 import com.example.computershop.entity.User;
 import com.example.computershop.entity.Products;
-import com.example.computershop.entity.ProductVariant;
-import com.example.computershop.entity.Voucher;
 import com.example.computershop.repository.CartRepository;
 import com.example.computershop.repository.UserRepository;
 import com.example.computershop.repository.ProductRepository;
-import com.example.computershop.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -20,7 +17,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Optional;
 
 @ControllerAdvice
 public class GlobalControllerAdvice {
@@ -34,8 +30,6 @@ public class GlobalControllerAdvice {
     @Autowired
     private ProductRepository productRepository;
     
-    @Autowired
-    private VoucherService voucherService;
     
 
     private User getUserFromPrincipal(Principal principal) {

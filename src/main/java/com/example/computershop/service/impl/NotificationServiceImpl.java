@@ -30,10 +30,36 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification createOrderSuccessNotification(User user, Order order) {
-        String message = String.format(
-                "Đơn hàng #%s của bạn đã được đặt thành công! Tổng tiền: %,d VND. Chúng tôi sẽ xử lý và giao hàng trong thời gian sớm nhất.",
-                order.getId().substring(0, 8), order.getTotalAmount());
+    public void createOrderSuccessNotification(User user, Order order) {
+        String message = "";
+        if(order.getStatus().isEmpty()) {
+            message = String.format(
+                    "Đơn hàng #%s của bạn đã được đặt thành công! Tổng tiền: %,d VND. Chúng tôi sẽ xử lý và giao hàng trong thời gian sớm nhất.",
+                    order.getId().substring(0, 8), order.getTotalAmount());
+        }else{
+            message = String.format("\"Đơn hàng #%s của bạn đã bị huỷ do không thanh toán!",order.getId().substring(0, 8));
+        }
+        Notification notification = Notification.builder()
+                .userId(user.getUserId())
+                .message(message)
+                .orderId(order.getId())
+                .isRead(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public void createOrderStatusChangeNotification(Order order, String oldStatus, String newStatus) {
+        // Tìm user của đơn hàng
+        Optional<User> userOpt = userRepository.findById(order.getUserId());
+        if (userOpt.isEmpty()) {
+            return;
+        }
+        
+        User user = userOpt.get();
+        String message = String.format("Trạng thái đơn hàng #%s đã được cập nhật từ '%s' thành '%s'.", order.getId(), getStatusDisplayName(oldStatus), getStatusDisplayName(newStatus));
 
         Notification notification = Notification.builder()
                 .userId(user.getUserId())
@@ -43,19 +69,28 @@ public class NotificationServiceImpl implements NotificationService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        return notificationRepository.save(notification);
+        notificationRepository.save(notification);
     }
 
     @Override
     public void createNewOrderNotificationForAdmin(Order order) {
         // Lấy tất cả admin users
         List<User> adminUsers = userRepository.findByRole(Role.Admin);
-
+        List<User> salesUsers = userRepository.findByRole(Role.Sales);
         String customerName = order.getCustomerName() != null ? order.getCustomerName() : "N/A";
         String message = String.format(
                 "Có đơn hàng mới #%s từ khách hàng %s. Tổng tiền: %,d VND. Vui lòng kiểm tra và xử lý.",
                 order.getId().substring(0, 8), customerName, order.getTotalAmount());
-
+        for (User salesUser : salesUsers) {
+            Notification notification = Notification.builder()
+                    .userId(salesUser.getUserId())
+                    .message(message)
+                    .orderId(order.getId())
+                    .isRead(false)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            notificationRepository.save(notification);
+        }
         for (User admin : adminUsers) {
             Notification notification = Notification.builder()
                     .userId(admin.getUserId())
@@ -135,9 +170,17 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Notification> filterNotifications(String search, String status, String type) {
+    public List<Notification> searchNotifications(String search, String status, String type) {
         List<Notification> all = notificationRepository.findAllOrderByCreatedAtDesc();
-        return all.stream()
+        
+        // Debug logging
+        System.out.println("=== SEARCH NOTIFICATIONS DEBUG ===");
+        System.out.println("Total notifications in database: " + all.size());
+        System.out.println("Search term: " + search);
+        System.out.println("Status filter: " + status);
+        System.out.println("Type filter: " + type);
+        
+        List<Notification> filtered = all.stream()
                 .filter(n -> search == null || search.isEmpty() ||
                         (n.getMessage() != null && n.getMessage().toLowerCase().contains(search.toLowerCase())))
                 .filter(n -> status == null || status.isEmpty() ||
@@ -148,12 +191,7 @@ public class NotificationServiceImpl implements NotificationService {
                         ("product".equals(type) && n.getProductId() != null) ||
                         ("system".equals(type) && n.getOrderId() == null && n.getProductId() == null))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public void deleteOldNotifications(int daysOld) {
-        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(daysOld);
-        notificationRepository.deleteNotificationsOlderThan(cutoffDate);
+        return filtered;
     }
 
     @Override
@@ -163,8 +201,30 @@ public class NotificationServiceImpl implements NotificationService {
         return notification.orElse(null);
     }
 
-    @Override
-    public void deleteNotification(String notificationId) {
-        notificationRepository.deleteById(notificationId);
+
+
+    private String getStatusDisplayName(String status) {
+        if (status == null) return "Không xác định";
+
+        switch (status) {
+            case "PENDING":
+                return "⏳ Chờ xác nhận";
+            case "PAYMENT_PENDING":
+                return "💳 Chờ thanh toán";
+            case "CONFIRMED":
+                return "✅ Đã xác nhận";
+            case "PROCESSING":
+                return "🔄 Đang xử lý";
+            case "SHIPPED":
+                return "🚚 Đang giao hàng";
+            case "DELIVERED":
+                return "📦 Đã giao hàng";
+            case "USER_CONFIRMED":
+                return "✅ Khách đã nhận";
+            case "CANCELLED":
+                return "❌ Đã hủy";
+            default:
+                return "❓ Không xác định";
+        }
     }
 }

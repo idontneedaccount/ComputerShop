@@ -1,6 +1,5 @@
 package com.example.computershop.payment.vnpay;
 
-import com.example.computershop.entity.Cart;
 import com.example.computershop.entity.Order;
 import com.example.computershop.entity.Payment;
 import com.example.computershop.service.OrderServiceImpl;
@@ -12,11 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -85,7 +83,7 @@ public class VNPayController {
             } catch (IllegalArgumentException e) {
                 log.error("VNPay amount validation failed for order {}: {}", orderId, e.getMessage());
                 return "redirect:/cart/checkout?error=amount_invalid&message=" + 
-                       java.net.URLEncoder.encode(e.getMessage(), "UTF-8");
+                       java.net.URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
             }
             
             // Check if payment record already exists for this order
@@ -95,10 +93,12 @@ public class VNPayController {
                 if (existingPayment.isPresent()) {
                     // Update existing payment with new transaction reference
                     Payment payment = existingPayment.get();
+                    payment.setOrderId(UUID.fromString(order.getId()));
                     payment.setVnpTxnRef(paymentRequest.getVnpTxnRef());
                     payment.setPaymentStatus("Pending");
                     payment.setPaidAmount(totalAmountVND);
                     payment.setUpdatedAt(LocalDateTime.now());
+                    payment.setOrderInfo(order.getNote());
                     paymentService.save(payment);
                     
                     log.info("Updated existing VNPay payment record for order {}", orderId);
@@ -106,7 +106,7 @@ public class VNPayController {
                     // Create new payment record
                     paymentService.createVNPayPayment(
                         UUID.fromString(orderId), 
-                        UUID.fromString(userId), 
+                        UUID.fromString(userId),
                         totalAmountVND, 
                         paymentRequest.getVnpTxnRef()
                     );
@@ -119,7 +119,7 @@ public class VNPayController {
             } catch (Exception e) {
                 log.error("Failed to create/update VNPay payment record", e);
                 return "redirect:/cart/checkout?error=payment_creation_failed&message=" + 
-                       java.net.URLEncoder.encode(e.getMessage(), "UTF-8");
+                       java.net.URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
             }
             
         } catch (Exception e) {

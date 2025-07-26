@@ -13,7 +13,6 @@ public class DistanceServiceImpl implements DistanceService {
     
     // Store location (FPT University Hanoi at Hoa Lac)
     private static final String STORE_ADDRESS = "Đại học FPT Hà Nội, Khu Công nghệ cao Hòa Lạc, Thạch Thất, Hà Nội";
-    private static final String STORE_REGION = "ha-noi";
     
     // Distance table from FPT Hanoi (Hoa Lac) to other regions (in kilometers)
     private static final Map<String, Double> DISTANCE_TABLE = new HashMap<>();

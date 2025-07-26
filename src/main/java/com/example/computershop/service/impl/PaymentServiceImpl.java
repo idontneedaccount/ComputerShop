@@ -112,6 +112,22 @@ public class PaymentServiceImpl implements IPaymentService {
         try {
             Payment savedPayment = paymentRepository.save(payment);
             log.info("Successfully created VNPay payment: paymentId={}", savedPayment.getPaymentId());
+            
+            // Debug: Kiểm tra dữ liệu đã được lưu
+            log.info("Saved Payment Details - OrderId: {}, UserId: {}, Amount: {}, Status: {}", 
+                    savedPayment.getOrderId(), savedPayment.getUserId(), 
+                    savedPayment.getPaidAmount(), savedPayment.getPaymentStatus());
+            
+            // Kiểm tra lại từ database
+            Optional<Payment> verifyPayment = paymentRepository.findById(savedPayment.getPaymentId());
+            if (verifyPayment.isPresent()) {
+                Payment dbPayment = verifyPayment.get();
+                log.info("Verification from DB - OrderId: {}, UserId: {}, Amount: {}", 
+                        dbPayment.getOrderId(), dbPayment.getUserId(), dbPayment.getPaidAmount());
+            } else {
+                log.error("Payment not found in database after save!");
+            }
+            
             return savedPayment;
         } catch (Exception e) {
             log.error("Error saving payment: {}", e.getMessage(), e);
