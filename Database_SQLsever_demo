@@ -1,0 +1,543 @@
+
+-- Khai báo biến để lưu productID cho mỗi sản phẩm
+DECLARE @productID1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID2 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID3 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID4 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID5 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID6 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID7 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID8 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID9 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID10 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID11 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID12 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID13 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID14 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID15 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID16 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID17 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID18 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID19 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID20 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID21 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID22 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID23 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID24 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID25 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID26 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID27 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID28 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID29 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID30 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID31 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID32 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID33 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID34 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID35 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID36 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID37 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID38 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID39 UNIQUEIDENTIFIER = NEWID();
+DECLARE @productID40 UNIQUEIDENTIFIER = NEWID();
+
+DECLARE @categoryID1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @categoryID2 UNIQUEIDENTIFIER = NEWID();
+DECLARE @categoryID3 UNIQUEIDENTIFIER = NEWID();
+DECLARE @categoryID4 UNIQUEIDENTIFIER = NEWID();
+
+DECLARE @userID1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID2 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID3 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID4 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID5 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID6 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID7 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID8 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID9 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID10 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID11 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID12 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID13 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID14 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID15 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID16 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID17 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID18 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID19 UNIQUEIDENTIFIER = NEWID();
+DECLARE @userID20 UNIQUEIDENTIFIER = NEWID();
+
+DECLARE @purchaseOrderID1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID2 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID3 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID4 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID5 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID6 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID7 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID8 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID9 UNIQUEIDENTIFIER = NEWID();
+DECLARE @purchaseOrderID10 UNIQUEIDENTIFIER = NEWID();
+
+DECLARE @orderID1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID2 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID3 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID4 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID5 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID6 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID7 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID8 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID9 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID10 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID11 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID12 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID13 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID14 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID15 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID16 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID17 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID18 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID19 UNIQUEIDENTIFIER = NEWID();
+DECLARE @orderID20 UNIQUEIDENTIFIER = NEWID();
+
+DECLARE @exportOrderID1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID2 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID3 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID4 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID5 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID6 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID7 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID8 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID9 UNIQUEIDENTIFIER = NEWID();
+DECLARE @exportOrderID10 UNIQUEIDENTIFIER = NEWID();
+
+
+Insert into Categories (categoryID, name, description,is_active)
+Values
+(@categoryID1,N'Laptop Gaming',N'Laptop gaming là dòng máy tính xách tay được thiết kế chuyên biệt cho việc chơi game với hiệu năng mạnh mẽ. Chúng thường được trang bị vi xử lý cao cấp, card đồ họa rời mạnh mẽ, màn hình tần số quét cao, hệ thống tản nhiệt hiệu quả và thiết kế hầm hố, cá tính. Laptop gaming phù hợp cho game thủ và những người cần xử lý các tác vụ đồ họa nặng như dựng phim, thiết kế 3D hay livestream.',1),
+(@categoryID2,N'Laptop Văn Phòng',N'Laptop văn phòng là dòng máy tính xách tay được thiết kế tối ưu cho công việc hàng ngày như soạn thảo văn bản, xử lý bảng tính, gửi email và họp trực tuyến. Chúng thường có thiết kế gọn nhẹ, pin lâu, hoạt động ổn định và cấu hình vừa đủ để đáp ứng nhu cầu công việc văn phòng. Laptop văn phòng phù hợp với nhân viên văn phòng, sinh viên và người dùng cần thiết bị phục vụ công việc cơ bản.',1),
+(@categoryID3,N'Laptop Cao Cấp', N'Laptop cao cấp là dòng máy tính xách tay sở hữu thiết kế sang trọng, vật liệu chất lượng cao và cấu hình mạnh mẽ. Chúng thường được trang bị vi xử lý đời mới, màn hình độ phân giải cao, thời lượng pin ấn tượng và nhiều tính năng hiện đại như cảm biến vân tay, màn hình cảm ứng hoặc âm thanh cao cấp. Laptop cao cấp phù hợp với doanh nhân, người dùng chuyên nghiệp và những ai yêu cầu hiệu năng mạnh mẽ cùng trải nghiệm sử dụng đẳng cấp.',1),
+(@categoryID4,N'Macbook', N'MacBook là dòng laptop do Apple sản xuất, nổi bật với thiết kế mỏng nhẹ, tinh tế và hiệu năng ổn định. Máy sử dụng hệ điều hành macOS, mang đến trải nghiệm mượt mà, bảo mật cao và tối ưu cho hệ sinh thái Apple. MacBook thường được trang bị màn hình Retina sắc nét, thời lượng pin ấn tượng và phần cứng tối ưu cho công việc sáng tạo như thiết kế đồ họa, chỉnh sửa video hay lập trình. Đây là lựa chọn phổ biến của sinh viên, người dùng chuyên nghiệp và doanh nhân yêu thích sự tinh tế và hiệu quả.',1);
+-- Insert vào bảng Products
+INSERT INTO Products (productID, name, brand, categories_id, description, price, quantity, is_active)
+VALUES
+(@productID1, N'ASUS ROG Strix G15 G512L WAZ114T', N'ASUS', @categoryID1, N'Laptop gaming ASUS ROG Strix G15 với thiết kế mạnh mẽ, hiệu năng vượt trội cho game thủ chuyên nghiệp', 44990000, 10, 1),
+(@productID2, N'ASUS ROG Strix G15 G512 IAL011T', N'ASUS', @categoryID1, N'Laptop gaming ASUS ROG Strix G15 phiên bản đặc biệt với màu Glacier Blue độc đáo', 28990000, 15, 1),
+(@productID3, N'ASUS ROG Strix G17 G712L UEV075T', N'ASUS', @categoryID1, N'Laptop gaming ASUS ROG Strix G17 màn hình lớn 17.3 inch cho trải nghiệm gaming tuyệt vời', 34990000, 8, 1),
+(@productID4, N'MSI GF63 Thin 11UD 473VN', N'MSI', @categoryID3, N'Laptop gaming MSI GF63 Thin thiết kế mỏng nhẹ, hiệu năng mạnh mẽ với RTX 3050Ti', 17490000, 20, 1),
+(@productID5, N'ASUS ROG Strix SCAR 16 G634JZ N4029W', N'ASUS', @categoryID1, N'Laptop gaming cao cấp ASUS ROG Strix SCAR 16 với RTX 4080 và i9 thế hệ 13', 69990000, 5, 1),
+(@productID6, N'MSI Katana GF66 12UC 676VN', N'MSI', @categoryID1, N'Laptop gaming MSI Katana GF66 với thiết kế samurai độc đáo', 23990000, 12, 1),
+(@productID7, N'Acer Nitro 5 AN515-58-769J', N'Acer', @categoryID1, N'Laptop gaming Acer Nitro 5 - lựa chọn tuyệt vời cho game thủ với ngân sách hợp lý', 22990000, 18, 1),
+(@productID8, N'Lenovo Legion 5 Pro 16ACH6H', N'Lenovo', @categoryID1, N'Laptop gaming Lenovo Legion 5 Pro với màn hình QHD+ 165Hz', 32990000, 10, 1),
+(@productID9, N'HP OMEN 16 b1450AX', N'HP', @categoryID1, N'Laptop gaming HP OMEN 16 với hiệu năng mạnh mẽ và thiết kế sang trọng', 31990000, 7, 1),
+(@productID10, N'Dell G15 5520 N5520-i7P165W11GR3050Ti', N'Dell', @categoryID1, N'Laptop gaming Dell G15 với thiết kế bền bỉ và hiệu năng ổn định', 26990000, 14, 1),
+(@productID11, N'ASUS TUF Gaming F15 FX506HE', N'ASUS', @categoryID1, N'Laptop gaming ASUS TUF Gaming F15 - độ bền quân đội, hiệu năng gaming', 24990000, 16, 1),
+(@productID12, N'MSI Bravo 15 B5DD 276VN', N'MSI', @categoryID1, N'Laptop gaming MSI Bravo 15 với AMD Ryzen và Radeon Graphics', 19990000, 11, 1),
+(@productID13, N'Gigabyte AORUS 15 XE4', N'Gigabyte', @categoryID1, N'Laptop gaming Gigabyte AORUS 15 với màn hình 240Hz siêu mượt', 42990000, 6, 1),
+(@productID14, N'ASUS ROG Zephyrus G14 GA401QM', N'ASUS', @categoryID1, N'Laptop gaming ASUS ROG Zephyrus G14 - nhỏ gọn nhưng mạnh mẽ', 35990000, 9, 1),
+(@productID15, N'Lenovo IdeaPad Gaming 3 15IAH7', N'Lenovo', @categoryID1, N'Laptop gaming Lenovo IdeaPad Gaming 3 - giá rẻ, hiệu năng tốt', 18990000, 22, 1),
+(@productID16, N'MSI Stealth 15M B12UE', N'MSI', @categoryID1, N'Laptop gaming MSI Stealth 15M siêu mỏng nhẹ cho game thủ di động', 38990000, 5, 1),
+(@productID17, N'Acer Predator Helios 300 PH315-55', N'Acer', @categoryID1, N'Laptop gaming Acer Predator Helios 300 - hiệu năng khủng trong tầm giá', 36990000, 8, 1),
+(@productID18, N'HP Victus 16 d0292TX', N'HP', @categoryID1, N'Laptop gaming HP Victus 16 - thiết kế trẻ trung, hiệu năng ổn định', 25990000, 13, 1),
+(@productID19, N'ASUS ROG Flow X13 GV301RE', N'ASUS', @categoryID1, N'Laptop gaming 2-in-1 ASUS ROG Flow X13 với màn hình cảm ứng xoay 360 độ', 45990000, 4, 1),
+(@productID20, N'MSI Crosshair 15 B12UEZ', N'MSI', @categoryID1, N'Laptop gaming MSI Crosshair 15 với thiết kế Rainbow Six Extraction độc quyền', 34990000, 7, 1),
+(@productID21, N'Dell Alienware M15 R7', N'Dell', @categoryID3, N'Laptop gaming cao cấp Dell Alienware M15 R7 với thiết kế vũ trụ độc đáo', 55990000, 3, 1),
+(@productID22, N'Lenovo Legion 7 16ACHg6', N'Lenovo', @categoryID1, N'Laptop gaming flagship Lenovo Legion 7 với RGB Lighting tuyệt đẹp', 48990000, 5, 1),
+(@productID23, N'ASUS TUF Dash F15 FX517ZM', N'ASUS', @categoryID1, N'Laptop gaming ASUS TUF Dash F15 - mỏng nhẹ nhưng vẫn mạnh mẽ', 29990000, 10, 1),
+(@productID24, N'MSI Raider GE76 12UGS', N'MSI', @categoryID3, N'Laptop gaming MSI Raider GE76 với màn hình 17.3 inch và RTX 3070Ti', 52990000, 4, 1),
+(@productID25, N'Acer Nitro 5 Tiger AN515-58', N'Acer', @categoryID1, N'Laptop gaming Acer Nitro 5 Tiger phiên bản mới với Intel Gen 12', 27990000, 12, 1),
+(@productID26, N'HP OMEN 17 ck1055AX', N'HP', @categoryID1, N'Laptop gaming HP OMEN 17 màn hình lớn cho trải nghiệm tuyệt vời', 43990000, 6, 1),
+(@productID27, N'ASUS ROG Strix G18 G814JI', N'ASUS', @categoryID3, N'Laptop gaming ASUS ROG Strix G18 màn hình khủng 18 inch', 64990000, 3, 1),
+(@productID28, N'Lenovo LOQ 15IRH8', N'Lenovo', @categoryID1, N'Laptop gaming Lenovo LOQ - dòng gaming mới với giá cả phải chăng', 21990000, 18, 1),
+(@productID29, N'MSI Titan GT77 HX 13VI', N'MSI', @categoryID3, N'Laptop gaming MSI Titan GT77 - siêu phẩm gaming với RTX 4090', 119990000, 2, 1),
+(@productID30, N'Dell G16 7620', N'Dell', @categoryID1, N'Laptop gaming Dell G16 với màn hình QHD+ và hiệu năng mạnh mẽ', 33990000, 9, 1),
+(@productID31, N'MacBook Pro 16 inch M3 Max 2024', N'Apple', @categoryID4, N'Macbook Pro 16 inch M3 Max 2023 36GB 1TB đem đến khả năng xử lý tác vụ nặng với hiệu suất ấn tượng thông qua chipset M3 Max mạnh mẽ với CPU 14 lõi và 30 nhân GPU. Kèm theo đó là thông số bộ nhớ lên đến 36GB RAM và 1TB bộ nhớ trong, hỗ trợ đa nhiệm xuất sắc và lưu trữ không giới hạn. Ngoài ra, dòng Macbook Pro 2023 mới này còn nổi bật với màn hình Liquid XDR 16 inch cung cấp chất lượng hình ảnh sắc nét và chuyên nghiệp trong từng điểm ảnh', 77990000, 3, 1),
+(@productID32, N'MacBook Air M3 13 inch 2024', N'Apple', @categoryID4, N'Apple Macbook Air 13 M3 với con chip Apple M3 mạnh mẽ cùng công nghệ dò tia tốc độ cao mang lại trải nghiệm dùng mượt mà. Laptop sở hữu một thiết kế siêu mỏng với độ dày 1,13 cm giúp người dùng dễ dàng mang theo. Macbook Air 13 được trang bị wifi 6E mang lại tốc độ nhanh hơn đến 2x lần so với wifi 622.', 24190000, 7, 1),
+(@productID33, N'MacBook Air M3 15 inch 2024', N'Apple', @categoryID4, N'CMacbook Air M3 15 inch 2024 đem lại trải nghiệm đột phá nhờ được trang bị CPU Apple M3 8 lõi và GPU 10 lõi thế hệ mới, kết hợp cùng RAM 8GB và 256GB SSD. Về khả năng hiển thị, Macbook Air M3 2024 cũng được đánh giá cao với màn hình 15.3 inch sử dụng công nghệ True Tone, cùng camera FaceTime HD 1080p và hệ điều hành MacOS siêu mượt mà. Đặc biệt hơn, Mac Air M3 15 inch 2024 còn ghi điểm với Wi-Fi 6E và công nghệ âm thanh Dolby Atmos, giúp cải thiện đáng kể trải nghiệm kết nối và giải trí.', 24990000, 5, 1),
+(@productID34, N'MacBook Pro 14 inch M2 Pro', N'Apple', @categoryID4, N'Macbook Pro 14 inch 2023 M2 Pro – Sang trọng, mỏng nhẹ, mạnh mẽ, là chiếc laptop của thương hiệu Apple, mang lại cho người dùng sự sang trọng và thanh lịch. Sở hữu cho mình bộ vi xử lý chip Macbook Pro 2023 giúp tăng hiệu suất xử lý đa tác vụ và độ họa một cách mượt mà nhất.', 45990000, 4, 1),
+(@productID35, N'MacBook Pro 16 inch M2 Pro 2023', N'Apple', @categoryID4, N'Macbook Pro 16 inch 2023 M2 Pro – Đồ họa ấn tượng, cấu hình mạnh mẽ, có thiết kế và tính năng ấn tượng có những ý kiến tích cực từ phía khách hàng. Chiếc Macbook Pro 2023 được sản xuất bởi nhà Apple, thương hiệu có tiếng trong thị trường công nghệ, nên càng nâng cao vị thế của sản phẩm khi ra mắt.', 52990000, 2, 1),
+(@productID36, N'MacBook Air M2 13 inch 2024', N'Apple', @categoryID4, N'Macbook Air M2 2024 với thiết kế sang trọng, vẻ ngoài siêu mỏng đầy lịch lãm. Mẫu Macbook Air mới với những nâng cấp về thiết kế và cấu hình cùng giá bán phải chăng, đây sẽ là một thiết bị lý tưởng cho công việc và giải trí', 19990000, 9, 1),
+(@productID37, N'MacBook Air M2 15 inch 2023', N'Apple', @categoryID4, N'MacBook Air 15 inch M2 2023 512GB sạc 70W là dòng MacBook Air tích hợp công nghệ sạc nhanh và hiệu quả với công suất 70W, sạc đầy trong thời gian ngắn. Đặc biệt, sạc còn được tích hợp các tính năng an toàn như chống quá nhiệt và chống quá tải, giúp bảo vệ thiết bị khỏi các rủi ro liên quan đến điện áp. Bộ sạc 70W cũng hỗ trợ công nghệ sạc nhanh, giúp nạp năng lượng kịp thời cho những người dùng thường xuyên di chuyển.', 25490000, 6, 1),
+(@productID38, N'MacBook Pro 14 inch M1 Pro 2021', N'Apple', @categoryID4, N'MacBook Pro 14 inch 2021 1TB được trang bị chip M1 Pro 10 nhân đi kèm RAM 16GB, đảm bảo khả năng render video và xử lý đồ hoạ 3D vô cùng xuất sắc. Ổ cứng 1TB cung cấp không gian lưu trữ đủ lớn để chứa những video 4K chất lượng cao. Màn hình Liquid Retina XDR 14.2 inch (3456 x 2234) của MacBook Pro mang đến chất lượng hình ảnh sắc nét. Bên cạnh đó, máy có đa dạng kết nối với webcam Full HD và 6 loa Dolby Atmos đỉnh cao. ', 42590000, 5, 1),
+(@productID39, N'MacBook Pro 16 inch M1 Pro 2021', N'Apple', @categoryID4, N'Macbook Pro M1 Max 16 inch – Thiết kế sang trọng, hiệu năng vượt trội.Không chỉ là điểm nhận biết trên các thiết bị smartphone, hiện nay tai thỏ đã xuất hiện trên thế hệ Macbook mới nhất. Macbook Pro M1 Max với thiết kế độc đáo, màn hình chất lượng mang lại trải nghiệm vượt  trội. Máy tính Macbook Pro 16 inch 2021 được trang bị cấu hình cực khủng với chip Apple M1 Max với 10CPU, 16GPU đi kèm dung lượng lên đến RAM 16GB và bộ nhớ SSD 1TB mang lại hiệu suất vượt trội.', 57990000, 3, 1),
+(@productID40, N'MacBook Air M1 13 inch 2020', N'Apple', @categoryID4, N'Macbook Air M1 là dòng sản phẩm có thiết kế mỏng nhẹ, sang trọng và tinh tế cùng với đó là giá thành phải chăng nên MacBook Air đã thu hút được đông đảo người dùng yêu thích và lựa chọn. Đây cũng là một trong những phiên bản Macbook Air mới nhất mà khách hàng không thể bỏ qua khi đến với CellphoneS. Dưới đây là chi tiết về thiết kế, cấu hình của máy.', 15990000, 10, 1);
+
+-- Insert vào bảng Product_Specifications
+INSERT INTO Product_Specifications (productID, cpu, ram, ssd, vga, screen, connect, weight, battery)
+VALUES
+(@productID1, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz 12MB', N'16GB DDR4 3200MHz (2x SO-DIMM, up to 32GB)', N'1TB SSD PCIE G3X4', N'NVIDIA GeForce RTX 2070 8GB GDDR6', N'15.6" FHD IPS 240Hz, 3ms, 300nits', N'USB3.2 Type-C, 3x USB3.2 Type-A, HDMI 2.0b, RJ-45, Wi-Fi 6', 2.3, N'4 Cell 66WHr'),
+(@productID2, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz 12MB', N'8GB DDR4 2933MHz (2x SO-DIMM, up to 32GB)', N'512GB SSD PCIE G3X4', N'NVIDIA GeForce GTX 1650Ti 4GB GDDR6', N'15.6" FHD IPS 144Hz, 250nits', N'USB3.2 Type-C, 3x USB3.2 Type-A, HDMI 2.0b, RJ-45', 2.3, N'3 Cell 48WHr'),
+(@productID3, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz 12MB', N'16GB DDR4 2933MHz (2x SO-DIMM, up to 32GB)', N'512GB SSD PCIE G3X4', N'NVIDIA GeForce GTX 1660Ti 6GB GDDR6', N'17.3" FHD IPS 144Hz, 300nits', N'USB3.2 Type-C, 3x USB3.2 Type-A, HDMI 2.0b, RJ-45', 2.85, N'4 Cell 66WHr'),
+(@productID4, N'Intel Core i5-11400H Gen 11th 2.7GHz up to 4.5GHz', N'8GB DDR4 3200MHz (2x SO-DIMM, up to 64GB)', N'512GB NVMe PCIe Gen3x4 SSD', N'NVIDIA GeForce RTX 3050Ti 4GB GDDR6', N'15.6" FHD IPS 60Hz, 72% NTSC', N'3x USB3.2 Type-A, USB3.2 Type-C, HDMI, RJ-45', 1.86, N'3 Cell 51WHr'),
+(@productID5, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz 24 cores', N'32GB DDR5-4800MHz (2 slots, up to 64GB)', N'1TB M.2 NVMe PCIe 4.0 SSD', N'NVIDIA GeForce RTX 4080 12GB GDDR6', N'16" WQXGA IPS 240Hz, DCI-P3 100%', N'Thunderbolt 4, USB Type-C, 2x USB Type-A, HDMI 2.1, 2.5G LAN', 2.5, N'4 Cell 90WHr'),
+(@productID6, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050 4GB GDDR6', N'15.6" FHD IPS 144Hz', N'USB Type-C, 3x USB Type-A, HDMI, RJ-45', 2.25, N'3 Cell 53.5WHr'),
+(@productID7, N'Intel Core i5-12500H 2.5GHz up to 4.5GHz', N'8GB DDR4 3200MHz (upgradeable to 32GB)', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050 4GB GDDR6', N'15.6" FHD IPS 144Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.5, N'4 Cell 57.5WHr'),
+(@productID8, N'AMD Ryzen 7 5800H 3.2GHz up to 4.4GHz', N'16GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB GDDR6', N'16" QHD+ IPS 165Hz, 500nits', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.45, N'4 Cell 80WHr'),
+(@productID9, N'AMD Ryzen 7 6800H 3.2GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB GDDR6', N'16.1" FHD IPS 144Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.46, N'6 Cell 83WHr'),
+(@productID10, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB GDDR6', N'15.6" FHD 165Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.67, N'6 Cell 86WHr'),
+(@productID11, N'Intel Core i7-11800H 2.3GHz up to 4.6GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB GDDR6', N'15.6" FHD IPS 144Hz', N'Thunderbolt 4, USB 3.2, HDMI 2.0b, RJ-45', 2.3, N'4 Cell 90WHr'),
+(@productID12, N'AMD Ryzen 5 5600H 3.3GHz up to 4.2GHz', N'8GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'AMD Radeon RX 5500M 4GB GDDR6', N'15.6" FHD IPS 144Hz', N'USB Type-C, USB 3.2, HDMI, RJ-45', 2.35, N'3 Cell 52.4WHr'),
+(@productID13, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB GDDR6', N'15.6" FHD IPS 240Hz', N'Thunderbolt 4, USB 3.2, HDMI 2.1, RJ-45', 2.3, N'99WHr'),
+(@productID14, N'AMD Ryzen 9 5900HS 3.0GHz up to 4.6GHz', N'16GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB GDDR6', N'14" FHD IPS 144Hz', N'USB Type-C, USB 3.2, HDMI 2.0b', 1.7, N'4 Cell 76WHr'),
+(@productID15, N'Intel Core i5-12450H 2.0GHz up to 4.4GHz', N'8GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce GTX 1650 4GB GDDR6', N'15.6" FHD IPS 120Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.32, N'3 Cell 45WHr'),
+(@productID16, N'Intel Core i7-1280P 1.8GHz up to 4.8GHz', N'16GB LPDDR5', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB GDDR6', N'15.6" FHD IPS 144Hz', N'Thunderbolt 4, USB Type-C, HDMI 2.1', 1.85, N'3 Cell 52WHr'),
+(@productID17, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070 8GB GDDR6', N'15.6" FHD IPS 165Hz', N'USB Type-C, USB 3.2, HDMI 2.1, Mini DP, RJ-45', 2.6, N'4 Cell 90WHr'),
+(@productID18, N'Intel Core i5-12500H 2.5GHz up to 4.5GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB GDDR6', N'16.1" FHD IPS 144Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.48, N'4 Cell 70WHr'),
+(@productID19, N'AMD Ryzen 9 6900HS 3.3GHz up to 4.9GHz', N'16GB LPDDR5 6400MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3050Ti 4GB GDDR6', N'13.4" FHD+ Touch IPS 120Hz', N'USB Type-C, USB 3.2, HDMI 2.0b', 1.3, N'4 Cell 62WHr'),
+(@productID20, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070 8GB GDDR6', N'15.6" FHD IPS 165Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.47, N'4 Cell 90WHr'),
+(@productID21, N'Intel Core i9-12900H 2.5GHz up to 5.0GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3080 8GB GDDR6', N'15.6" FHD IPS 360Hz', N'Thunderbolt 4, USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.69, N'6 Cell 86WHr'),
+(@productID22, N'AMD Ryzen 9 5900HX 3.3GHz up to 4.6GHz', N'32GB DDR4 3200MHz', N'2TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3080 16GB GDDR6', N'16" QHD IPS 165Hz, HDR400', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.5, N'4 Cell 80WHr'),
+(@productID23, N'Intel Core i7-12650H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB GDDR6', N'15.6" FHD IPS 144Hz', N'Thunderbolt 4, USB Type-C, USB 3.2, HDMI 2.0b, RJ-45', 2.0, N'4 Cell 76WHr'),
+(@productID24, N'Intel Core i9-12900HK 2.5GHz up to 5.0GHz', N'32GB DDR5 4800MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB GDDR6', N'17.3" FHD IPS 360Hz', N'Thunderbolt 4, USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.9, N'4 Cell 99.9WHr'),
+(@productID25, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB GDDR6', N'15.6" FHD IPS 144Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.5, N'4 Cell 57.5WHr'),
+(@productID26, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB GDDR6', N'17.3" FHD IPS 165Hz', N'USB Type-C, USB 3.2, HDMI 2.1, Mini DP, RJ-45', 2.78, N'6 Cell 83WHr'),
+(@productID27, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz', N'32GB DDR5 4800MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 4070 8GB GDDR6', N'18" FHD+ IPS 165Hz', N'Thunderbolt 4, USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 3.0, N'4 Cell 90WHr'),
+(@productID28, N'Intel Core i5-13420H 2.1GHz up to 4.6GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 4050 6GB GDDR6', N'15.6" FHD IPS 144Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.3, N'3 Cell 60WHr'),
+(@productID29, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz', N'64GB DDR5 5600MHz', N'4TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 4090 16GB GDDR6', N'17.3" 4K Mini LED 144Hz', N'Thunderbolt 4, USB Type-C, USB 3.2, HDMI 2.1, SD Card, RJ-45', 3.3, N'4 Cell 99.9WHr'),
+(@productID30, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB GDDR6', N'16" QHD+ IPS 165Hz', N'USB Type-C, USB 3.2, HDMI 2.1, RJ-45', 2.65, N'6 Cell 86WHr'),
+(@productID31, N'Apple M3 Max 14C CPU - 30C GPU', N'36GB Unified', N'1TB SSD', N'Apple GPU 30C', N'16" Liquid Retina XDR 120Hz', N'Thunderbolt 4, MagSafe, HDMI', 2.2, N'100Wh'),
+(@productID32, N'Apple M3 8C CPU - 10C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 10C', N'13.6" Liquid Retina', N'Thunderbolt 4, MagSafe', 1.2, N'52.6Wh'),
+(@productID33, N'Apple M3 8C CPU - 10C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 10C', N'15.3" Liquid Retina', N'Thunderbolt 4, MagSafe', 1.5, N'66.5Wh'),
+(@productID34, N'Apple M2 Pro 10C CPU - 16C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 16C', N'14" Liquid Retina XDR 120Hz', N'Thunderbolt 4, MagSafe, HDMI', 1.6, N'70Wh'),
+(@productID35, N'Apple M2 Pro 12C CPU - 19C GPU', N'16GB Unified', N'1TB SSD', N'Apple GPU 19C', N'16" Liquid Retina XDR 120Hz', N'Thunderbolt 4, MagSafe, HDMI', 2.2, N'100Wh'),
+(@productID36, N'Apple M2 8C CPU - 8C GPU', N'8GB Unified', N'256GB SSD', N'Apple GPU 10C', N'13.6" Liquid Retina', N'Thunderbolt 4, MagSafe', 1.2, N'52.6Wh'),
+(@productID37, N'Apple M2 8C CPU - 10C GPU', N'8GB Unified', N'512GB SSD', N'Apple GPU 10C', N'15.3" Liquid Retina', N'Thunderbolt 4, MagSafe', 1.5, N'66.5Wh'),
+(@productID38, N'Apple M1 Pro 10C CPU - 16C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 16C', N'14" Liquid Retina XDR 120Hz', N'Thunderbolt 4, MagSafe, HDMI', 1.6, N'70Wh'),
+(@productID39, N'Apple M1 Pro 10C CPU - 16C GPU', N'16GB Unified', N'1TB SSD', N'Apple GPU 16C', N'16" Liquid Retina XDR 120Hz', N'Thunderbolt 4, MagSafe, HDMI', 2.2, N'100Wh'),
+(@productID40, N'Apple M1 8C CPU - 7 Core GPU', N'8GB Unified', N'256GB SSD', N'Apple GPU 8C', N'13.3" Retina', N'2 Thunderbolt 3', 1.29, N'49.9Wh');
+
+
+-- Insert dữ liệu vào bảng product_variants
+INSERT INTO product_variants (variant_id, product_id, variant_name, price, quantity, sku, is_active, cpu, ram, storage, gpu, screen, created_at)
+VALUES
+(NEWID(), @productID1, N'Core i7-10750H - 16GB RAM - 1TB SSD', 44990000, 5, 'ASUS-ROG-G15-001', 1, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz', N'16GB DDR4 3200MHz', N'1TB SSD PCIE G3X4', N'NVIDIA GeForce RTX 2070 8GB', N'15.6" FHD IPS 240Hz', GETDATE()),
+(NEWID(), @productID1, N'Core i7-10750H - 32GB RAM - 1TB SSD', 49990000, 3, 'ASUS-ROG-G15-002', 1, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz', N'32GB DDR4 3200MHz', N'1TB SSD PCIE G3X4', N'NVIDIA GeForce RTX 2070 8GB', N'15.6" FHD IPS 240Hz', GETDATE()),
+(NEWID(), @productID1, N'Core i7-10750H - 16GB RAM - 2TB SSD', 52990000, 2, 'ASUS-ROG-G15-003', 1, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz', N'16GB DDR4 3200MHz', N'2TB SSD PCIE G3X4', N'NVIDIA GeForce RTX 2070 8GB', N'15.6" FHD IPS 240Hz', GETDATE()),
+(NEWID(), @productID2, N'Core i7-10750H - 8GB RAM - 512GB SSD', 28990000, 8, 'ASUS-ROG-G15-004', 1, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz', N'8GB DDR4 2933MHz', N'512GB SSD PCIE G3X4', N'NVIDIA GeForce GTX 1650Ti 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID2, N'Core i7-10750H - 16GB RAM - 512GB SSD', 32990000, 7, 'ASUS-ROG-G15-005', 1, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz', N'16GB DDR4 2933MHz', N'512GB SSD PCIE G3X4', N'NVIDIA GeForce GTX 1650Ti 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID3, N'Core i7-10750H - 16GB RAM - 512GB SSD', 34990000, 4, 'ASUS-ROG-G17-001', 1, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz', N'16GB DDR4 2933MHz', N'512GB SSD PCIE G3X4', N'NVIDIA GeForce GTX 1660Ti 6GB', N'17.3" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID3, N'Core i7-10750H - 32GB RAM - 1TB SSD', 42990000, 4, 'ASUS-ROG-G17-002', 1, N'Intel Core i7-10750H 2.6GHz up to 5.0GHz', N'32GB DDR4 2933MHz', N'1TB SSD PCIE G3X4', N'NVIDIA GeForce GTX 1660Ti 6GB', N'17.3" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID4, N'Core i5-11400H - 8GB RAM - 512GB SSD', 17490000, 10, 'MSI-GF63-001', 1, N'Intel Core i5-11400H Gen 11th 2.7GHz', N'8GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'15.6" FHD IPS 60Hz', GETDATE()),
+(NEWID(), @productID4, N'Core i5-11400H - 16GB RAM - 512GB SSD', 20490000, 10, 'MSI-GF63-002', 1, N'Intel Core i5-11400H Gen 11th 2.7GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'15.6" FHD IPS 60Hz', GETDATE()),
+(NEWID(), @productID5, N'Core i9-13980HX - 32GB RAM - 1TB SSD', 69990000, 3, 'ASUS-SCAR16-001', 1, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz', N'32GB DDR5-4800MHz', N'1TB M.2 NVMe PCIe 4.0 SSD', N'NVIDIA GeForce RTX 4080 12GB', N'16" WQXGA IPS 240Hz', GETDATE()),
+(NEWID(), @productID5, N'Core i9-13980HX - 64GB RAM - 2TB SSD', 89990000, 2, 'ASUS-SCAR16-002', 1, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz', N'64GB DDR5-4800MHz', N'2TB M.2 NVMe PCIe 4.0 SSD', N'NVIDIA GeForce RTX 4080 12GB', N'16" WQXGA IPS 240Hz', GETDATE()),
+(NEWID(), @productID6, N'Core i7-12700H - 16GB RAM - 512GB SSD', 23990000, 6, 'MSI-KATANA-001', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID6, N'Core i7-12700H - 32GB RAM - 1TB SSD', 29990000, 6, 'MSI-KATANA-002', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID7, N'Core i5-12500H - 8GB RAM - 512GB SSD', 22990000, 9, 'ACER-NITRO5-001', 1, N'Intel Core i5-12500H 2.5GHz up to 4.5GHz', N'8GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID7, N'Core i5-12500H - 16GB RAM - 1TB SSD', 27990000, 9, 'ACER-NITRO5-002', 1, N'Intel Core i5-12500H 2.5GHz up to 4.5GHz', N'16GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID8, N'Ryzen 7 5800H - 16GB RAM - 1TB SSD', 32990000, 5, 'LENOVO-LEGION5-001', 1, N'AMD Ryzen 7 5800H 3.2GHz up to 4.4GHz', N'16GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB', N'16" QHD+ IPS 165Hz', GETDATE()),
+(NEWID(), @productID8, N'Ryzen 7 5800H - 32GB RAM - 2TB SSD', 42990000, 5, 'LENOVO-LEGION5-002', 1, N'AMD Ryzen 7 5800H 3.2GHz up to 4.4GHz', N'32GB DDR4 3200MHz', N'2TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB', N'16" QHD+ IPS 165Hz', GETDATE()),
+(NEWID(), @productID9, N'Ryzen 7 6800H - 16GB RAM - 512GB SSD', 31990000, 4, 'HP-OMEN16-001', 1, N'AMD Ryzen 7 6800H 3.2GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB', N'16.1" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID9, N'Ryzen 7 6800H - 32GB RAM - 1TB SSD', 39990000, 3, 'HP-OMEN16-002', 1, N'AMD Ryzen 7 6800H 3.2GHz up to 4.7GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB', N'16.1" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID10, N'Core i7-12700H - 16GB RAM - 512GB SSD', 26990000, 7, 'DELL-G15-001', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'15.6" FHD 165Hz', GETDATE()),
+(NEWID(), @productID10, N'Core i7-12700H - 32GB RAM - 1TB SSD', 33990000, 7, 'DELL-G15-002', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'15.6" FHD 165Hz', GETDATE()),
+(NEWID(), @productID11, N'Core i7-11800H - 16GB RAM - 512GB SSD', 24990000, 8, 'ASUS-TUF-F15-001', 1, N'Intel Core i7-11800H 2.3GHz up to 4.6GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID11, N'Core i7-11800H - 32GB RAM - 1TB SSD', 31990000, 8, 'ASUS-TUF-F15-002', 1, N'Intel Core i7-11800H 2.3GHz up to 4.6GHz', N'32GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID12, N'Ryzen 5 5600H - 8GB RAM - 512GB SSD', 19990000, 6, 'MSI-BRAVO15-001', 1, N'AMD Ryzen 5 5600H 3.3GHz up to 4.2GHz', N'8GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'AMD Radeon RX 5500M 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID12, N'Ryzen 5 5600H - 16GB RAM - 1TB SSD', 24990000, 5, 'MSI-BRAVO15-002', 1, N'AMD Ryzen 5 5600H 3.3GHz up to 4.2GHz', N'16GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'AMD Radeon RX 5500M 4GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID13, N'Core i7-12700H - 16GB RAM - 1TB SSD', 42990000, 3, 'GIGABYTE-AORUS15-001', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB', N'15.6" FHD IPS 240Hz', GETDATE()),
+(NEWID(), @productID13, N'Core i7-12700H - 32GB RAM - 2TB SSD', 54990000, 3, 'GIGABYTE-AORUS15-002', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR5 4800MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB', N'15.6" FHD IPS 240Hz', GETDATE()),
+(NEWID(), @productID14, N'Ryzen 9 5900HS - 16GB RAM - 1TB SSD', 35990000, 5, 'ASUS-ZEPHYRUS-G14-001', 1, N'AMD Ryzen 9 5900HS 3.0GHz up to 4.6GHz', N'16GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB', N'14" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID14, N'Ryzen 9 5900HS - 32GB RAM - 2TB SSD', 47990000, 4, 'ASUS-ZEPHYRUS-G14-002', 1, N'AMD Ryzen 9 5900HS 3.0GHz up to 4.6GHz', N'32GB DDR4 3200MHz', N'2TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB', N'14" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID15, N'Core i5-12450H - 8GB RAM - 512GB SSD', 18990000, 11, 'LENOVO-IDEAPAD-G3-001', 1, N'Intel Core i5-12450H 2.0GHz up to 4.4GHz', N'8GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce GTX 1650 4GB', N'15.6" FHD IPS 120Hz', GETDATE()),
+(NEWID(), @productID15, N'Core i5-12450H - 16GB RAM - 1TB SSD', 23990000, 11, 'LENOVO-IDEAPAD-G3-002', 1, N'Intel Core i5-12450H 2.0GHz up to 4.4GHz', N'16GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce GTX 1650 4GB', N'15.6" FHD IPS 120Hz', GETDATE()),
+(NEWID(), @productID16, N'Core i7-1280P - 16GB RAM - 512GB SSD', 38990000, 3, 'MSI-STEALTH15M-001', 1, N'Intel Core i7-1280P 1.8GHz up to 4.8GHz', N'16GB LPDDR5', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID16, N'Core i7-1280P - 32GB RAM - 1TB SSD', 47990000, 2, 'MSI-STEALTH15M-002', 1, N'Intel Core i7-1280P 1.8GHz up to 4.8GHz', N'32GB LPDDR5', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID17, N'Core i7-12700H - 16GB RAM - 512GB SSD', 36990000, 4, 'ACER-PREDATOR-H300-001', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070 8GB', N'15.6" FHD IPS 165Hz', GETDATE()),
+(NEWID(), @productID17, N'Core i7-12700H - 32GB RAM - 1TB SSD', 44990000, 4, 'ACER-PREDATOR-H300-002', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070 8GB', N'15.6" FHD IPS 165Hz', GETDATE()),
+(NEWID(), @productID18, N'Core i5-12500H - 16GB RAM - 512GB SSD', 25990000, 7, 'HP-VICTUS16-001', 1, N'Intel Core i5-12500H 2.5GHz up to 4.5GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'16.1" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID18, N'Core i5-12500H - 32GB RAM - 1TB SSD', 32990000, 6, 'HP-VICTUS16-002', 1, N'Intel Core i5-12500H 2.5GHz up to 4.5GHz', N'32GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'16.1" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID19, N'Ryzen 9 6900HS - 16GB RAM - 1TB SSD', 45990000, 2, 'ASUS-FLOW-X13-001', 1, N'AMD Ryzen 9 6900HS 3.3GHz up to 4.9GHz', N'16GB LPDDR5 6400MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'13.4" FHD+ Touch IPS 120Hz', GETDATE()),
+(NEWID(), @productID19, N'Ryzen 9 6900HS - 32GB RAM - 2TB SSD', 59990000, 2, 'ASUS-FLOW-X13-002', 1, N'AMD Ryzen 9 6900HS 3.3GHz up to 4.9GHz', N'32GB LPDDR5 6400MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3050Ti 4GB', N'13.4" FHD+ Touch IPS 120Hz', GETDATE()),
+(NEWID(), @productID20, N'Core i7-12700H - 16GB RAM - 512GB SSD', 34990000, 4, 'MSI-CROSSHAIR15-001', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070 8GB', N'15.6" FHD IPS 165Hz', GETDATE()),
+(NEWID(), @productID20, N'Core i7-12700H - 32GB RAM - 1TB SSD', 42990000, 3, 'MSI-CROSSHAIR15-002', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR4 3200MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070 8GB', N'15.6" FHD IPS 165Hz', GETDATE()),
+(NEWID(), @productID21, N'Core i9-12900H - 32GB RAM - 1TB SSD', 55990000, 2, 'DELL-ALIENWARE-M15-001', 1, N'Intel Core i9-12900H 2.5GHz up to 5.0GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3080 8GB', N'15.6" FHD IPS 360Hz', GETDATE()),
+(NEWID(), @productID21, N'Core i9-12900H - 64GB RAM - 2TB SSD', 74990000, 1, 'DELL-ALIENWARE-M15-002', 1, N'Intel Core i9-12900H 2.5GHz up to 5.0GHz', N'64GB DDR5 4800MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3080 8GB', N'15.6" FHD IPS 360Hz', GETDATE()),
+(NEWID(), @productID22, N'Ryzen 9 5900HX - 32GB RAM - 2TB SSD', 48990000, 3, 'LENOVO-LEGION7-001', 1, N'AMD Ryzen 9 5900HX 3.3GHz up to 4.6GHz', N'32GB DDR4 3200MHz', N'2TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3080 16GB', N'16" QHD IPS 165Hz HDR400', GETDATE()),
+(NEWID(), @productID22, N'Ryzen 9 5900HX - 64GB RAM - 4TB SSD', 69990000, 2, 'LENOVO-LEGION7-002', 1, N'AMD Ryzen 9 5900HX 3.3GHz up to 4.6GHz', N'64GB DDR4 3200MHz', N'4TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3080 16GB', N'16" QHD IPS 165Hz HDR400', GETDATE()),
+(NEWID(), @productID23, N'Core i7-12650H - 16GB RAM - 512GB SSD', 29990000, 5, 'ASUS-TUF-DASH-F15-001', 1, N'Intel Core i7-12650H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID23, N'Core i7-12650H - 32GB RAM - 1TB SSD', 37990000, 5, 'ASUS-TUF-DASH-F15-002', 1, N'Intel Core i7-12650H 2.3GHz up to 4.7GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID24, N'Core i9-12900HK - 32GB RAM - 2TB SSD', 52990000, 2, 'MSI-RAIDER-GE76-001', 1, N'Intel Core i9-12900HK 2.5GHz up to 5.0GHz', N'32GB DDR5 4800MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB', N'17.3" FHD IPS 360Hz', GETDATE()),
+(NEWID(), @productID24, N'Core i9-12900HK - 64GB RAM - 4TB SSD', 72990000, 2, 'MSI-RAIDER-GE76-002', 1, N'Intel Core i9-12900HK 2.5GHz up to 5.0GHz', N'64GB DDR5 4800MHz', N'4TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB', N'17.3" FHD IPS 360Hz', GETDATE()),
+(NEWID(), @productID25, N'Core i7-12700H - 16GB RAM - 512GB SSD', 27990000, 6, 'ACER-NITRO5-TIGER-001', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR4 3200MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID25, N'Core i7-12700H - 32GB RAM - 1TB SSD', 34990000, 6, 'ACER-NITRO5-TIGER-002', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR4 3200MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 3060 6GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID26, N'Core i7-12700H - 32GB RAM - 1TB SSD', 43990000, 3, 'HP-OMEN17-001', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB', N'17.3" FHD IPS 165Hz', GETDATE()),
+(NEWID(), @productID26, N'Core i7-12700H - 64GB RAM - 2TB SSD', 57990000, 3, 'HP-OMEN17-002', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'64GB DDR5 4800MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3070Ti 8GB', N'17.3" FHD IPS 165Hz', GETDATE()),
+(NEWID(), @productID27, N'Core i9-13980HX - 32GB RAM - 2TB SSD', 64990000, 2, 'ASUS-ROG-G18-001', 1, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz', N'32GB DDR5 4800MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 4070 8GB', N'18" FHD+ IPS 165Hz', GETDATE()),
+(NEWID(), @productID27, N'Core i9-13980HX - 64GB RAM - 4TB SSD', 84990000, 1, 'ASUS-ROG-G18-002', 1, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz', N'64GB DDR5 4800MHz', N'4TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 4070 8GB', N'18" FHD+ IPS 165Hz', GETDATE()),
+(NEWID(), @productID28, N'Core i5-13420H - 16GB RAM - 512GB SSD', 21990000, 9, 'LENOVO-LOQ15-001', 1, N'Intel Core i5-13420H 2.1GHz up to 4.6GHz', N'16GB DDR5 4800MHz', N'512GB NVMe PCIe SSD', N'NVIDIA GeForce RTX 4050 6GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID28, N'Core i5-13420H - 32GB RAM - 1TB SSD', 28990000, 9, 'LENOVO-LOQ15-002', 1, N'Intel Core i5-13420H 2.1GHz up to 4.6GHz', N'32GB DDR5 4800MHz', N'1TB NVMe PCIe SSD', N'NVIDIA GeForce RTX 4050 6GB', N'15.6" FHD IPS 144Hz', GETDATE()),
+(NEWID(), @productID29, N'Core i9-13980HX - 64GB RAM - 4TB SSD', 119990000, 1, 'MSI-TITAN-GT77-001', 1, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz', N'64GB DDR5 5600MHz', N'4TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 4090 16GB', N'17.3" 4K Mini LED 144Hz', GETDATE()),
+(NEWID(), @productID29, N'Core i9-13980HX - 128GB RAM - 8TB SSD', 169990000, 1, 'MSI-TITAN-GT77-002', 1, N'Intel Core i9-13980HX 2.2GHz up to 5.6GHz', N'128GB DDR5 5600MHz', N'8TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 4090 16GB', N'17.3" 4K Mini LED 144Hz', GETDATE()),
+(NEWID(), @productID30, N'Core i7-12700H - 16GB RAM - 1TB SSD', 33990000, 5, 'DELL-G16-001', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'16GB DDR5 4800MHz', N'1TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB', N'16" QHD+ IPS 165Hz', GETDATE()),
+(NEWID(), @productID30, N'Core i7-12700H - 32GB RAM - 2TB SSD', 42990000, 4, 'DELL-G16-002', 1, N'Intel Core i7-12700H 2.3GHz up to 4.7GHz', N'32GB DDR5 4800MHz', N'2TB NVMe PCIe Gen4 SSD', N'NVIDIA GeForce RTX 3060 6GB', N'16" QHD+ IPS 165Hz', GETDATE()),
+(NEWID(), @productID31, N'M3 Max 14C CPU - 30C GPU - 36GB RAM - 1TB SSD', 77990000, 2, 'APPLE-MBP16-M3MAX-001', 1, N'Apple M3 Max 14C CPU - 30C GPU', N'36GB Unified', N'1TB SSD', N'Apple GPU 30C', N'16" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID31, N'M3 Max 14C CPU - 30C GPU - 48GB RAM - 2TB SSD', 97990000, 1, 'APPLE-MBP16-M3MAX-002', 1, N'Apple M3 Max 14C CPU - 30C GPU', N'48GB Unified', N'2TB SSD', N'Apple GPU 30C', N'16" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID32, N'M3 8C CPU - 8C GPU - 8GB RAM - 256GB SSD', 24190000, 4, 'APPLE-MBA13-M3-001', 1, N'Apple M3 8C CPU - 8C GPU', N'8GB Unified', N'256GB SSD', N'Apple GPU 8C', N'13.6" Liquid Retina', GETDATE()),
+(NEWID(), @productID32, N'M3 8C CPU - 10C GPU - 16GB RAM - 512GB SSD', 31190000, 3, 'APPLE-MBA13-M3-002', 1, N'Apple M3 8C CPU - 10C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 10C', N'13.6" Liquid Retina', GETDATE()),
+(NEWID(), @productID33, N'M3 8C CPU - 10C GPU - 8GB RAM - 256GB SSD', 24990000, 3, 'APPLE-MBA15-M3-001', 1, N'Apple M3 8C CPU - 10C GPU', N'8GB Unified', N'256GB SSD', N'Apple GPU 10C', N'15.3" Liquid Retina', GETDATE()),
+(NEWID(), @productID33, N'M3 8C CPU - 10C GPU - 16GB RAM - 512GB SSD', 32990000, 2, 'APPLE-MBA15-M3-002', 1, N'Apple M3 8C CPU - 10C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 10C', N'15.3" Liquid Retina', GETDATE()),
+(NEWID(), @productID34, N'M2 Pro 10C CPU - 16C GPU - 16GB RAM - 512GB SSD', 45990000, 2, 'APPLE-MBP14-M2PRO-001', 1, N'Apple M2 Pro 10C CPU - 16C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 16C', N'14" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID34, N'M2 Pro 12C CPU - 19C GPU - 32GB RAM - 1TB SSD', 59990000, 2, 'APPLE-MBP14-M2PRO-002', 1, N'Apple M2 Pro 12C CPU - 19C GPU', N'32GB Unified', N'1TB SSD', N'Apple GPU 19C', N'14" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID35, N'M2 Pro 12C CPU - 19C GPU - 16GB RAM - 1TB SSD', 52990000, 1, 'APPLE-MBP16-M2PRO-001', 1, N'Apple M2 Pro 12C CPU - 19C GPU', N'16GB Unified', N'1TB SSD', N'Apple GPU 19C', N'16" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID35, N'M2 Pro 12C CPU - 19C GPU - 32GB RAM - 2TB SSD', 72990000, 1, 'APPLE-MBP16-M2PRO-002', 1, N'Apple M2 Pro 12C CPU - 19C GPU', N'32GB Unified', N'2TB SSD', N'Apple GPU 19C', N'16" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID36, N'M2 8C CPU - 8C GPU - 8GB RAM - 256GB SSD', 19990000, 5, 'APPLE-MBA13-M2-001', 1, N'Apple M2 8C CPU - 8C GPU', N'8GB Unified', N'256GB SSD', N'Apple GPU 8C', N'13.6" Liquid Retina', GETDATE()),
+(NEWID(), @productID36, N'M2 8C CPU - 10C GPU - 16GB RAM - 512GB SSD', 26990000, 4, 'APPLE-MBA13-M2-002', 1, N'Apple M2 8C CPU - 10C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 10C', N'13.6" Liquid Retina', GETDATE()),
+(NEWID(), @productID37, N'M2 8C CPU - 10C GPU - 8GB RAM - 512GB SSD', 25490000, 3, 'APPLE-MBA15-M2-001', 1, N'Apple M2 8C CPU - 10C GPU', N'8GB Unified', N'512GB SSD', N'Apple GPU 10C', N'15.3" Liquid Retina', GETDATE()),
+(NEWID(), @productID37, N'M2 8C CPU - 10C GPU - 16GB RAM - 1TB SSD', 33490000, 3, 'APPLE-MBA15-M2-002', 1, N'Apple M2 8C CPU - 10C GPU', N'16GB Unified', N'1TB SSD', N'Apple GPU 10C', N'15.3" Liquid Retina', GETDATE()),
+(NEWID(), @productID38, N'M1 Pro 8C CPU - 14C GPU - 16GB RAM - 512GB SSD', 42590000, 3, 'APPLE-MBP14-M1PRO-001', 1, N'Apple M1 Pro 8C CPU - 14C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 14C', N'14" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID38, N'M1 Pro 10C CPU - 16C GPU - 32GB RAM - 1TB SSD', 54590000, 2, 'APPLE-MBP14-M1PRO-002', 1, N'Apple M1 Pro 10C CPU - 16C GPU', N'32GB Unified', N'1TB SSD', N'Apple GPU 16C', N'14" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID39, N'M1 Pro 10C CPU - 16C GPU - 16GB RAM - 1TB SSD', 57990000, 2, 'APPLE-MBP16-M1PRO-001', 1, N'Apple M1 Pro 10C CPU - 16C GPU', N'16GB Unified', N'1TB SSD', N'Apple GPU 16C', N'16" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID39, N'M1 Max 10C CPU - 32C GPU - 32GB RAM - 2TB SSD', 74990000, 1, 'APPLE-MBP16-M1PRO-002', 1, N'Apple M1 Max 10C CPU - 32C GPU', N'32GB Unified', N'2TB SSD', N'Apple GPU 32C', N'16" Liquid Retina XDR 120Hz', GETDATE()),
+(NEWID(), @productID40, N'M1 8C CPU - 7C GPU - 8GB RAM - 256GB SSD', 15990000, 5, 'APPLE-MBA13-M1-001', 1, N'Apple M1 8C CPU - 7C GPU', N'8GB Unified', N'256GB SSD', N'Apple GPU 7C', N'13.3" Retina', GETDATE()),
+(NEWID(), @productID40, N'M1 8C CPU - 8C GPU - 16GB RAM - 512GB SSD', 21990000, 5, 'APPLE-MBA13-M1-002', 1, N'Apple M1 8C CPU - 8C GPU', N'16GB Unified', N'512GB SSD', N'Apple GPU 8C', N'13.3" Retina', GETDATE());
+
+UPDATE Products
+SET imageURL = name + N'.jpg';
+
+INSERT INTO [ComputerShop].[dbo].[Users] 
+([user_id], [username], [password], [full_name], [email], [phone_number], [role], [created_at], [is_active], [verification_code], [verification_expiration], [provider], [is_account_locked], [address], [image])
+VALUES 
+(@userID1,  'user01', '$2a$10$UtOZfNbhBNWRhm1WUgqP/.2qCBKR5mNCquMwYPXI6crzXZTGQptZy', N'Nguyễn Văn Nam',     'user01@example.com', '0900000001', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Hà Nội', NULL),
+(@userID2,  'user02', '$2a$10$0gWm7A9O62efT9K9IUZr3OTMmkV9vIMa8o53rE5l4f7BQzQe1hz9S', N'Trần Thị Mai',      'user02@example.com', '0900000002', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Đà Nẵng', NULL),
+(@userID3,  'user03', '$2a$10$lXc4ZxoAOTYlcbWXB9vlj.g1G9uDJ49XvSUK6TJKhAVRLyGu/Pl7u', N'Phạm Minh Tuấn',    'user03@example.com', '0900000003', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'TP. HCM', NULL),
+(@userID4,  'user04', '$2a$10$7YkX3HZ54CoOMOSk/qOBjOl98zD7MJciCOEk1ghFpnkL22o8K/MJ.', N'Lê Thị Ngọc Hân',    'user04@example.com', '0900000004', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Cần Thơ', NULL),
+(@userID5,  'user05', '$2a$10$yAYHiJGea6xYvL/fH7M4WezTQu54YiZXwfeI.JUVH3wnRw8xMYv92', N'Đỗ Văn Khánh',      'user05@example.com', '0900000005', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Bắc Ninh', NULL),
+(@userID6,  'user06', '$2a$10$91j7xOSXnyF4cfHTMaRmsuCLYNpsB1aU7ACih1h58cCUuSGfZ4iCm', N'Bùi Thị Lan',        'user06@example.com', '0900000006', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Hải Phòng', NULL),
+(@userID7,  'user07', '$2a$10$Wes7U8p9dU.Y19B9xeHInOAy4DNRKCyQzYKU/7cqvUAr5CgKbnU7i', N'Ngô Minh Khoa',      'user07@example.com', '0900000007', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Huế', NULL),
+(@userID8,  'user08', '$2a$10$3mCFBl1RCbApPZNRBbRm5.Lv4NRZnpNi7GLx4my7J2kSlY/dubqGy', N'Vũ Thị Bích Trâm',   'user08@example.com', '0900000008', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Quảng Ninh', NULL),
+(@userID9,  'user09', '$2a$10$KiN95uoZYo2G9h2Z9/CyNO/FYJQpghU/.n7e6pgtxEwAZ/FmsAxQW', N'Hoàng Đức Anh',      'user09@example.com', '0900000009', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Nghệ An', NULL),
+(@userID10, 'user10', '$2a$10$UqLLyAcRH5bfhe37NBFcWuBMu1hzUsAzpWh2tDqqX2KJQYjXc1iIG', N'Trịnh Thị Thanh Hà', 'user10@example.com', '0900000010', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Thái Nguyên', NULL),
+(@userID11, 'user11', '$2a$10$xEzpyArldwqElbF7eK/FjOn5oY3HQUogP4ntth0OvYy7QnYPkUjSG', N'Nguyễn Thị Hương',    'user11@example.com', '0900000011', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Nam Định', NULL),
+(@userID12, 'user12', '$2a$10$3vnHFC2A77Eyd/Z2xqKFxu5YpgYHZAKmP2JJZ9cS62VjXZrr0fhce', N'Trần Văn Dũng',        'user12@example.com', '0900000012', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Thanh Hóa', NULL),
+(@userID13, 'user13', '$2a$10$RfW6hxwLMcK1fAbuAyQlCO0tXwvImhTbGuKxv7zpvQZulchzVGEsu', N'Lê Minh Châu',         'user13@example.com', '0900000013', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Hưng Yên', NULL),
+(@userID14, 'user14', '$2a$10$3iSnDGAOrD13MehzSRZ1Y.47MfdV/6aCr5qKqchQPKX7qk0rm0jGa', N'Phạm Thị Thu Trang',   'user14@example.com', '0900000014', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Phú Thọ', NULL),
+(@userID15, 'user15', '$2a$10$fcz7PS0B8YZ2EpEKbtmWgeUoFwYDxfsZtGmPM/sFb8ZnAyIdADcQW', N'Đặng Văn Hòa',         'user15@example.com', '0900000015', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Hòa Bình', NULL),
+(@userID16, 'user16', '$2a$10$gUv6EX5VJzpcM2nO6lPXQug2rqZtTW8x3lz2ibLdrkIAn2FrWYk5y', N'Bùi Thị Nhàn',         'user16@example.com', '0900000016', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Lạng Sơn', NULL),
+(@userID17, 'user17', '$2a$10$Lz8P1F3z12QUAXhPpFPDaO3B9DQ2b5J1CjkNNypksrWv0sZQ8k14K', N'Đỗ Quang Vinh',        'user17@example.com', '0900000017', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Bình Dương', NULL),
+(@userID18, 'user18', '$2a$10$zP8YBvKDHmL.3V2x3oHTse4vClyy5QqSpt2mWW.y5sh0jYO7RYQFS', N'Vũ Thị Kim Dung',      'user18@example.com', '0900000018', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Ninh Bình', NULL),
+(@userID19, 'user19', '$2a$10$nQu8Z6Eqk5cIErcCymTI5uG5rBa2fsw8dv8W0pxY7y3ZEGQMWytce', N'Trương Văn Hậu',       'user19@example.com', '0900000019', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Vĩnh Phúc', NULL),
+(@userID20, 'user20', '$2a$10$Lt4AeLVMIJ9MdXj9FvW6HeE7YPW0yD/8YzhsyVG0nKX8ZkFrSc7NW', N'Ngô Thị Tuyết Mai',    'user20@example.com', '0900000020', 'Customer', GETDATE(), 1, NULL, NULL, 'local', 0, N'Yên Bái', NULL);
+
+
+
+
+
+
+INSERT INTO Reviews (ReviewID, UserID, ProductID, Rating, Comment, CreatedAt)
+VALUES 
+(NEWID(), @userID1,  @productID31, 5, N'Sản phẩm rất tốt!', SYSDATETIME()),
+(NEWID(), @userID2,  @productID32, 4, N'Chất lượng ổn, giao hàng nhanh.', SYSDATETIME()),
+(NEWID(), @userID3,  @productID33, 3, N'Bình thường, chưa ưng ý lắm.', SYSDATETIME()),
+(NEWID(), @userID4,  @productID34, 5, N'Rất đáng tiền, sẽ mua lại.', SYSDATETIME()),
+(NEWID(), @userID5,  @productID35, 2, N'Sản phẩm không như mô tả.', SYSDATETIME()),
+(NEWID(), @userID6,  @productID36, 4, N'Chất lượng khá tốt.', SYSDATETIME()),
+(NEWID(), @userID7,  @productID37, 3, N'Sản phẩm ở mức trung bình.', SYSDATETIME()),
+(NEWID(), @userID8,  @productID38, 5, N'Tuyệt vời!', SYSDATETIME()),
+(NEWID(), @userID9,  @productID39, 4, N'Hài lòng với sản phẩm.', SYSDATETIME()),
+(NEWID(), @userID10, @productID40, 1, N'Tệ, không như kỳ vọng.', SYSDATETIME()),
+
+(NEWID(), @userID11, @productID31, 5, N'Sản phẩm đáng giá.', SYSDATETIME()),
+(NEWID(), @userID12, @productID32, 4, N'Dịch vụ giao hàng rất tốt.', SYSDATETIME()),
+(NEWID(), @userID13, @productID33, 2, N'Chưa hài lòng về chất lượng.', SYSDATETIME()),
+(NEWID(), @userID14, @productID34, 3, N'Mức giá phù hợp.', SYSDATETIME()),
+(NEWID(), @userID15, @productID35, 5, N'Mua nhiều lần rồi, đều tốt.', SYSDATETIME()),
+(NEWID(), @userID16, @productID36, 4, N'Đóng gói kỹ, sản phẩm ổn.', SYSDATETIME()),
+(NEWID(), @userID17, @productID37, 3, N'Khá ổn trong tầm giá.', SYSDATETIME()),
+(NEWID(), @userID18, @productID38, 2, N'Không như mong đợi.', SYSDATETIME()),
+(NEWID(), @userID19, @productID39, 5, N'Rất hài lòng!', SYSDATETIME()),
+(NEWID(), @userID20, @productID40, 4, N'Sản phẩm dùng tốt.', SYSDATETIME());
+
+
+INSERT INTO Orders (OrderID, UserID, OrderDate, Status, TotalAmount, ShippingAddress, voucherID, ShippingMethod, ShippingFee, Distance) VALUES
+(@orderID1,  @userID1,  '2025-01-10T10:00:00', N'DELIVERED', 55000000, N'Hà Nội', NULL, N'Giao hàng tiêu chuẩn', 30000, 12.5),
+(@orderID2,  @userID2,  '2025-02-15T11:00:00', N'DELIVERED', 49500000, N'TP.HCM', NULL, N'Hỏa tốc', 50000, 8.0),
+(@orderID3,  @userID3,  '2025-03-20T12:00:00', N'DELIVERED', 60000000, N'Đà Nẵng', NULL, N'Tiết kiệm', 0, 16.8),
+(@orderID4,  @userID4,  '2025-04-05T13:00:00', N'DELIVERED', 68000000, N'Hải Phòng', NULL, N'Giao hàng tiêu chuẩn', 30000, 9.3),
+(@orderID5,  @userID5,  '2025-05-12T14:00:00', N'DELIVERED', 72000000, N'Cần Thơ', NULL, N'Tiết kiệm', 0, 11.2),
+(@orderID6,  @userID6,  '2025-06-18T15:00:00', N'DELIVERED', 58000000, N'Hà Nội', NULL, N'Hỏa tốc', 50000, 7.7),
+(@orderID7,  @userID7,  '2025-07-07T16:00:00', N'DELIVERED', 50500000, N'TP.HCM', NULL, N'Giao hàng tiêu chuẩn', 30000, 14.4),
+(@orderID8,  @userID8,  '2025-08-22T17:00:00', N'DELIVERED', 46500000, N'Đà Nẵng', NULL, N'Hỏa tốc', 50000, 10.1),
+(@orderID9,  @userID9,  '2025-09-30T09:30:00', N'DELIVERED', 52000000, N'Hải Phòng', NULL, N'Tiết kiệm', 0, 20.5),
+(@orderID10, @userID10, '2025-10-11T10:30:00', N'DELIVERED', 71000000, N'Cần Thơ', NULL, N'Giao hàng tiêu chuẩn', 30000, 13.2),
+(@orderID11, @userID11, '2025-11-05T08:45:00', N'DELIVERED', 57500000, N'Hà Nội', NULL, N'Tiết kiệm', 0, 6.8),
+(@orderID12, @userID12, '2025-12-21T13:30:00', N'DELIVERED', 48000000, N'TP.HCM', NULL, N'Hỏa tốc', 50000, 5.0),
+(@orderID13, @userID13, '2025-01-08T14:45:00', N'DELIVERED', 45000000, N'Đà Nẵng', NULL, N'Tiết kiệm', 0, 9.9),
+(@orderID14, @userID14, '2025-02-19T16:10:00', N'DELIVERED', 49500000, N'Hải Phòng', NULL, N'Giao hàng tiêu chuẩn', 30000, 12.0),
+(@orderID15, @userID15, '2025-03-13T11:15:00', N'DELIVERED', 68000000, N'Cần Thơ', NULL, N'Hỏa tốc', 50000, 14.7),
+(@orderID16, @userID16, '2025-04-25T09:20:00', N'DELIVERED', 52000000, N'Hà Nội', NULL, N'Tiết kiệm', 0, 8.3),
+(@orderID17, @userID17, '2025-05-27T17:50:00', N'DELIVERED', 49000000, N'TP.HCM', NULL, N'Giao hàng tiêu chuẩn', 30000, 10.0),
+(@orderID18, @userID18, '2025-06-16T15:35:00', N'DELIVERED', 61000000, N'Đà Nẵng', NULL, N'Hỏa tốc', 50000, 18.1),
+(@orderID19, @userID19, '2025-07-29T12:05:00', N'DELIVERED', 69000000, N'Hải Phòng', NULL, N'Giao hàng tiêu chuẩn', 30000, 7.1),
+(@orderID20, @userID20, '2025-08-09T14:00:00', N'DELIVERED', 53000000, N'Cần Thơ', NULL, N'Tiết kiệm', 0, 6.9);
+
+INSERT INTO Order_Details (OrderDetailID, OrderID, ProductID, variant_id, Quantity, UnitPrice) VALUES
+(NEWID(), @orderID1,  @productID31, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP16-M3MAX-001'), 1, 55000000),
+(NEWID(), @orderID2,  @productID32, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA13-M3-002'), 1, 49500000),
+(NEWID(), @orderID3,  @productID33, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA15-M3-001'), 1, 60000000),
+(NEWID(), @orderID4,  @productID34, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP14-M2PRO-002'), 1, 68000000),
+(NEWID(), @orderID5,  @productID35, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP16-M2PRO-001'), 1, 72000000),
+(NEWID(), @orderID6,  @productID36, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA13-M2-001'), 1, 58000000),
+(NEWID(), @orderID7,  @productID37, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA15-M2-001'), 1, 50500000),
+(NEWID(), @orderID8,  @productID38, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP14-M1PRO-001'), 1, 46500000),
+(NEWID(), @orderID9,  @productID39, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP16-M1PRO-001'), 1, 52000000),
+(NEWID(), @orderID10, @productID40, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA13-M1-002'), 1, 71000000),
+(NEWID(), @orderID11, @productID31, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP16-M3MAX-001'), 1, 57500000),
+(NEWID(), @orderID12, @productID32, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA13-M3-002'), 1, 48000000),
+(NEWID(), @orderID13, @productID33, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA15-M3-001'), 1, 45000000),
+(NEWID(), @orderID14, @productID34, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP14-M2PRO-002'), 1, 49500000),
+(NEWID(), @orderID15, @productID35, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP16-M2PRO-001'), 1, 68000000),
+(NEWID(), @orderID16, @productID36, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA13-M2-001'), 1, 52000000),
+(NEWID(), @orderID17, @productID37, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA15-M2-001'), 1, 49000000),
+(NEWID(), @orderID18, @productID38, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP14-M1PRO-001'), 1, 61000000),
+(NEWID(), @orderID19, @productID39, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBP16-M1PRO-001'), 1, 69000000),
+(NEWID(), @orderID20, @productID40, (SELECT variant_id FROM product_variants WHERE sku = 'APPLE-MBA13-M1-002'), 1, 53000000);
+
+INSERT INTO export_order (id, created_at, note, status)
+VALUES
+(@exportOrderID1, GETDATE(), N'Đơn xuất laptop gaming', 'COMPLETED'),
+(@exportOrderID2, GETDATE(), N'Đơn xuất MacBook cho công ty', 'COMPLETED'),
+(@exportOrderID3, GETDATE(), N'Đơn xuất laptop cao cấp', 'COMPLETED'),
+(@exportOrderID4, GETDATE(), N'Đơn xuất laptop văn phòng', 'COMPLETED'),
+(@exportOrderID5, GETDATE(), N'Đơn xuất gaming laptop', 'COMPLETED'),
+(@exportOrderID6, GETDATE(), N'Đơn xuất MacBook Pro', 'COMPLETED'),
+(@exportOrderID7, GETDATE(), N'Đơn xuất laptop gaming mid-range', 'COMPLETED'),
+(@exportOrderID8, GETDATE(), N'Đơn xuất laptop cao cấp', 'COMPLETED'),
+(@exportOrderID9, GETDATE(), N'Đơn xuất laptop entry-level', 'COMPLETED'),
+(@exportOrderID10, GETDATE(), N'Đơn xuất MacBook Air', 'COMPLETED');
+
+-- ===============================
+-- INSERT DỮ LIỆU CHO BẢNG ExportOrderDetail
+-- ===============================
+INSERT INTO export_order_detail (id, product_id, quantity, export_price, export_order_id) VALUES
+-- ExportOrder 1: Xuất một số laptop gaming
+(NEWID(), @productID1, 2, 44990000, @exportOrderID1),
+(NEWID(), @productID7, 3, 22990000, @exportOrderID1),
+(NEWID(), @productID15, 1, 18990000, @exportOrderID1),
+
+-- ExportOrder 2: Xuất MacBook cho công ty
+(NEWID(), @productID31, 5, 77990000, @exportOrderID2),
+(NEWID(), @productID32, 3, 24190000, @exportOrderID2),
+(NEWID(), @productID40, 2, 15990000, @exportOrderID2),
+
+-- ExportOrder 3: Xuất laptop cao cấp
+(NEWID(), @productID5, 1, 69990000, @exportOrderID3),
+(NEWID(), @productID21, 1, 55990000, @exportOrderID3),
+
+-- ExportOrder 4: Xuất laptop văn phòng
+(NEWID(), @productID4, 4, 17490000, @exportOrderID4),
+(NEWID(), @productID12, 2, 19990000, @exportOrderID4),
+(NEWID(), @productID28, 3, 21990000, @exportOrderID4),
+
+-- ExportOrder 5: Xuất gaming laptop
+(NEWID(), @productID13, 2, 42990000, @exportOrderID5),
+(NEWID(), @productID17, 1, 36990000, @exportOrderID5),
+(NEWID(), @productID25, 2, 27990000, @exportOrderID5),
+
+-- ExportOrder 6: Xuất MacBook Pro
+(NEWID(), @productID34, 2, 45990000, @exportOrderID6),
+(NEWID(), @productID35, 1, 52990000, @exportOrderID6),
+
+-- ExportOrder 7: Xuất laptop gaming mid-range
+(NEWID(), @productID6, 3, 23990000, @exportOrderID7),
+(NEWID(), @productID8, 2, 32990000, @exportOrderID7),
+(NEWID(), @productID11, 1, 24990000, @exportOrderID7),
+
+-- ExportOrder 8: Xuất laptop cao cấp
+(NEWID(), @productID22, 1, 48990000, @exportOrderID8),
+(NEWID(), @productID27, 1, 64990000, @exportOrderID8),
+
+-- ExportOrder 9: Xuất laptop entry-level
+(NEWID(), @productID18, 4, 25990000, @exportOrderID9),
+(NEWID(), @productID23, 2, 29990000, @exportOrderID9),
+
+-- ExportOrder 10: Xuất MacBook Air
+(NEWID(), @productID33, 3, 24990000, @exportOrderID10),
+(NEWID(), @productID36, 2, 19990000, @exportOrderID10),
+(NEWID(), @productID37, 1, 25490000, @exportOrderID10);
+
+-- ===============================
+-- INSERT DỮ LIỆU CHO BẢNG PurchaseOrder
+-- ===============================
+INSERT INTO purchase_order (id, created_at, total_amount, paid_amount, debt_amount, status) VALUES
+(@purchaseOrderID1, '2024-12-01T08:00:00', 500000000, 500000000, 0, 'PAID'),
+(@purchaseOrderID2, '2024-12-15T09:30:00', 750000000, 600000000, 150000000, 'PARTIAL'),
+(@purchaseOrderID3, '2025-01-05T10:45:00', 1200000000, 1200000000, 0, 'PAID'),
+(@purchaseOrderID4, '2025-01-20T14:20:00', 850000000, 0, 850000000, 'UNPAID'),
+(@purchaseOrderID5, '2025-02-10T11:15:00', 950000000, 950000000, 0, 'PAID'),
+(@purchaseOrderID6, '2025-02-25T16:30:00', 680000000, 400000000, 280000000, 'PARTIAL'),
+(@purchaseOrderID7, '2025-03-10T09:00:00', 1500000000, 1500000000, 0, 'PAID'),
+(@purchaseOrderID8, '2025-03-25T13:45:00', 420000000, 420000000, 0, 'PAID'),
+(@purchaseOrderID9, '2025-04-08T08:30:00', 780000000, 500000000, 280000000, 'PARTIAL'),
+(@purchaseOrderID10, '2025-04-20T15:10:00', 1100000000, 0, 1100000000, 'UNPAID');
+
+-- ===============================
+-- INSERT DỮ LIỆU CHO BẢNG PurchaseOrderDetail
+-- ===============================
+INSERT INTO purchase_order_detail (id, product_id, quantity, import_price, purchase_order_id) VALUES
+-- PurchaseOrder 1: Nhập laptop gaming phổ thông
+(NEWID(), @productID1, 10, 40000000, @purchaseOrderID1),
+(NEWID(), @productID7, 15, 20000000, @purchaseOrderID1),
+
+-- PurchaseOrder 2: Nhập MacBook từ Apple
+(NEWID(), @productID31, 8, 70000000, @purchaseOrderID2),
+(NEWID(), @productID32, 12, 22000000, @purchaseOrderID2),
+(NEWID(), @productID40, 15, 14000000, @purchaseOrderID2),
+
+-- PurchaseOrder 3: Nhập laptop gaming cao cấp
+(NEWID(), @productID5, 5, 65000000, @purchaseOrderID3),
+(NEWID(), @productID21, 3, 52000000, @purchaseOrderID3),
+(NEWID(), @productID29, 2, 110000000, @purchaseOrderID3),
+
+-- PurchaseOrder 4: Nhập laptop văn phòng
+(NEWID(), @productID4, 20, 15000000, @purchaseOrderID4),
+(NEWID(), @productID12, 15, 17000000, @purchaseOrderID4),
+(NEWID(), @productID28, 18, 19000000, @purchaseOrderID4),
+
+-- PurchaseOrder 5: Nhập laptop gaming mid-range
+(NEWID(), @productID13, 8, 38000000, @purchaseOrderID5),
+(NEWID(), @productID17, 6, 33000000, @purchaseOrderID5),
+(NEWID(), @productID25, 12, 25000000, @purchaseOrderID5),
+
+-- PurchaseOrder 6: Nhập MacBook Pro
+(NEWID(), @productID34, 6, 42000000, @purchaseOrderID6),
+(NEWID(), @productID35, 4, 48000000, @purchaseOrderID6),
+
+-- PurchaseOrder 7: Nhập laptop gaming đa dạng
+(NEWID(), @productID6, 15, 21000000, @purchaseOrderID7),
+(NEWID(), @productID8, 10, 30000000, @purchaseOrderID7),
+(NEWID(), @productID11, 12, 22000000, @purchaseOrderID7),
+(NEWID(), @productID22, 5, 45000000, @purchaseOrderID7),
+
+-- PurchaseOrder 8: Nhập laptop entry-level
+(NEWID(), @productID15, 25, 16000000, @purchaseOrderID8),
+(NEWID(), @productID18, 20, 23000000, @purchaseOrderID8),
+
+-- PurchaseOrder 9: Nhập laptop cao cấp
+(NEWID(), @productID24, 4, 48000000, @purchaseOrderID9),
+(NEWID(), @productID27, 3, 60000000, @purchaseOrderID9),
+(NEWID(), @productID14, 8, 32000000, @purchaseOrderID9),
+
+-- PurchaseOrder 10: Nhập MacBook Air và Pro
+(NEWID(), @productID33, 10, 22000000, @purchaseOrderID10),
+(NEWID(), @productID36, 15, 17000000, @purchaseOrderID10),
+(NEWID(), @productID37, 8, 23000000, @purchaseOrderID10),
+(NEWID(), @productID38, 5, 38000000, @purchaseOrderID10);
+
+
+INSERT INTO Vouchers (voucherID, code, discount_percent, max_discount_amount, expiration_date, is_active, last_used_by, last_used_at, usage_count)
+VALUES
+    (NEWID(), 'WELCOME10', 10, 100000, DATEADD(MONTH, 1, GETDATE()), 1, NULL, NULL, 0),
+    (NEWID(), 'SUMMER20', 20, 200000, DATEADD(MONTH, 2, GETDATE()), 1, NULL, NULL, 0),
+    (NEWID(), 'FLASH50', 50, 500000, DATEADD(DAY, 3, GETDATE()), 1, NULL, NULL, 0),
+    (NEWID(), 'NEWUSER15', 15, 150000, DATEADD(MONTH, 3, GETDATE()), 1, NULL, NULL, 0),
+    (NEWID(), 'HOLIDAY25', 25, 250000, DATEADD(MONTH, 1, GETDATE()), 1, NULL, NULL, 0),
+    (NEWID(), 'LOYALTY30', 30, 300000, DATEADD(MONTH, 6, GETDATE()), 1, NULL, NULL, 0),
+    (NEWID(), 'SPECIAL40', 40, 400000, DATEADD(DAY, 7, GETDATE()), 1, NULL, NULL, 0),
+    (NEWID(), 'BLACK20', 20, 200000, DATEADD(MONTH, 2, GETDATE()), 1, NULL, NULL, 0),
+    (NEWID(), 'TEST5', 5, 50000, DATEADD(DAY, 1, GETDATE()), 0, NULL, NULL, 0),
+    (NEWID(), 'EXPIRED10', 10, 100000, DATEADD(DAY, -5, GETDATE()), 0, NULL, NULL, 0);
+
+
+
+
+
