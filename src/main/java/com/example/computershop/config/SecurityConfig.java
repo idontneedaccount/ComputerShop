@@ -45,8 +45,7 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**", "/home", "/css/**",
                                         "/js/**", "/images/**", "/assets/**","/error/**","/assets2/**","/uploads/**",
                                         "/oauth2/**", "/login/oauth2/**","/user/shopping-page","/",
-                                        "/cart/add/**", "/cart/count", "/cart/add-variant","/user/single-product/**",
-                                        "/notifications/api/**")  // Added API endpoints to permitAll
+                                        "/cart/add/**", "/cart/count", "/cart/add-variant","/user/single-product/**")
                                 .permitAll()
                                 .requestMatchers("/admin/dashboard","/admin/orders/**","/notifications/admin/personal","/admin/api/**",
                                         "/admin/vouchers/**","/admin/product/**","/admin/vouchers/**","/admin/purchase-orders/**",
@@ -60,6 +59,8 @@ public class SecurityConfig {
                                         "/cart/update/**","/cart/remove/**","/cart/clear","/cart/order/**",
                                         "/api/reviews/product/**","/notifications/user")
                                 .hasAnyRole("Admin","Sales","Shipper","Customer")
+                                .requestMatchers("/notifications/api/**")
+                                .authenticated()
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)

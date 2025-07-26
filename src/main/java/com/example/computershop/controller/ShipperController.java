@@ -190,11 +190,11 @@ public class ShipperController {
                     "' sang '" + getStatusDisplayName(newStatus) + "'");
                 return "redirect:/shipper/orders/" + orderId;
             }
-            
+            String oldStatus = order.getStatus();
             // Cập nhật trạng thái
             order.setStatus(newStatus);
-            orderService.updateOrder(order);
-            
+            orderService.updateOrder(order, oldStatus);
+
             log.info("Shipper updated order {} status from {} to {}", orderId, currentStatus, newStatus);
             
             redirectAttributes.addFlashAttribute(SUCCESS, 

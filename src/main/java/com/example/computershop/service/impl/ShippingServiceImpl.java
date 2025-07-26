@@ -1,5 +1,6 @@
-package com.example.computershop.service;
+package com.example.computershop.service.impl;
 
+import com.example.computershop.service.ShippingService;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

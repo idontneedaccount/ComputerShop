@@ -334,9 +334,10 @@ public class CartController {
 
             // Handle different payment methods
             if ("VNPAY".equals(request.getPaymentMethod())) {
+                String oldstatus = savedOrder.getStatus();
                 //  NEW FLOW: Set order to PAYMENT_PENDING status and redirect to VNPay
                 savedOrder.setStatus("PAYMENT_PENDING");
-                orderService.updateOrder(savedOrder);
+                orderService.updateOrder(savedOrder,oldstatus);
                 
                 log.info("VNPay checkout: created order {} with PAYMENT_PENDING status", savedOrder.getId());
                 return "redirect:/user/checkout/vnpay?orderId=" + savedOrder.getId();
@@ -436,11 +437,11 @@ public class CartController {
                 response.put("message", "Chỉ có thể xác nhận đơn hàng đang trong trạng thái giao hàng");
                 return ResponseEntity.badRequest().body(response);
             }
-            
+            String oldStatus = order.getStatus();
             // Update order status to DELIVERED
             order.setStatus("DELIVERED");
-            orderService.updateOrder(order);
-            
+            orderService.updateOrder(order, oldStatus);
+
             response.put("success", true);
             response.put("message", "Đã xác nhận đơn hàng thành công");
             response.put("orderId", orderId);
