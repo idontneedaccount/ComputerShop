@@ -15,6 +15,7 @@ class ShippingCalculator {
 
         this.currentDistance = 0;
         this.subtotal = 0;
+        this.discount = 0;  // Thêm biến lưu discount
         this.isShippingCalculated = false; // Track if shipping is calculated
 
         this.init();
@@ -161,9 +162,20 @@ class ShippingCalculator {
 
             // Make sure subtotal display never changes (don't modify it)
             console.log('✅ Subtotal element found and preserved:', this.formatCurrency(this.subtotal));
+
+            // Get discount if available
+            const discountRow = document.querySelector('.order-discount td:last-child');
+            if (discountRow) {
+                const discountText = discountRow.textContent.replace(/[^\d]/g, '');
+                this.discount = parseInt(discountText) || 0;
+                console.log('✅ Discount loaded:', this.discount);
+            } else {
+                this.discount = 0;
+            }
         } else {
             console.log('⚠️ Subtotal element not found, using default');
             this.subtotal = 0;
+            this.discount = 0;
         }
     }
 
@@ -526,13 +538,24 @@ class ShippingCalculator {
             }
         }
 
-        // 🔧 FIX: Keep subtotal unchanged, only update final total
+        // 🔧 FIX: Keep subtotal unchanged, apply discount, then add shipping fee to final total
         // DON'T touch subtotal display, only update final total
         const finalTotal = document.querySelector('.order-total-amount strong span');
         if (finalTotal) {
-            const newTotal = this.subtotal + shippingFee;
+            // Lấy giá trị discount nếu có
+            const discountRow = document.querySelector('.order-discount td:last-child');
+            let discountAmount = 0;
+
+            if (discountRow) {
+                const discountText = discountRow.textContent.replace(/[^\d]/g, '');
+                discountAmount = parseInt(discountText) || 0;
+                console.log(`✅ Discount found: ${discountAmount}`);
+            }
+
+            // Tính toán lại total: subtotal - discount + shipping fee
+            const newTotal = this.subtotal - discountAmount + shippingFee;
             finalTotal.textContent = this.formatCurrency(newTotal, false);
-            console.log(`✅ Correct calculation: Subtotal(${this.subtotal}) + Shipping(${shippingFee}) = Total(${newTotal})`);
+            console.log(`✅ Correct calculation: Subtotal(${this.subtotal}) - Discount(${discountAmount}) + Shipping(${shippingFee}) = Total(${newTotal})`);
         }
 
         // Update hidden fields
@@ -556,10 +579,21 @@ class ShippingCalculator {
         if (shippingInfo) shippingInfo.style.display = 'none';
         if (shippingFeeRow) shippingFeeRow.style.display = 'none';
 
-        // Reset total
+        // Reset total with discount applied
         const finalTotal = document.querySelector('.order-total-amount strong span');
         if (finalTotal) {
-            finalTotal.textContent = this.formatCurrency(this.subtotal, false);
+            // Lấy giá trị discount nếu có
+            const discountRow = document.querySelector('.order-discount td:last-child');
+            let discountAmount = 0;
+
+            if (discountRow) {
+                const discountText = discountRow.textContent.replace(/[^\d]/g, '');
+                discountAmount = parseInt(discountText) || 0;
+            }
+
+            // Hiển thị total = subtotal - discount (không có phí vận chuyển)
+            const totalWithoutShipping = this.subtotal - discountAmount;
+            finalTotal.textContent = this.formatCurrency(totalWithoutShipping, false);
         }
 
         // Reset fee display
