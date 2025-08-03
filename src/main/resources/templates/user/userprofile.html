@@ -5,6 +5,8 @@
 <title>Hồ sơ cá nhân</title>
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Logout button CSS -->
+<link rel="stylesheet" th:href="@{/assets/css/logout-button.css}">
 
 <body class="sticky-header">
 
@@ -66,8 +68,11 @@
                                     <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-change-password"
                                        role="tab" aria-selected="false" th:unless="${isOAuth2}"><i
                                             class="fas fa-key"></i>Đổi mật khẩu</a>
-                                    <a class="nav-item nav-link" href="/logout"><i class="fal fa-sign-out"></i>Đăng
-                                        xuất</a>
+                                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                                        <button type="submit" class="nav-item nav-link logout-btn border-0 bg-transparent" style="cursor: pointer;">
+                                            <i class="fal fa-sign-out"></i>Đăng xuất
+                                        </button>
+                                    </form>
                                 </div>
                             </nav>
                         </aside>
@@ -78,8 +83,12 @@
                             <div class="tab-pane fade show active" id="nav-account-info" role="tabpanel">
                                 <div class="axil-dashboard-overview">
                                     <div class="welcome-text">Xin chào <span th:text="${user.fullName}"></span>!
-                                        (không phải <span th:text="${user.fullName}"></span>? <a href="/logout">Đăng
-                                            xuất</a>)</div>
+                                        (không phải <span th:text="${user.fullName}"></span>? 
+                                        <form th:action="@{/logout}" method="post" style="display: inline;">
+                                            <button type="submit" class="logout-button">
+                                                Đăng xuất
+                                            </button>
+                                        </form>)</div>
                                     <p>Thông tin chi tiết về tài khoản của bạn. Để cập nhật thông tin, vui lòng sử
                                         dụng tab "Chỉnh sửa thông tin".</p>
 

@@ -49,7 +49,11 @@
                                 </span>
                             </li>
                             <li sec:authorize="isAuthenticated()">
-                                <a th:href="@{/logout}">Đăng xuất</a>
+                                <form th:action="@{/logout}" method="post" style="display: inline;">
+                                    <button type="submit" class="dropdown-link" style="background: none; border: none; padding: 0; color: inherit; text-decoration: none; cursor: pointer;">
+                                        Đăng xuất
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </div>
@@ -136,7 +140,11 @@
                                         </a>
                                     </li>
                                     <li sec:authorize="isAuthenticated()">
-                                        <a th:href="@{/logout}">Đăng xuất</a>
+                                        <form th:action="@{/logout}" method="post">
+                                            <button type="submit">
+                                                Đăng xuất
+                                            </button>
+                                        </form>
                                     </li>
                                 </ul>
                                 <div class="login-btn" sec:authorize="!isAuthenticated()">
@@ -230,7 +238,7 @@
     <!-- Notification Styles -->
     <style>
 
-        .notification-btn.has-notifications .notification-count {
+        .notification-btn.has-notifications {
             display: flex;
         }
         

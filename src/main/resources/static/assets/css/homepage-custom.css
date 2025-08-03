@@ -1,5 +1,60 @@
 /* Homepage Custom Styles */
 
+/* Logout Button Styles */
+.logout-button {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    font: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    display: inline !important;
+}
+
+.logout-button:hover {
+    text-decoration: underline !important;
+    color: inherit !important;
+}
+
+/* For dropdown items */
+.dropdown-link {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    font: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.dropdown-link:hover {
+    text-decoration: none !important;
+    color: inherit !important;
+    background-color: rgba(0,0,0,0.1) !important;
+}
+
+/* For nav items */
+.nav-link.logout-btn {
+    background: none !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    font: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.nav-link.logout-btn:hover {
+    color: var(--bs-nav-link-hover-color) !important;
+    background-color: transparent !important;
+}
+
 /* Header Navigation - Center Fix */
 .axil-mainmenu .container {
     max-width: 1400px !important;
