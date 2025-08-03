@@ -32,17 +32,14 @@ import java.util.*;
 @Slf4j
 public class CartController {
 
-    // ===== CORE SERVICES (Refactored) =====
     private final CartService cartService;
     private final CheckoutService checkoutService;
     private final OrderService orderService;
-
-    // ===== LEGACY DEPENDENCIES (Kept for /add-variant and other dev features) =====
-    private final ProductRepository repo; // For legacy code compatibility
-    private final CartRepository cartRepository; // Used in /add-variant endpoint
-    private final UserRepository userRepository; // Injected but delegated to CartService
-    private final ProductVariantService productVariantService; // Used in /add-variant endpoint
-    private final VoucherService voucherService; // Injected but delegated to CartService
+    private final ProductRepository repo;
+    private final CartRepository cartRepository;
+    private final UserRepository userRepository;
+    private final ProductVariantService productVariantService;
+    private final VoucherService voucherService;
 
     public CartController(ProductRepository repo, OrderService orderService, CartService cartService, CheckoutService checkoutService, CartRepository cartRepository, UserRepository userRepository, ProductVariantService productVariantService, VoucherService voucherService) {
         this.repo = repo;
@@ -64,10 +61,8 @@ public class CartController {
         boolean isAjax = "XMLHttpRequest".equals(requestedWith);
 
         if (isAjax) {
-            // For AJAX requests, use existing AJAX method
             return cartService.addToCart(id, null, sl, principal);
         } else {
-            // For non-AJAX requests, use new non-AJAX method
             String result = cartService.addProductToCart(id, sl, principal);
 
             if (result.startsWith("error:")) {
@@ -76,7 +71,6 @@ public class CartController {
             } else if (result.startsWith("redirect:")) {
                 return result.substring(9);
             }
-
             return CartConstants.REDIRECT_CART_VIEW;
         }
     }
@@ -98,16 +92,13 @@ public class CartController {
         }
     }
 
-    /**
-     * Update cart item quantity -  REFACTORED to use CartService (now supports variants)
-     */
     @PostMapping("/update/{id}")
     public String update(@PathVariable String id, @RequestParam int sl,
                          @RequestParam(required = false) String variantId,
                          Principal principal, RedirectAttributes redirectAttributes) {
         String result;
         if (variantId != null && !variantId.trim().isEmpty()) {
-            // Use CartService AJAX method for variant support
+
             ResponseEntity<Map<String, Object>> response = cartService.updateCartItem(id, variantId, sl, principal);
             if (response.getBody() != null && (Boolean) response.getBody().getOrDefault("success", false)) {
                 result = "success";
@@ -126,16 +117,14 @@ public class CartController {
         return CartConstants.REDIRECT_CART_VIEW;
     }
 
-    /**
-     * Remove item from cart -  REFACTORED to use CartService (now supports variants)
-     */
+
     @GetMapping("/remove/{id}")
     public String remove(@PathVariable String id,
                          @RequestParam(required = false) String variantId,
                          Principal principal) {
         String result;
         if (variantId != null && !variantId.trim().isEmpty()) {
-            // Use CartService AJAX method for variant support
+
             ResponseEntity<Map<String, Object>> response = cartService.removeFromCart(id, variantId, principal);
             if (response.getBody() != null && (Boolean) response.getBody().getOrDefault("success", false)) {
                 result = "success";
@@ -154,9 +143,7 @@ public class CartController {
         return CartConstants.REDIRECT_CART_VIEW;
     }
 
-    /**
-     * Clear all items from cart - REFACTORED to use CartService
-     */
+
     @GetMapping("/clear")
     public String clear(Principal principal) {
         String result = cartService.clearUserCart(principal);
@@ -168,11 +155,7 @@ public class CartController {
         return CartConstants.REDIRECT_CART_VIEW;
     }
 
-    // =========================== VOUCHER OPERATIONS ===========================
 
-    /**
-     * Apply voucher to cart - REFACTORED to use CartService
-     */
     @PostMapping("/apply-voucher")
     public String applyVoucher(@RequestParam String voucherCode,
                                @RequestParam(defaultValue = "cart") String redirect,
@@ -197,9 +180,6 @@ public class CartController {
         return getRedirectPath(redirect);
     }
 
-    /**
-     * Remove voucher from cart - REFACTORED to use CartService
-     */
     @GetMapping("/remove-voucher")
     public String removeVoucher(@RequestParam(defaultValue = "cart") String redirect,
                                 Principal principal,
@@ -219,11 +199,6 @@ public class CartController {
         return getRedirectPath(redirect);
     }
 
-    // REMOVED - All voucher helper methods moved to CartService
-
-    /**
-     * Get redirect path based on redirect parameter
-     */
     private String getRedirectPath(String redirect) {
         return switch (redirect.toLowerCase()) {
             case "checkout" -> "redirect:/cart/checkout";
@@ -231,22 +206,14 @@ public class CartController {
         };
     }
 
-    /**
-     * Check if user has admin role (supports both Admin and ADMIN for backward compatibility)
-     */
+
     private boolean isAdminRole(Role role) {
         if (role == null) return false;
         String roleName = role.name();
         return "Admin".equals(roleName) || "ADMIN".equals(roleName);
     }
 
-    // REMOVED - formatCurrency and safeGetUsageCount moved to CartService
 
-    // =========================== CHECKOUT OPERATIONS ===========================
-
-    /**
-     * Display checkout page - REFACTORED to use CartService
-     */
     @GetMapping("/checkout")
     public String checkout(Model model, Principal principal) {
         try {
@@ -269,9 +236,7 @@ public class CartController {
         }
     }
 
-    /**
-     * Process checkout form submission
-     */
+
     @PostMapping("/checkout")
     public String processCheckout(@RequestParam("fullName") String fullName,
                                   @RequestParam("phone") String phone,
@@ -290,7 +255,7 @@ public class CartController {
         CheckoutRequest request = new CheckoutRequest();
 
 
-        //  NEW - Set shipping address và alternative receiver nếu cần
+
         if (address != null && !address.trim().isEmpty()) {
             request.setShippingAddress(address);
         }
@@ -313,9 +278,7 @@ public class CartController {
         return processCheckoutInternal(request, model, principal);
     }
 
-    /**
-     * Internal checkout processing logic -  REFACTORED to use CheckoutService
-     */
+
     private String processCheckoutInternal(CheckoutRequest request, Model model, Principal principal) {
         try {
             User user = cartService.getUserFromPrincipal(principal);
@@ -329,13 +292,12 @@ public class CartController {
                 return CartConstants.REDIRECT_CART_VIEW;
             }
 
-            //  Always create order, but with different status based on payment method
+
             Order savedOrder = checkoutService.processCheckout(request, user, userCart);
 
-            // Handle different payment methods
             if ("VNPAY".equals(request.getPaymentMethod())) {
                 String oldstatus = savedOrder.getStatus();
-                //  NEW FLOW: Set order to PAYMENT_PENDING status and redirect to VNPay
+
                 savedOrder.setStatus("PAYMENT_PENDING");
                 orderService.updateOrder(savedOrder,oldstatus);
                 
@@ -343,7 +305,7 @@ public class CartController {
                 return "redirect:/user/checkout/vnpay?orderId=" + savedOrder.getId();
                 
             } else {
-                // COD or other payment methods - order already created with PENDING status
+
                 log.info("COD checkout: order {} created with PENDING status", savedOrder.getId());
                 model.addAttribute(CartConstants.ORDER, savedOrder);
                 return "Cart/orderDetails";
@@ -357,9 +319,6 @@ public class CartController {
     }
 
 
-    /**
-     * View specific order details
-     */
     @GetMapping("/order/{orderId}")
     public String viewOrder(@PathVariable String orderId, Model model, Principal principal) {
         try {
@@ -369,7 +328,6 @@ public class CartController {
                 return CartConstants.REDIRECT_CART_VIEW;
             }
 
-            // Check access permission - merged if conditions
             if (principal != null) {
                 User user = cartService.getUserFromPrincipal(principal);
                 if (user != null && order.getUserId() != null &&
@@ -388,27 +346,19 @@ public class CartController {
         }
     }
 
-    // =========================== API ENDPOINTS ===========================
-
-    /**
-     * Get cart count for current user - REFACTORED to use CartService
-     */
     @GetMapping("/count")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getCartCount(Principal principal) {
         return cartService.getCartCount(principal);
     }
-    
-    /**
-     * Confirm delivery - Update order status to DELIVERED when user confirms receipt
-     */
+
     @PostMapping("/confirm-delivery")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> confirmDelivery(@RequestParam String orderId, Principal principal) {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // Get current user
+
             User user = cartService.getUserFromPrincipal(principal);
             if (user == null) {
                 response.put("success", false);
@@ -416,29 +366,28 @@ public class CartController {
                 return ResponseEntity.badRequest().body(response);
             }
             
-            // Get order
+
             Order order = orderService.getOrderById(orderId);
             if (order == null) {
                 response.put("success", false);
                 response.put("message", "Không tìm thấy đơn hàng");
                 return ResponseEntity.badRequest().body(response);
             }
-            
-            // Check if user owns this order
+
             if (!order.getUserId().equals(user.getUserId())) {
                 response.put("success", false);
                 response.put("message", "Bạn không có quyền thao tác với đơn hàng này");
                 return ResponseEntity.badRequest().body(response);
             }
             
-            // Check if order is in correct status to be delivered
+
             if (!"SHIPPED".equals(order.getStatus())) {
                 response.put("success", false);
                 response.put("message", "Chỉ có thể xác nhận đơn hàng đang trong trạng thái giao hàng");
                 return ResponseEntity.badRequest().body(response);
             }
             String oldStatus = order.getStatus();
-            // Update order status to DELIVERED
+
             order.setStatus("DELIVERED");
             orderService.updateOrder(order, oldStatus);
 
@@ -455,9 +404,6 @@ public class CartController {
         }
     }
 
-    /**
-     * Get cart review content for AJAX updates - REFACTORED to use CartService
-     */
     @GetMapping("/review")
     public String getCartReview(Model model, Principal principal) {
         try {
@@ -470,11 +416,6 @@ public class CartController {
         }
     }
 
-
-
-    /**
-     * Add product variant to cart - New feature from PR #23
-     */
     @PostMapping("/add-variant")
     @ResponseBody
     public ResponseEntity<?> addVariant(@RequestParam String variantId,
@@ -521,7 +462,6 @@ public class CartController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Kiểm tra tồn kho - IMPROVED: Use CartService for better abstraction
             List<Cart> userCart = cartService.getCurrentUserCart(principal);
             int currentQuantity = 0;
             Cart existingCartItem = null;
@@ -577,9 +517,6 @@ public class CartController {
         }
     }
 
-    /**
-     * Test endpoint để kiểm tra payment methods
-     */
     @GetMapping("/checkout/test")
     @ResponseBody
     public Map<String, Object> testCheckoutPaymentMethods() {

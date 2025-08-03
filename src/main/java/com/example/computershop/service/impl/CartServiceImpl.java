@@ -98,7 +98,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public ResponseEntity<Map<String, Object>> addToCart(String productId, String variantId, Integer quantity, Principal principal) {
         try {
-            // Validate input
+           
             if (productId == null || productId.trim().isEmpty()) {
                 return createErrorResponse("Product ID không được để trống", HttpStatus.BAD_REQUEST.value());
             }
@@ -107,19 +107,19 @@ public class CartServiceImpl implements CartService {
                 return createErrorResponse("Số lượng phải từ 1 đến 10", HttpStatus.BAD_REQUEST.value());
             }
 
-            // Get user
+            
             User user = getUserFromPrincipal(principal);
             if (user == null) {
                 return createErrorResponse("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", HttpStatus.UNAUTHORIZED.value());
             }
 
-            // Get product
+           
             Products product = productRepository.findById(productId).orElse(null);
             if (product == null) {
                 return createErrorResponse("Sản phẩm không tồn tại", HttpStatus.NOT_FOUND.value());
             }
 
-            // Get variant if specified
+          
             ProductVariant variant = null;
             if (variantId != null && !variantId.trim().isEmpty()) {
                 variant = productVariantService.findById(variantId);
@@ -128,7 +128,7 @@ public class CartServiceImpl implements CartService {
                 }
             }
 
-            // Check stock
+       
             int availableStock = variant != null ? 
                 (variant.getQuantity() != null ? variant.getQuantity() : 0) : 
                 (product.getQuantity() != null ? product.getQuantity() : 0);
@@ -137,7 +137,7 @@ public class CartServiceImpl implements CartService {
                 return createErrorResponse("Không đủ hàng trong kho. Còn lại: " + availableStock, HttpStatus.BAD_REQUEST.value());
             }
 
-            // Check if item already exists in cart
+         
             Optional<Cart> existingCartItem;
             if (variant != null) {
                 existingCartItem = cartRepository.findByUserAndProductAndVariant(user, product, variant);
@@ -169,7 +169,7 @@ public class CartServiceImpl implements CartService {
                 cartRepository.save(newCartItem);
             }
 
-            // Get updated cart count
+        
             int cartCount = cartRepository.findByUser(user).stream()
                     .mapToInt(Cart::getQuantity)
                     .sum();
@@ -207,7 +207,7 @@ public class CartServiceImpl implements CartService {
                 variant = productVariantService.findById(variantId);
             }
 
-            // Find cart item
+  
             Optional<Cart> cartItemOpt;
             if (variant != null) {
                 cartItemOpt = cartRepository.findByUserAndProductAndVariant(user, product, variant);
@@ -221,7 +221,7 @@ public class CartServiceImpl implements CartService {
 
             Cart cartItem = cartItemOpt.get();
             
-            // Check stock
+    
             int availableStock = variant != null ? 
                 (variant.getQuantity() != null ? variant.getQuantity() : 0) : 
                 (product.getQuantity() != null ? product.getQuantity() : 0);
@@ -260,7 +260,7 @@ public class CartServiceImpl implements CartService {
                 variant = productVariantService.findById(variantId);
             }
 
-            // Find and remove cart item
+   
             Optional<Cart> cartItemOpt;
             if (variant != null) {
                 cartItemOpt = cartRepository.findByUserAndProductAndVariant(user, product, variant);
@@ -316,7 +316,7 @@ public class CartServiceImpl implements CartService {
                 return createErrorResponse("Vui lòng nhập mã voucher", HttpStatus.BAD_REQUEST.value());
             }
 
-            // Validate voucher
+    
             Optional<Voucher> voucherOpt = voucherService.getValidVoucherByCode(voucherCode.trim());
             if (!voucherOpt.isPresent()) {
                 return createErrorResponse("Mã voucher không tồn tại hoặc đã hết hạn", HttpStatus.NOT_FOUND.value());
@@ -329,7 +329,6 @@ public class CartServiceImpl implements CartService {
                 return createErrorResponse("Giỏ hàng trống", HttpStatus.BAD_REQUEST.value());
             }
 
-            // Calculate discount
             Long subtotal = cartItems.stream()
                     .mapToLong(cart -> {
                         if (cart.getVariant() != null) {
@@ -341,8 +340,7 @@ public class CartServiceImpl implements CartService {
                     .sum();
 
             Long discountAmount = voucherService.calculateDiscountAmount(voucher, subtotal);
-            
-            // Distribute discount proportionally among cart items
+      
             Long remainingDiscount = discountAmount;
             for (int i = 0; i < cartItems.size(); i++) {
                 Cart cart = cartItems.get(i);
@@ -363,10 +361,7 @@ public class CartServiceImpl implements CartService {
                 cart.setDiscountAmount(itemDiscount);
                 cartRepository.save(cart);
             }
-
-            // ✅ TODO - Update voucher usage tracking if needed
-            // voucherService.updateVoucherUsage(voucher, user.getUserId());
-
+            
             Map<String, Object> data = new HashMap<>();
             data.put("message", "Áp dụng voucher thành công");
             data.put("discountAmount", discountAmount);
@@ -447,12 +442,7 @@ public class CartServiceImpl implements CartService {
         response.putAll(data);
         return ResponseEntity.ok(response);
     }
-
-    // Private helper methods
-
-    /**
-     * Extract email from OAuth2 attributes based on provider
-     */
+    
     private String getEmailFromOAuth2Attributes(String provider, Map<String, Object> attributes) {
         try {
             if ("google".equals(provider)) {
@@ -481,8 +471,7 @@ public class CartServiceImpl implements CartService {
             return null;
         }
     }
-    
-    // ===== NON-AJAX CART OPERATIONS =====
+
     
     @Override
     public String addProductToCart(String productId, int quantity, Principal principal) {
@@ -629,7 +618,6 @@ public class CartServiceImpl implements CartService {
             return "error:" + errorMsg;
         }
 
-        // Check existing cart item
         int currentCartQuantity = 0;
         Cart existingCartItem = null;
         for (Cart c : userCart) {
@@ -678,7 +666,6 @@ public class CartServiceImpl implements CartService {
         return "success";
     }
     
-    // ===== VOUCHER OPERATIONS =====
     
     @Override
     public String applyVoucherToCart(String voucherCode, Principal principal) {
@@ -717,12 +704,11 @@ public class CartServiceImpl implements CartService {
             // Distribute discount across cart items proportionally
             distributeDiscountToCartItems(userCart, discountAmount, voucherCode);
 
-            // Update voucher usage tracking (non-blocking)
             try {
                 updateVoucherUsageTracking(voucher, user);
             } catch (Exception trackingError) {
                 System.err.println("Warning: Failed to update voucher usage tracking, but voucher was applied successfully: " + trackingError.getMessage());
-                // Continue execution - don't let tracking failure break voucher application
+               
             }
 
             return "success:Áp dụng voucher " + voucherCode + " thành công! Giảm " + formatCurrency(discountAmount) + " VND";
@@ -825,16 +811,12 @@ public class CartServiceImpl implements CartService {
         }
     }
     
-    /**
-     * Format currency for display
-     */
+ 
     private String formatCurrency(Long amount) {
         return String.format("%,d", amount);
     }
     
-    /**
-     * Safely get usage count from voucher
-     */
+
     private Integer safeGetUsageCount(Voucher voucher) {
         try {
             if (voucher == null) return 0;
@@ -845,8 +827,7 @@ public class CartServiceImpl implements CartService {
             return 0;
         }
     }
-    
-    // ===== CART DISPLAY OPERATIONS =====
+
     
     @Override
     public Map<String, Object> prepareCartViewData(Principal principal) {
@@ -947,8 +928,7 @@ public class CartServiceImpl implements CartService {
         
         return reviewData;
     }
-    
-    // ===== ADDITIONAL USER AND CART OPERATIONS =====
+
     
     @Override
     public User getUserById(UUID userId) {

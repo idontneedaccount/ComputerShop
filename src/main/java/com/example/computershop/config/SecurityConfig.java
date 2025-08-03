@@ -22,12 +22,12 @@ public class SecurityConfig {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private static final String LOGIN ="/auth/login";
 
-    public SecurityConfig(CustomAuthenticationProvider authenticationProvider, 
-                         @Qualifier("customAuthenticationSuccessHandler") AuthenticationSuccessHandler successHandler, 
-                         AuthenticationFailureHandler customAuthenticationFailureHandler,
-                         @Qualifier("oauth2SuccessHandler") OAuth2SuccessHandler oauth2SuccessHandler,
-                         @Qualifier("oauth2FailureHandler") OAuth2FailureHandler oauth2FailureHandler,
-                         ClientRegistrationRepository clientRegistrationRepository) {
+    public SecurityConfig(CustomAuthenticationProvider authenticationProvider,
+                          @Qualifier("customAuthenticationSuccessHandler") AuthenticationSuccessHandler successHandler,
+                          AuthenticationFailureHandler customAuthenticationFailureHandler,
+                          @Qualifier("oauth2SuccessHandler") OAuth2SuccessHandler oauth2SuccessHandler,
+                          @Qualifier("oauth2FailureHandler") OAuth2FailureHandler oauth2FailureHandler,
+                          ClientRegistrationRepository clientRegistrationRepository) {
         this.authenticationProvider = authenticationProvider;
         this.successHandler = successHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;

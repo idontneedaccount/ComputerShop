@@ -27,10 +27,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order createOrder(Order order, List<OrderDetail> orderDetails) {
         try {
-            // Set order properties
+
             order.setOrderDate(LocalDateTime.now());
             order.setStatus("PENDING");
-            order.setOrderDetails(null); // Clear any existing details
+            order.setOrderDetails(null);
             
             // Save order first
             Order savedOrder = orderRepository.save(order);
@@ -38,13 +38,8 @@ public class OrderServiceImpl implements OrderService {
             // Save order details
             for (OrderDetail detail : orderDetails) {
                 detail.setOrder(savedOrder);
-                // TotalPrice is a computed column, don't set it
                 orderDetailRepository.save(detail);
             }
-            
-            // Don't set orderDetails back to avoid circular reference issues
-            // The controller should handle this if needed
-            
             return savedOrder;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create order: " + e.getMessage(), e);
