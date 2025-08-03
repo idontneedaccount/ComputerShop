@@ -145,26 +145,6 @@ public class ProductVariantController {
                     return PRODUCT_VARIANTS + productId;
                 }
             }
-            
-            // XỬ LÝ UPLOAD NHIỀU ẢNH
-            if (variantImages != null && variantImages.length > 0) {
-                List<String> imageNames = new ArrayList<>();
-                for (MultipartFile image : variantImages) {
-                    if (!image.isEmpty()) {
-                        try {
-                            String fileName = storageService.store(image);
-                            imageNames.add(fileName);
-                        } catch (Exception e) {
-                            redirectAttributes.addFlashAttribute(ERROR, "Lỗi upload ảnh: " + e.getMessage());
-                            return PRODUCT_VARIANTS + productId;
-                        }
-                    }
-                }
-                if (!imageNames.isEmpty()) {
-                    variant.setVariantImagesArray(imageNames.toArray(new String[0]));
-                }
-            }
-            
             // Xử lý custom attributes
             Map<String, String> customAttributes = new HashMap<>();
             List<VariantFieldConfig> customFields = fieldConfigService.getAllActiveFields();
@@ -383,18 +363,18 @@ public class ProductVariantController {
         return "redirect:/admin/product-variants/field-config";
     }
 
-    // Toggle functionality removed as per user request
-
-    @PostMapping("/toggle-field-status/{fieldId}")
-    @ResponseBody
-    public String toggleFieldStatus(@PathVariable String fieldId) {
+    @GetMapping("/field-config/delete/{fieldId}")
+    public String deleteField(@PathVariable String fieldId,
+                              RedirectAttributes redirectAttributes) {
         try {
-            if (fieldConfigService.toggleStatus(fieldId)) {
-                return "success";
+            if (fieldConfigService.delete(fieldId)) {
+                redirectAttributes.addFlashAttribute(SUCCCESS, "Xóa trường thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute(ERROR, "Không thể xóa trường!");
             }
-            return "error";
         } catch (Exception e) {
-            return "error";
+            redirectAttributes.addFlashAttribute(ERROR, LOI + e.getMessage());
         }
+        return "redirect:/admin/product-variants/field-config";
     }
 } 
