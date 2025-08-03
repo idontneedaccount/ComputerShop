@@ -74,30 +74,53 @@
 
     // Update main product image when variant is selected
     const selectedImageUrl = variantElement.dataset.image;
-    if (selectedImageUrl && selectedImageUrl !== 'null' && selectedImageUrl !== '') {
-    const fullImagePath = `/assets/images/product/laptop/${selectedImageUrl}`;
-    if (mainProductImage) {
-    mainProductImage.src = fullImagePath;
-}
-    if (mainImageLink) {
-    mainImageLink.href = fullImagePath;
-}
-    if (zoomLink) {
-    zoomLink.href = fullImagePath;
-}
+    console.log('Selected image URL:', selectedImageUrl);
+    
+    if (selectedImageUrl && selectedImageUrl !== 'null' && selectedImageUrl !== '' && selectedImageUrl.trim() !== '') {
+        const fullImagePath = `/assets/images/product/laptop/${selectedImageUrl}`;
+        console.log('Full image path:', fullImagePath);
+        
+        if (mainProductImage) {
+            // Check if image exists before setting
+            const testImg = new Image();
+            testImg.onload = function() {
+                mainProductImage.src = fullImagePath;
+                console.log('Image loaded successfully:', fullImagePath);
+            };
+            testImg.onerror = function() {
+                console.warn('Image failed to load:', fullImagePath);
+                // Fallback to default product image if variant image fails
+                const defaultImagePath = `/assets/images/product/laptop/${/*[[${product.imageURL}]]*/ ''}`;
+                mainProductImage.src = defaultImagePath;
+            };
+            testImg.src = fullImagePath;
+        }
+        
+        if (mainImageLink) {
+            mainImageLink.href = fullImagePath;
+        }
+        if (zoomLink) {
+            zoomLink.href = fullImagePath;
+        }
 
-    // Update active thumbnail
-    if (thumbnailContainer) {
-    const activeThumb = thumbnailContainer.querySelector('.small-thumb-img.active');
-    if (activeThumb) {
-    activeThumb.classList.remove('active');
-}
-    const newActiveThumb = thumbnailContainer.querySelector(`[data-image="${selectedImageUrl}"]`);
-    if (newActiveThumb) {
-    newActiveThumb.classList.add('active');
-}
-}
-}
+        // Update active thumbnail
+        if (thumbnailContainer) {
+            const activeThumb = thumbnailContainer.querySelector('.small-thumb-img.active');
+            if (activeThumb) {
+                activeThumb.classList.remove('active');
+            }
+            const newActiveThumb = thumbnailContainer.querySelector(`[data-image="${selectedImageUrl}"]`);
+            if (newActiveThumb) {
+                newActiveThumb.classList.add('active');
+            } else {
+                // If no matching thumbnail, activate the first one (main product image)
+                const firstThumb = thumbnailContainer.querySelector('.small-thumb-img[data-variant-id="main"]');
+                if (firstThumb) {
+                    firstThumb.classList.add('active');
+                }
+            }
+        }
+    }
 }
 }
 
@@ -138,45 +161,58 @@
 
     // Handle thumbnail clicks
     if (thumbnailContainer) {
-    thumbnailContainer.addEventListener('click', function(e) {
-    const clickedThumb = e.target.closest('.small-thumb-img');
-    if (clickedThumb) {
-    const imageUrl = clickedThumb.dataset.image;
-    const variantId = clickedThumb.dataset.variantId;
+        thumbnailContainer.addEventListener('click', function(e) {
+            const clickedThumb = e.target.closest('.small-thumb-img');
+            if (clickedThumb) {
+                const imageUrl = clickedThumb.dataset.image;
+                const variantId = clickedThumb.dataset.variantId;
+                
+                console.log('Thumbnail clicked:', imageUrl, 'Variant ID:', variantId);
 
-    // Update main image
-    if (mainProductImage && imageUrl) {
-    const fullImagePath = `/assets/images/product/laptop/${imageUrl}`;
-    mainProductImage.src = fullImagePath;
-    mainProductImage.alt = `Product image - ${imageUrl}`;
+                // Update main image
+                if (mainProductImage && imageUrl) {
+                    const fullImagePath = `/assets/images/product/laptop/${imageUrl}`;
+                    
+                    // Check if image exists before setting
+                    const testImg = new Image();
+                    testImg.onload = function() {
+                        mainProductImage.src = fullImagePath;
+                        mainProductImage.alt = `Product image - ${imageUrl}`;
+                        console.log('Thumbnail image loaded successfully:', fullImagePath);
 
-    // Update zoom links
-    if (mainImageLink) {
-    mainImageLink.href = fullImagePath;
-}
-    if (zoomLink) {
-    zoomLink.href = fullImagePath;
-}
-}
+                        // Update zoom links
+                        if (mainImageLink) {
+                            mainImageLink.href = fullImagePath;
+                        }
+                        if (zoomLink) {
+                            zoomLink.href = fullImagePath;
+                        }
+                    };
+                    testImg.onerror = function() {
+                        console.warn('Thumbnail image failed to load:', fullImagePath);
+                    };
+                    testImg.src = fullImagePath;
+                }
 
-    // Update active thumbnail
-    const activeThumb = thumbnailContainer.querySelector('.small-thumb-img.active');
-    if (activeThumb) {
-    activeThumb.classList.remove('active');
-}
-    clickedThumb.classList.add('active');
+                // Update active thumbnail
+                const activeThumb = thumbnailContainer.querySelector('.small-thumb-img.active');
+                if (activeThumb) {
+                    activeThumb.classList.remove('active');
+                }
+                clickedThumb.classList.add('active');
 
-    // If clicking on variant image, auto-select that variant
-    if (variantId && variantId !== 'main') {
-    const variantRadio = document.querySelector(`input[name="selectedVariant"][value="${variantId}"]`);
-    if (variantRadio && !variantRadio.disabled) {
-    variantRadio.checked = true;
-    updateVariantDisplay();
-}
-}
-}
-});
-}
+                // If clicking on variant image, auto-select that variant
+                if (variantId && variantId !== 'main') {
+                    const variantRadio = document.querySelector(`input[name="selectedVariant"][value="${variantId}"]`);
+                    if (variantRadio && !variantRadio.disabled) {
+                        variantRadio.checked = true;
+                        updateVariantDisplay();
+                        console.log('Auto-selected variant:', variantId);
+                    }
+                }
+            }
+        });
+    }
 
     // Handle add to cart
     if (addToCartButton) {

@@ -190,12 +190,28 @@
 
     <!-- Notification Count Script -->
     <script th:if="${#authorization.expression('isAuthenticated()')}">
-        $(document).ready(function() {
+        // Wait for both DOM and jQuery to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if jQuery is loaded
+            if (typeof $ !== 'undefined') {
+                initNotifications();
+            } else {
+                // If jQuery not loaded yet, wait for it
+                const checkJQuery = setInterval(function() {
+                    if (typeof $ !== 'undefined') {
+                        clearInterval(checkJQuery);
+                        initNotifications();
+                    }
+                }, 100);
+            }
+        });
+
+        function initNotifications() {
             loadNotificationCount();
             
             // Refresh notification count every 30 seconds
             setInterval(loadNotificationCount, 30000);
-        });
+        }
 
         function loadNotificationCount() {
             $.get('/notifications/api/unread-count')

@@ -363,16 +363,18 @@ public class ProductVariantController {
         return "redirect:/admin/product-variants/field-config";
     }
 
-    @PostMapping("/toggle-field-status/{fieldId}")
-    @ResponseBody
-    public String toggleFieldStatus(@PathVariable String fieldId) {
+    @GetMapping("/field-config/delete/{fieldId}")
+    public String deleteField(@PathVariable String fieldId,
+                              RedirectAttributes redirectAttributes) {
         try {
-            if (fieldConfigService.toggleStatus(fieldId)) {
-                return "success";
+            if (fieldConfigService.delete(fieldId)) {
+                redirectAttributes.addFlashAttribute(SUCCCESS, "Xóa trường thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute(ERROR, "Không thể xóa trường!");
             }
-            return "error";
         } catch (Exception e) {
-            return "error";
+            redirectAttributes.addFlashAttribute(ERROR, LOI + e.getMessage());
         }
+        return "redirect:/admin/product-variants/field-config";
     }
 } 

@@ -56,13 +56,14 @@
                                     <!-- Variant Images -->
                                     <th:block th:if="${variants != null and !variants.isEmpty()}" th:each="variant : ${variants}">
                                         <!-- Variant Main Image -->
-                                        <div th:if="${variant.variantImageUrl != null and !variant.variantImageUrl.isEmpty()}" 
+                                        <div th:if="${variant.variantImageUrl != null and !variant.variantImageUrl.isEmpty() and !variant.variantImageUrl.equals('')}" 
                                              class="small-thumb-img" 
                                              th:attr="data-image=${variant.variantImageUrl}, data-variant-id=${variant.variantId}">
                                             <img th:src="@{'/assets/images/product/laptop/' + ${variant.variantImageUrl}}" 
                                                  th:alt="${variant.displayName}" 
                                                  alt="variant thumb"
-                                                 style="cursor: pointer;">
+                                                 style="cursor: pointer;"
+                                                 onerror="this.style.display='none';">
                                         </div>
                                         
                                         <!-- Additional Variant Images -->
@@ -143,7 +144,7 @@
                                                       data-ram=${variant.ram}, 
                                                       data-storage=${variant.storage}, 
                                                       data-gpu=${variant.gpu},
-                                                      data-image=${variant.variantImageUrl ?: product.imageURL},
+                                                      data-image=${(variant.variantImageUrl != null and !variant.variantImageUrl.isEmpty() and !variant.variantImageUrl.equals('')) ? variant.variantImageUrl : product.imageURL},
                                                       data-color=${variant.customAttributesMap.get('color')}"
                                              th:classappend="${variant.quantity == 0} ? 'out-of-stock' : ''">
                                             <input type="radio" th:id="'variant-' + ${variant.variantId}" 

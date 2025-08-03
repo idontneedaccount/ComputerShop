@@ -269,13 +269,13 @@
                                 <td th:text="${iterStat.count}">1</td>
                                 <!-- Variant Image -->
                                 <td>
-                                    <img th:if="${variant.variantImageUrl}" 
+                                    <img th:if="${variant.variantImageUrl != null and !variant.variantImageUrl.isEmpty() and !variant.variantImageUrl.equals('')}" 
                                          th:src="@{'/assets/images/product/laptop/' + ${variant.variantImageUrl}}" 
                                          style="width: 50px; height: 50px; object-fit: cover;"
                                          class="rounded"
                                          th:alt="${variant.variantName}"
-                                         onerror="this.src='/assets/images/product/default-product.png'">
-                                    <img th:unless="${variant.variantImageUrl}" 
+                                         onerror="this.src='/assets/images/product/default-product.png'; console.warn('Variant image failed to load:', this.src);">
+                                    <img th:unless="${variant.variantImageUrl != null and !variant.variantImageUrl.isEmpty() and !variant.variantImageUrl.equals('')}" 
                                          th:src="@{'/assets/images/product/laptop/' + ${product.imageURL}}" 
                                          style="width: 50px; height: 50px; object-fit: cover;"
                                          class="rounded opacity-50"

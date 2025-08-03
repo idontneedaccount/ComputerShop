@@ -10,21 +10,21 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class VariantFieldConfigService {
-    
+
     private final VariantFieldConfigRepository repository;
-    
+
     public List<VariantFieldConfig> getAllActiveFields() {
         return repository.findByIsActiveTrueOrderByDisplayOrder();
     }
-    
+
     public List<VariantFieldConfig> getAllFields() {
         return repository.findAllByOrderByDisplayOrder();
     }
-    
+
     public VariantFieldConfig findById(String fieldId) {
         return repository.findById(fieldId).orElse(null);
     }
-    
+
     @Transactional
     public VariantFieldConfig create(VariantFieldConfig fieldConfig) {
         if (repository.existsByFieldKey(fieldConfig.getFieldKey())) {
@@ -32,30 +32,30 @@ public class VariantFieldConfigService {
         }
         return repository.save(fieldConfig);
     }
-    
+
     @Transactional
     public VariantFieldConfig update(String fieldId, VariantFieldConfig updatedField) {
         VariantFieldConfig existing = findById(fieldId);
         if (existing == null) {
             return null;
         }
-        
+
         existing.setFieldName(updatedField.getFieldName());
         existing.setFieldType(updatedField.getFieldType());
         existing.setFieldOptions(updatedField.getFieldOptions());
         existing.setIsRequired(updatedField.getIsRequired());
         existing.setDisplayOrder(updatedField.getDisplayOrder());
-        
+
         // Only update isActive if it's provided (not null)
         if (updatedField.getIsActive() != null) {
             existing.setIsActive(updatedField.getIsActive());
         }
-        
+
         // Don't update fieldKey as it should be immutable
-        
+
         return repository.save(existing);
     }
-    
+
     @Transactional
     public boolean toggleStatus(String fieldId) {
         try {
@@ -70,4 +70,14 @@ public class VariantFieldConfigService {
             return false;
         }
     }
-} 
+
+    @Transactional
+    public boolean delete(String fieldId) {
+        try {
+            repository.deleteById(fieldId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}
