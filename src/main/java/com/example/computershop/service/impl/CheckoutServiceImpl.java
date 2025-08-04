@@ -37,35 +37,18 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Override
     public Order processCheckout(CheckoutRequest request, User user, List<Cart> cartItems) {
-        // Validate checkout data
         validateCheckoutData(request, user, cartItems);
-        
-        // Create order with voucher support
         Order order = createOrderWithVoucher(request, cartItems);
         order.setUserId(user.getUserId());
-        
-        // Create order details
         List<OrderDetail> orderDetails = createOrderDetails(cartItems, order);
-        
-        // Save order
         Order savedOrder = orderService.createOrder(order, orderDetails);
-        
-        // Create notifications after successful order creation
         try {
-            // Tạo notification cho user về đơn hàng thành công
             notificationService.createOrderSuccessNotification(user, savedOrder);
-            
-            // Tạo notification cho admin về đơn hàng mới
             notificationService.createNewOrderNotificationForAdmin(savedOrder);
         } catch (Exception e) {
-            // Log error but don't fail the checkout process
             System.err.println("Warning: Failed to create notifications for order " + savedOrder.getId() + ": " + e.getMessage());
         }
-        
-        // Clear cart after successful checkout
         clearUserCart(user);
-        
-        // Set order details for response
         savedOrder.setOrderDetails(orderDetails);
         
         return savedOrder;
@@ -74,8 +57,6 @@ public class CheckoutServiceImpl implements CheckoutService {
     @Override
     public Order createOrderWithVoucher(CheckoutRequest request, List<Cart> cartItems) {
         Order order = new Order();
-        
-        // Calculate totals with voucher
         Long originalAmount = calculateCartOriginalTotal(cartItems);
         Long discountAmount = 0L;
         String voucherCode = null;
@@ -92,26 +73,22 @@ public class CheckoutServiceImpl implements CheckoutService {
                 if (voucher.isPresent()) {
                     voucherId = voucher.get().getVoucherId();
                 }
-                break; // All items should have same voucher
+                break;
             }
         }
         
         Long finalAmount = originalAmount - discountAmount;
-        
-        // Set alternative receiver if different from user
+
         if (request.getAlternativeReceiverName() != null && !request.getAlternativeReceiverName().trim().isEmpty()) {
             order.setAlternativeReceiverName(request.getAlternativeReceiverName());
         }
         if (request.getAlternativeReceiverPhone() != null && !request.getAlternativeReceiverPhone().trim().isEmpty()) {
             order.setAlternativeReceiverPhone(request.getAlternativeReceiverPhone());
         }
-        
-        // Set shipping address (may be different from user.address)
+
         if (request.getCompleteShippingAddress() != null && !request.getCompleteShippingAddress().trim().isEmpty()) {
             order.setShippingAddress(request.getCompleteShippingAddress());
         }
-        
-        // Set order basic info
         order.setPaymentMethod(request.getPaymentMethod());
         order.setNote(request.getNote());
         order.setShippingMethod(request.getShippingMethod());
@@ -119,8 +96,6 @@ public class CheckoutServiceImpl implements CheckoutService {
         order.setDistance(request.getDistance());
         order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
-        
-        // Set voucher fields
         order.setOriginalAmount(originalAmount);
         order.setDiscountAmount(discountAmount);
         order.setTotalAmount(finalAmount + (request.getShippingFee() != null ? request.getShippingFee() : 0L));
@@ -140,8 +115,6 @@ public class CheckoutServiceImpl implements CheckoutService {
             detail.setProduct(cartItem.getProduct());
             detail.setVariant(cartItem.getVariant());
             detail.setQuantity(cartItem.getQuantity());
-            
-            // Set unit price based on variant or product
             Long unitPrice;
             if (cartItem.getVariant() != null) {
                 unitPrice = cartItem.getVariant().getPrice().longValue();
@@ -149,8 +122,6 @@ public class CheckoutServiceImpl implements CheckoutService {
                 unitPrice = cartItem.getProduct().getPrice().longValue();
             }
             detail.setUnitPrice(unitPrice);
-            // totalPrice will be calculated by database computed column
-            
             orderDetails.add(detail);
         }
         

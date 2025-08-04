@@ -26,8 +26,7 @@ public class OrderController {
     private final NotificationService notificationService;
     private OrderService orderService;
     private PaymentRepository paymentRepository;
-    
-    // Constants - theo pattern ProductController
+
     private static final String ORDER = "order";
     private static final String ORDERS = "orders";
     private static final String ERROR = "error";
@@ -47,9 +46,6 @@ public class OrderController {
         "PENDING", "PAYMENT_PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "USER_CONFIRMED", "CANCELLED"
     );
 
-    /**
-     * Hiển thị danh sách tất cả đơn hàng với search và sort
-     */
     @GetMapping("/orders")
     public String index(Model model,
                        @RequestParam(value = "status", required = false) String status,
@@ -57,23 +53,18 @@ public class OrderController {
                        @RequestParam(value = "sort", required = false, defaultValue = "date_desc") String sort) {
         
         try {
-            // Lấy danh sách đơn hàng
+
             List<Order> orderList = getAllFilteredAndSortedOrders(status, search, sort);
-            
-            // Lookup payment status cho mỗi order
+
             Map<String, String> paymentStatusMap = getPaymentStatusMap(orderList);
-            
-            // Set model attributes
+
             model.addAttribute(ORDERS, orderList);
             model.addAttribute("paymentStatusMap", paymentStatusMap);
             model.addAttribute(STATUS_OPTIONS, ALL_STATUSES);
             model.addAttribute(SELECTED_STATUS, status != null ? status : "");
             model.addAttribute(SELECTED_SORT, sort);
             model.addAttribute(SEARCH_TERM, search != null ? search : "");
-            
-            // Thêm thống kê đơn giản
             model.addAttribute("totalOrders", orderList.size());
-            
             return ORDER_VIEW;
         } catch (Exception e) {
             model.addAttribute(ERROR, "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
@@ -83,9 +74,6 @@ public class OrderController {
         }
     }
 
-    /**
-     * Xem chi tiết đơn hàng
-     */
     @GetMapping("/orders/{orderId}")
     public String viewOrder(@PathVariable String orderId, Model model, RedirectAttributes redirectAttributes) {
         try {
@@ -113,7 +101,6 @@ public class OrderController {
                                    @RequestParam(value = "status", required = false) String newStatus,
                                    RedirectAttributes redirectAttributes) {
         try {
-            // Validate parameters
             if (orderId == null || orderId.trim().isEmpty()) {
                 redirectAttributes.addFlashAttribute(ERROR, "ID đơn hàng không được để trống!");
                 return ORDER_VIEW_REDIRECT;
@@ -123,21 +110,19 @@ public class OrderController {
                 redirectAttributes.addFlashAttribute(ERROR, "Vui lòng chọn trạng thái mới!");
                 return "redirect:/admin/orders/" + orderId;
             }
-            
-            // Validate status
+
             if (!ALL_STATUSES.contains(newStatus)) {
                 redirectAttributes.addFlashAttribute(ERROR, "Trạng thái không hợp lệ: " + newStatus);
                 return "redirect:/admin/orders/" + orderId;
             }
-            
-            // Get và update order
+
             Order order = orderService.getOrderById(orderId);
             if (order == null) {
                 redirectAttributes.addFlashAttribute(ERROR, "Không tìm thấy đơn hàng với ID: " + orderId);
                 return ORDER_VIEW_REDIRECT;
             }
             String oldStatus = order.getStatus();
-            // Set status mới và update order - updateOrder() sẽ tự động gửi notification
+
             order.setStatus(newStatus);
             Order updatedOrder = orderService.updateOrder(order, oldStatus);
 
@@ -153,17 +138,10 @@ public class OrderController {
             redirectAttributes.addFlashAttribute(ERROR, "Có lỗi xảy ra khi cập nhật trạng thái: " + e.getMessage());
         }
         
-        // Redirect về trang chi tiết đơn hàng thay vì danh sách
+
         return "redirect:/admin/orders/" + orderId;
     }
 
-
-
-    // =========================== HELPER METHODS ===========================
-
-    /**
-     * Lấy danh sách đơn hàng đã filter và sort
-     */
     private List<Order> getAllFilteredAndSortedOrders(String status, String search, String sort) {
         List<Order> orders;
         
@@ -185,41 +163,35 @@ public class OrderController {
         return orders;
     }
 
-    /**
-     * Filter orders by search term
-     */
     private List<Order> filterOrdersBySearch(List<Order> orders, String searchTerm) {
         return orders.stream()
             .filter(order -> {
-                // Search in order ID
+
                 if (order.getId() != null && order.getId().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // ✅ FIXED - Search in customer name using helper method
+
                 if (order.getCustomerName() != null && order.getCustomerName().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // ✅ FIXED - Search in email using helper method
+
                 if (order.getCustomerEmail() != null && order.getCustomerEmail().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // ✅ FIXED - Search in phone using helper method
+
                 if (order.getCustomerPhone() != null && order.getCustomerPhone().contains(searchTerm)) {
                     return true;
                 }
-                // ✅ NEW - Search in alternative receiver name
+
                 if (order.getAlternativeReceiverName() != null && order.getAlternativeReceiverName().toLowerCase().contains(searchTerm)) {
                     return true;
                 }
-                // ✅ NEW - Search in alternative receiver phone
+
                 return order.getAlternativeReceiverPhone() != null && order.getAlternativeReceiverPhone().contains(searchTerm);
             })
             .collect(Collectors.toList());
     }
 
-    /**
-     * Sort orders based on criteria
-     */
     private List<Order> sortOrders(List<Order> orders, String sortBy) {
         switch (sortBy) {
             case "date_asc":
@@ -273,22 +245,19 @@ public class OrderController {
         }
     }
 
-    /**
-     * Lấy payment status map cho danh sách orders
-     */
     private Map<String, String> getPaymentStatusMap(List<Order> orders) {
         Map<String, String> paymentStatusMap = new java.util.HashMap<>();
         
         for (Order order : orders) {
             try {
-                // Try to find payment by orderId
+
                 Optional<Payment> paymentOpt = paymentRepository.findByOrderId(UUID.fromString(order.getId()));
                 
                 if (paymentOpt.isPresent()) {
                     Payment payment = paymentOpt.get();
                     paymentStatusMap.put(order.getId(), payment.getPaymentStatus());
                 } else {
-                    // No payment record found, determine status by payment method
+
                     if ("VNPAY".equals(order.getPaymentMethod())) {
                         paymentStatusMap.put(order.getId(), "PENDING");
                     } else if ("COD".equals(order.getPaymentMethod())) {
@@ -298,7 +267,6 @@ public class OrderController {
                     }
                 }
             } catch (Exception e) {
-                // Handle UUID parsing error or other exceptions
                 paymentStatusMap.put(order.getId(), "ERROR");
             }
         }
@@ -306,9 +274,7 @@ public class OrderController {
         return paymentStatusMap;
     }
     
-    /**
-     * Chuyển đổi status code thành tên hiển thị tiếng Việt
-     */
+
     private String getStatusDisplayName(String status) {
         if (status == null) return "Không xác định";
 

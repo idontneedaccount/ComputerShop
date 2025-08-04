@@ -13,7 +13,6 @@ public interface OrderService {
     List<Order> getOrdersByUser(String userId);
     List<Order> getOrdersByUserWithDetails(String userId);
 
-    // Admin methods
     List<Order> getOrdersByStatus(String status);
     Order updateOrder(Order order, String oldStatus);
     void updateOrderStatus(String orderId, String newStatus);
